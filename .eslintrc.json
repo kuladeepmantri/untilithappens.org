@@ -1,4 +1,22 @@
 {
   "extends": "next/core-web-vitals",
-  "root": true
+  "root": true,
+  "rules": {
+    "react/no-unescaped-entities": [
+      "error",
+      {
+        "forbid": [
+          {
+            "char": ">",
+            "alternatives": ["&gt;"]
+          },
+          {
+            "char": "}",
+            "alternatives": ["&#125;"]
+          }
+        ]
+      }
+    ],
+    "react-hooks/exhaustive-deps": "warn"
+  }
 } 

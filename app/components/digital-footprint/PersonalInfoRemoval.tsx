@@ -146,7 +146,7 @@ export default function PersonalInfoRemoval() {
               <h2 className="text-3xl md:text-7xl font-bold text-white leading-tight">
                 Take Back Control
                 <span className="block text-xl md:text-4xl text-white/80 mt-2 md:mt-4 font-normal">
-                  See What's Out There
+                  See What&apos;s Out There
                 </span>
               </h2>
             </div>

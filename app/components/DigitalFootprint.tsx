@@ -72,7 +72,7 @@ const categories: Category[] = [
       },
       {
         name: 'Bing Search',
-        description: 'Microsoft\'s search engine offering different results and perspectives on your online presence.',
+        description: 'Microsoft&apos;s search engine offering different results and perspectives on your online presence.',
         type: 'Web search',
         loginRequired: false,
         pricing: 'Free',
@@ -628,7 +628,7 @@ export default function DigitalFootprint() {
                   <div className="text-sm text-white/90 tracking-widest uppercase">your digital presence</div>
                   <p className="text-2xl md:text-2xl lg:text-3xl text-white font-light leading-[1.15]">
                     Every click, search, and post leaves a trace.<br/>
-                    <span className="text-white/90">Let's find what they know about you.</span>
+                    <span className="text-white/90">Let&apos;s find what they know about you.</span>
                   </p>
                 </motion.div>
               </motion.div>

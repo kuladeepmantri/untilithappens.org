@@ -233,7 +233,7 @@ export default function PasswordSecurity() {
             </div>
             <p className="text-xl md:text-2xl text-white/70 leading-relaxed">
               Passkeys are revolutionizing how we secure our digital lives. But until they're everywhere,
-              let's make your passwords unbreakable.
+              let&apos;s make your passwords unbreakable.
             </p>
           </motion.div>
         </div>
@@ -271,7 +271,7 @@ export default function PasswordSecurity() {
             Start With What You Have
           </h3>
           <p className="text-xl text-white/70 text-center mb-12">
-            Your device already includes powerful password management. Here's what to use based on your ecosystem:
+            Your device already includes powerful password management. Here&apos;s what to use based on your ecosystem:
           </p>
           <div className="grid md:grid-cols-2 gap-8">
             {systemPasswordManagers.map((manager) => (

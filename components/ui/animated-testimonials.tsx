@@ -38,11 +38,12 @@ export function AnimatedTestimonials({
   };
 
   useEffect(() => {
-    if (autoplay) {
-      const interval = setInterval(handleNext, 5000);
-      return () => clearInterval(interval);
-    }
-  }, [autoplay]);
+    const timer = setInterval(() => {
+      handleNext();
+    }, 5000);
+
+    return () => clearInterval(timer);
+  }, [handleNext]);
 
   const randomRotateY = () => {
     return Math.floor(Math.random() * 21) - 10;
