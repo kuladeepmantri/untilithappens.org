@@ -1,0 +1,235 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Theme Colors - CHANGE THESE VALUES TO UPDATE THE ENTIRE SITE'S COLORS */
+    
+    /* Current Theme: Deep Teal */
+    --theme-primary: 187 60% 20%;      /* #144C52 (Deep Teal) */
+    --theme-primary-dark: 187 60% 15%;  /* #0F393E (Darker Teal) */
+    --theme-primary-light: 187 60% 25%; /* #195F66 (Lighter Teal) */
+    
+    /* Available Color Options - Copy these values above to change colors:
+    
+    1. Vibrant Purple (#8A2BE2)
+    --theme-primary: 271 71% 53%
+    --theme-primary-dark: 271 71% 43%
+    --theme-primary-light: 271 71% 63%
+    
+    2. Bright Cyan (#00FFFF)
+    --theme-primary: 180 100% 50%
+    --theme-primary-dark: 180 100% 40%
+    --theme-primary-light: 180 100% 60%
+    
+    3. Electric Blue (#0066FF)
+    --theme-primary: 217 100% 50%
+    --theme-primary-dark: 217 100% 40%
+    --theme-primary-light: 217 100% 60%
+
+    4. Pure Red (#FF0000)
+    --theme-primary: 0 100% 50%
+    --theme-primary-dark: 0 100% 40%
+    --theme-primary-light: 0 100% 60%
+    
+    5. Neon Green (#00FF00)
+    --theme-primary: 120 100% 50%
+    --theme-primary-dark: 120 100% 40%
+    --theme-primary-light: 120 100% 60%
+    */
+    
+    /* Base colors - DON'T CHANGE THESE */
+    --background: 0 0% 0%;
+    --foreground: 0 0% 100%;
+    --muted: 0 0% 40%;
+    --muted-foreground: 0 0% 60%;
+    --border: 0 0% 20%;
+    --input: 0 0% 10%;
+    --ring: var(--theme-primary);
+
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+ 
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+ 
+    --primary: var(--theme-primary);
+    --primary-foreground: 210 40% 98%;
+ 
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+ 
+    --accent: var(--theme-primary-light);
+    --accent-foreground: 222.2 47.4% 11.2%;
+ 
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+
+    --radius: 0.5rem;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+
+  .dark {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+ 
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+ 
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+ 
+    --primary: 210 40% 98%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+ 
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+ 
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+ 
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+ 
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+ 
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 212.7 26.8% 83.9%;
+  }
+}
+ 
+@layer base {
+  * {
+    @apply border-border;
+  }
+} 
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+  
+  .text-gradient {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-500;
+  }
+  
+  .bg-gradient-subtle {
+    @apply bg-gradient-to-br from-black via-gray-900 to-black;
+  }
+  
+  .bg-grain {
+    background-image: url('/images/grain.png');
+    background-repeat: repeat;
+    opacity: 0.4;
+    pointer-events: none;
+  }
+}
+
+.container {
+  @apply mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl;
+}
+
+/* Smooth scrolling */
+.scroll-smooth {
+  scroll-behavior: smooth;
+}
+
+/* Hide scrollbar for Chrome, Safari and Opera */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* Hide scrollbar for IE, Edge and Firefox */
+.no-scrollbar {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+
+/* Animation utilities */
+.animate-fade-up {
+  animation: fadeUp 0.5s ease-out forwards;
+}
+
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Custom video background styles */
+.video-background {
+  @apply absolute inset-0 w-full h-full object-cover;
+  filter: grayscale(100%) brightness(50%);
+}
+
+.video-grain {
+  @apply absolute inset-0 w-full h-full pointer-events-none;
+  background-image: url('/images/grain.png');
+  background-repeat: repeat;
+  opacity: 0.4;
+  mix-blend-mode: overlay;
+}
+
+/* Custom button styles */
+.btn-primary {
+  @apply inline-flex items-center justify-center px-6 py-3 text-base font-medium text-black bg-white rounded-lg hover:bg-gray-200 transition-colors duration-200;
+}
+
+.btn-secondary {
+  @apply inline-flex items-center justify-center px-6 py-3 text-base font-medium text-white bg-transparent border border-white/20 rounded-lg hover:bg-white/10 transition-colors duration-200;
+}
+
+/* Custom card styles */
+.card {
+  @apply relative overflow-hidden rounded-2xl bg-white/5 p-6 backdrop-blur-lg border border-white/10;
+}
+
+.card-hover {
+  @apply hover:bg-white/10 transition-colors duration-200;
+}
+
+/* Custom input styles */
+.input {
+  @apply w-full px-4 py-3 bg-input border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-ring text-foreground placeholder:text-muted-foreground;
+}
+
+/* Theme-aware utility classes */
+.bg-theme {
+  @apply bg-[hsl(var(--theme-primary))];
+}
+
+.bg-theme-dark {
+  @apply bg-[hsl(var(--theme-primary-dark))];
+}
+
+.bg-theme-light {
+  @apply bg-[hsl(var(--theme-primary-light))];
+}
+
+.text-theme {
+  @apply text-[hsl(var(--theme-primary))];
+}
+
+.border-theme {
+  @apply border-[hsl(var(--theme-primary))];
+}
+
+.bg-theme-gradient {
+  @apply bg-gradient-to-br from-[hsl(var(--theme-primary))] to-[hsl(var(--theme-primary-dark))];
+}
+
+.bg-theme-gradient-subtle {
+  @apply bg-gradient-to-br from-[hsl(var(--theme-primary-dark))] to-[hsl(var(--theme-primary))]/80;
+} 
