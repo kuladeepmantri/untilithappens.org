@@ -1,5 +1,6 @@
 import { motion, useScroll, useMotionValueEvent } from 'framer-motion';
 import { useState } from 'react';
+import { ChevronDown } from 'lucide-react';
 
 export function ScrollIndicator() {
   const [isVisible, setIsVisible] = useState(true);
@@ -17,30 +18,33 @@ export function ScrollIndicator() {
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ 
-        opacity: isVisible ? [0.3, 0.6, 0.3] : 0,
+        opacity: isVisible ? 1 : 0,
         y: isVisible ? 0 : 20
       }}
       transition={{
-        duration: isVisible ? 2.5 : 0.3,
-        repeat: isVisible ? Infinity : 0,
-        ease: "easeInOut"
+        duration: 0.4,
+        ease: "easeOut"
       }}
-      className="fixed left-1/2 -translate-x-1/2 bottom-16 md:bottom-20 flex flex-col items-center justify-center z-50 pointer-events-none"
+      className="fixed left-1/2 -translate-x-1/2 bottom-12 md:bottom-16 flex flex-col items-center justify-center z-50 pointer-events-none"
     >
-      <div className="text-white/40 text-[10px] tracking-[0.2em] uppercase text-center font-medium">
-        Scroll
+      <div className="relative flex flex-col items-center">
+        <motion.div
+          animate={{
+            y: [0, 4, 0],
+            opacity: [0.5, 1, 0.5]
+          }}
+          transition={{
+            duration: 2,
+            repeat: Infinity,
+            ease: "easeInOut"
+          }}
+          className="flex flex-col items-center gap-1"
+        >
+          <ChevronDown className="w-4 h-4 text-white/40" strokeWidth={1.5} />
+          <ChevronDown className="w-4 h-4 text-white/30" strokeWidth={1.5} />
+          <ChevronDown className="w-4 h-4 text-white/20" strokeWidth={1.5} />
+        </motion.div>
       </div>
-      <motion.div 
-        animate={{ 
-          y: isVisible ? [0, 6, 0] : 0
-        }}
-        transition={{
-          duration: 2.5,
-          repeat: isVisible ? Infinity : 0,
-          ease: "easeInOut"
-        }}
-        className="mt-2 w-[1px] h-8 bg-gradient-to-b from-transparent via-white/30 to-transparent"
-      />
     </motion.div>
   );
 } 
