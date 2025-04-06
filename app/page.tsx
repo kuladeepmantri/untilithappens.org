@@ -680,7 +680,7 @@ export default function Home() {
                     links: [
                       { href: "/check-footprint", text: "Digital Footprint" },
                       { href: "/threats", text: "Threats" },
-                      { href: "/security-guide", text: "Protection" }
+                      { href: "/protect", text: "Protection" }
                     ]
                   },
                   {

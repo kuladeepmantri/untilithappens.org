@@ -49,7 +49,7 @@ export function Navigation({ showFullNav = true }: NavigationProps) {
       description: 'See what the internet knows about you'
     },
     {
-      href: '/security-guide',
+      href: '/protect',
       label: 'protect.',
       description: 'Personalized protection suggestions'
     },
