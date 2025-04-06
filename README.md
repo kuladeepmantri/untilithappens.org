@@ -12,20 +12,23 @@ We make cybersecurity human. Accessible. Personal.
 ## Our Focus
 
 **Digital Footprint Analysis**
-Understanding what the digital world knows about you—before others exploit it.
+We've built sophisticated scanning tools that work like a digital mirror, showing you what others see. Because understanding your exposure is the first step to protection.
 
 **Security Education**
-Knowledge delivered with clarity and purpose, not complexity.
+Modern threats require modern solutions. Our guides combine technical precision with real-world context, making complex security concepts feel natural and actionable.
 
 **Threat Awareness**
-Real stories. Real consequences. Real solutions.
+We monitor emerging threats in real-time, analyzing attack patterns and translating technical data into human impact. Because numbers without stories are just statistics.
 
 **AI Fraud Prevention**
-As technology evolves, so do the threats. We keep you ahead.
+Our AI detection systems work silently in the background, while you focus on what matters—connecting with real people, safely and confidently.
 
 ## Technical Foundation
 
-Built on Next.js 14, TypeScript, and modern web technologies. But the technology isn't the story—it's the lives we protect.
+We leverage cutting-edge technology to protect what's human:
+- Next.js 14 powers our responsive, real-time protection
+- TypeScript ensures our security checks are precise and reliable
+- Modern web technologies make safety feel natural, not forced
 
 ## Getting Started
 
@@ -52,10 +55,6 @@ public/            # Assets
 ## Contributing
 
 Your expertise can prevent someone's tragedy. If you have something to contribute, we welcome your involvement.
-
-## License
-
-MIT License - See LICENSE file
 
 ## A Personal Note
 
