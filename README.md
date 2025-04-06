@@ -1,88 +1,70 @@
 # Until It Happens
 
-A modern web platform dedicated to raising awareness about cybersecurity threats and providing resources for digital safety.
+"I never thought it would happen to me."
+These words echo through countless lives shattered by digital threats.
 
-## 🛡️ About The Project
+## About
 
-"Until It Happens" is a non-profit initiative focused on making cybersecurity accessible and understandable to everyone. We believe in preventing cyber threats through education and awareness before they happen to you or your loved ones.
+Until It Happens is more than a platform—it's a response to the silent epidemic of cyber victimization. We exist because every day, someone's grandmother loses her life savings to an AI-generated voice of a loved one. Because a small business owner watches decades of work vanish in a ransomware attack. Because a teenager's life unravels from digital exploitation.
 
-### Key Features
+We make cybersecurity human. Accessible. Personal.
 
-- 🔍 **Digital Footprint Scanner**: Check what information is publicly available about you
-- 📚 **Security Guides**: Comprehensive guides for digital safety
-- 🚨 **Real-time Threat Alerts**: Stay updated with the latest cybersecurity threats
-- 🤖 **AI Scam Awareness**: Learn about emerging AI-based fraud techniques
-- 💡 **Interactive Learning**: User-friendly security education
+## Our Focus
 
-## 🚀 Built With
+**Digital Footprint Analysis**
+Understanding what the digital world knows about you—before others exploit it.
 
-- [Next.js 14](https://nextjs.org/) - React Framework
-- [TypeScript](https://www.typescriptlang.org/) - Programming Language
-- [Tailwind CSS](https://tailwindcss.com/) - Styling
-- [Framer Motion](https://www.framer.com/motion/) - Animations
-- [Radix UI](https://www.radix-ui.com/) - UI Components
-- [Lucide Icons](https://lucide.dev/) - Icons
+**Security Education**
+Knowledge delivered with clarity and purpose, not complexity.
 
-## 🛠️ Getting Started
+**Threat Awareness**
+Real stories. Real consequences. Real solutions.
 
-### Prerequisites
+**AI Fraud Prevention**
+As technology evolves, so do the threats. We keep you ahead.
 
-- Node.js (v18 or higher)
-- npm or yarn
+## Technical Foundation
 
-### Installation
+Built on Next.js 14, TypeScript, and modern web technologies. But the technology isn't the story—it's the lives we protect.
 
-1. Clone the repository
-   ```sh
-   git clone https://github.com/yourusername/untilithappens.org.git
-   ```
+## Getting Started
 
-2. Install dependencies
-   ```sh
-   npm install
-   # or
-   yarn install
-   ```
+Prerequisites: Node.js (v18+)
 
-3. Run the development server
-   ```sh
-   npm run dev
-   # or
-   yarn dev
-   ```
-
-4. Open [http://localhost:3000](http://localhost:3000) in your browser
-
-## 🌐 Project Structure
-
-```
-├── app/                # Next.js app directory
-│   ├── components/     # App-specific components
-│   ├── security-guide/ # Security guide pages
-│   └── page.tsx       # Main landing page
-├── components/         # Reusable UI components
-├── lib/               # Utility functions and helpers
-└── public/            # Static assets
+```sh
+git clone https://github.com/yourusername/untilithappens.org.git
+npm install
+npm run dev
 ```
 
-## 🤝 Contributing
+## Structure
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+```
+app/                # Core application
+  ├─ components/    # Interface elements
+  ├─ security-guide/# Educational resources
+  └─ page.tsx      # Main experience
+components/         # Shared elements
+lib/               # Core utilities
+public/            # Assets
+```
 
-## 📝 License
+## Contributing
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+Your expertise can prevent someone's tragedy. If you have something to contribute, we welcome your involvement.
 
-## 🙏 Acknowledgments
+## License
 
-- All the cybersecurity experts who contributed to our knowledge base
-- The victims who shared their stories to help others
-- Our community of volunteers and supporters
+MIT License - See LICENSE file
 
-## 📬 Contact
+## A Personal Note
 
-For inquiries about the project or to report security vulnerabilities, please reach out through our website or open an issue.
+Every line of code in this project represents someone's story—someone who wished they had known sooner. Someone who thought it couldn't happen to them.
+
+Until it did.
 
 ---
 
-Remember: Cybersecurity matters not just until, but before it happens. Stay safe! 🛡️
+For inquiries or to report vulnerabilities, reach out through our website or open an issue.
+
+Remember: Prevention isn't paranoia. It's protection.
