@@ -1,8 +1,11 @@
 'use client';
 
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useState } from 'react';
 import { ScrollIndicator } from '../components/ui/scroll-indicator';
+import { BackButton } from '../components/ui/back-button';
+import WindowsProtection from '../components/protection-guides/WindowsProtection';
+import Link from 'next/link';
 
 interface DetectedDevice {
   type: string;
@@ -11,15 +14,134 @@ interface DetectedDevice {
   version: string;
 }
 
+interface DeviceMatch {
+  id: string;
+  type: string;
+  os: string;
+  model: string;
+  category: string;
+  keywords: string[];
+}
+
 export default function Protect() {
   const [detectedDevice, setDetectedDevice] = useState<DetectedDevice | null>(null);
-  const [selectedOS, setSelectedOS] = useState('');
+  const [selectedDevice, setSelectedDevice] = useState<DeviceMatch | null>(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [step, setStep] = useState<'initial' | 'detection' | 'manual' | 'results'>('initial');
+  const [showOSTooltip, setShowOSTooltip] = useState(false);
+  const [hasStartedTyping, setHasStartedTyping] = useState(false);
+
+  const deviceDatabase: DeviceMatch[] = [
+    // Samsung Devices
+    {
+      id: 'samsung-s-series',
+      type: 'Phone',
+      os: 'Android',
+      model: 'Samsung Galaxy S Series',
+      category: 'Mobile',
+      keywords: ['samsung', 'galaxy', 's23', 's22', 's21', 's20', 'ultra', 'plus', 'android']
+    },
+    {
+      id: 'samsung-fold',
+      type: 'Phone',
+      os: 'Android',
+      model: 'Samsung Galaxy Fold/Flip',
+      category: 'Mobile',
+      keywords: ['samsung', 'galaxy', 'fold', 'flip', 'z fold', 'z flip', 'android']
+    },
+    {
+      id: 'samsung-tablet',
+      type: 'Tablet',
+      os: 'Android',
+      model: 'Samsung Galaxy Tab',
+      category: 'Tablet',
+      keywords: ['samsung', 'galaxy', 'tab', 's8', 's7', 'tablet', 'android']
+    },
+    // Apple Devices
+    {
+      id: 'iphone',
+      type: 'Phone',
+      os: 'iOS',
+      model: 'iPhone',
+      category: 'Mobile',
+      keywords: ['iphone', 'apple', 'ios', '15', '14', '13', '12', 'pro', 'max', 'plus']
+    },
+    // Google Devices
+    {
+      id: 'pixel',
+      type: 'Phone',
+      os: 'Android',
+      model: 'Google Pixel',
+      category: 'Mobile',
+      keywords: ['google', 'pixel', '8', '7', '6', 'pro', 'android']
+    },
+    // OnePlus Devices
+    {
+      id: 'oneplus',
+      type: 'Phone',
+      os: 'Android',
+      model: 'OnePlus',
+      category: 'Mobile',
+      keywords: ['oneplus', '12', '11', '10', 'pro', 'android']
+    },
+    // Xiaomi Devices
+    {
+      id: 'xiaomi',
+      type: 'Phone',
+      os: 'Android',
+      model: 'Xiaomi',
+      category: 'Mobile',
+      keywords: ['xiaomi', 'redmi', 'poco', 'mi', 'android']
+    },
+    // OPPO Devices
+    {
+      id: 'oppo',
+      type: 'Phone',
+      os: 'Android',
+      model: 'OPPO',
+      category: 'Mobile',
+      keywords: ['oppo', 'find', 'reno', 'android']
+    },
+    // Computers
+    {
+      id: 'windows-hp',
+      type: 'Laptop',
+      os: 'Windows',
+      model: 'HP Laptop',
+      category: 'Computer',
+      keywords: ['hp', 'pavilion', 'envy', 'spectre', 'windows', 'laptop']
+    },
+    {
+      id: 'windows-dell',
+      type: 'Laptop',
+      os: 'Windows',
+      model: 'Dell Laptop',
+      category: 'Computer',
+      keywords: ['dell', 'xps', 'inspiron', 'latitude', 'windows', 'laptop']
+    },
+    {
+      id: 'windows-lenovo',
+      type: 'Laptop',
+      os: 'Windows',
+      model: 'Lenovo Laptop',
+      category: 'Computer',
+      keywords: ['lenovo', 'thinkpad', 'yoga', 'ideapad', 'windows', 'laptop']
+    },
+    // Add a generic Windows entry
+    {
+      id: 'windows-os',
+      type: 'Computer',
+      os: 'Windows',
+      model: 'Windows PC',
+      category: 'Computer',
+      keywords: ['windows', 'pc', 'computer', 'desktop']
+    }
+  ];
 
   const detectDevice = () => {
     setIsAnalyzing(true);
-    // Simulated device detection - in real implementation, this would use actual device detection logic
+    setStep('detection');
     setTimeout(() => {
       setDetectedDevice({
         type: 'Desktop',
@@ -31,258 +153,489 @@ export default function Protect() {
     }, 2000);
   };
 
-  const systemTypes = [
-    { id: 'desktop', label: 'desktop computer.' },
-    { id: 'laptop', label: 'laptop.' },
-    { id: 'phone', label: 'mobile phone.' },
-    { id: 'tablet', label: 'tablet.' }
-  ];
+  const getDeviceSuggestions = (query: string) => {
+    if (!query) return [];
+    const lowerQuery = query.toLowerCase();
+    
+    // Check if it's a direct OS match first
+    const osKeywords = ['windows', 'android', 'ios', 'ipados', 'macos', 'linux'];
+    if (osKeywords.includes(lowerQuery)) {
+      return deviceDatabase.filter(device => 
+        device.os.toLowerCase() === lowerQuery
+      );
+    }
+    
+    // Then try exact device matches
+    const exactMatches = deviceDatabase.filter(device => 
+      device.keywords.some(keyword => keyword === lowerQuery)
+    );
+    
+    if (exactMatches.length > 0) {
+      return exactMatches;
+    }
+    
+    // Finally, try partial matches
+    return deviceDatabase.filter(device => 
+      device.keywords.some(keyword => keyword.includes(lowerQuery)) ||
+      device.model.toLowerCase().includes(lowerQuery)
+    );
+  };
 
-  const filteredSystems = systemTypes.filter(system => 
-    system.label.toLowerCase().includes(searchQuery.toLowerCase())
+  const suggestions = getDeviceSuggestions(searchQuery);
+  const groupedSuggestions = suggestions.reduce((acc, device) => {
+    if (!acc[device.category]) {
+      acc[device.category] = [];
+    }
+    acc[device.category].push(device);
+    return acc;
+  }, {} as Record<string, DeviceMatch[]>);
+
+  // OS Tooltip component
+  const OSTooltip = () => (
+    <AnimatePresence>
+      {showOSTooltip && (
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -10 }}
+          className="absolute left-0 right-0 top-[calc(100%+1.5rem)] bg-gradient-to-br from-white/20 to-white/10 backdrop-blur-lg rounded-xl p-6 shadow-xl z-10"
+        >
+          <div className="relative">
+            <button
+              onClick={() => setShowOSTooltip(false)}
+              className="absolute -top-2 -right-2 text-white/60 hover:text-white"
+            >
+              ×
+            </button>
+            <div className="space-y-4">
+              <div>
+                <p className="text-white/90 text-lg font-light mb-2">
+                  Quick Tip: Operating System is Key
+                </p>
+                <p className="text-white/70 text-base font-light leading-relaxed">
+                  We focus on providing operating system level protection, which is the foundation of your device's security. Simply tell us your OS (Windows, Android, iOS, etc.).
+                </p>
+              </div>
+              <div className="pt-2 border-t border-white/10">
+                <p className="text-white/60 text-sm font-light">
+                  While we can't provide device-specific security features, we'll give you comprehensive OS-level protection steps. For device-specific security features, please refer to your manufacturer's guidelines.
+                </p>
+              </div>
+            </div>
+          </div>
+        </motion.div>
+      )}
+    </AnimatePresence>
+  );
+
+  // Preserve the existing hero section code
+  const heroSection = (
+    <section className="relative min-h-[100svh] flex items-start md:items-center justify-center overflow-hidden">
+      <div className="max-w-screen-xl mx-auto px-6 w-full flex flex-col md:flex-row items-start md:items-center justify-between pt-32 md:pt-0">
+        {/* Main Title Group */}
+        <div className="relative flex-1 flex items-start md:items-center justify-start w-full">
+          <div className="relative">
+            <motion.div
+              className="absolute -inset-x-20 -inset-y-20 bg-white/10 blur-3xl rounded-full hidden md:block"
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ 
+                opacity: [0.05, 0.1, 0.05],
+                scale: [0.8, 1, 0.8]
+              }}
+              transition={{ 
+                duration: 6,
+                repeat: Infinity,
+                ease: "easeInOut"
+              }}
+            />
+
+            <div className="relative">
+              <motion.div 
+                className="flex flex-col items-start"
+                initial={{ opacity: 0, x: -50 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 1, delay: 0.2 }}
+              >
+                <h1 
+                  className="text-[clamp(4rem,15vw,8rem)] font-bold tracking-tighter text-white leading-[0.85]"
+                  style={{ fontFamily: 'var(--font-geist-sans)' }}
+                >
+                  <span className="block">protect</span>
+                  <span className="block">yourself.</span>
+                </h1>
+              </motion.div>
+            </div>
+          </div>
+        </div>
+
+        {/* Right Side Content */}
+        <div className="flex-1 max-w-full md:max-w-lg w-full mt-16 md:mt-0">
+          <div className="space-y-10 md:space-y-12">
+            {/* Description */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8 }}
+              className="relative"
+            >
+              <div className="absolute -left-3 top-0 w-[1px] h-full bg-gradient-to-b from-white/0 via-white to-white/0" />
+              <motion.div 
+                className="pl-8 space-y-5 md:space-y-6"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 1, delay: 0.4 }}
+              >
+                <div className="text-sm text-white/90 tracking-widest uppercase">your digital safety</div>
+                <p className="text-2xl md:text-2xl lg:text-3xl text-white font-light leading-[1.15]">
+                  let us help you stay safe.<br/>
+                  <span className="text-white/90">we'll guide you every step.</span>
+                </p>
+              </motion.div>
+            </motion.div>
+
+            {/* Stats */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.8, delay: 0.6 }}
+              className="grid grid-cols-2 gap-12 md:gap-8 px-0"
+            >
+              <div>
+                <div className="text-4xl md:text-4xl font-bold text-white mb-3">94%</div>
+                <p className="text-sm text-white/90">threats preventable</p>
+              </div>
+              <div>
+                <div className="text-4xl md:text-4xl font-bold text-white mb-3">3min</div>
+                <p className="text-sm text-white/90">to secure device</p>
+              </div>
+            </motion.div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+
+  // New innovative device detection section
+  const deviceDetectionSection = (
+    <section className="relative w-full min-h-screen">
+      {step !== 'initial' && <BackButton onClick={() => setStep('initial')} />}
+      <div className="py-24 md:py-32">
+        <div className="container mx-auto px-6">
+          <motion.div 
+            className="max-w-4xl mx-auto relative"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.8 }}
+          >
+            <AnimatePresence mode="wait">
+              {step === 'initial' && (
+                <motion.div 
+                  className="space-y-16"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -20 }}
+                >
+                  <div className="text-center space-y-6">
+                    <h2 className="text-5xl md:text-6xl text-white font-light">how would you like to start?</h2>
+                    <p className="text-xl text-white/80 font-light max-w-2xl mx-auto">
+                      choose your preferred way to identify your device and get personalized protection steps.
+                    </p>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <motion.button
+                      onClick={() => {
+                        setStep('detection');
+                        detectDevice();
+                      }}
+                      className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-white/10 to-white/5 p-8 text-left transition-all duration-300"
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                    >
+                      <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                      <div className="relative space-y-4">
+                        <div className="text-3xl text-white font-light">automatic.</div>
+                        <p className="text-lg text-white/70 font-light">
+                          let us detect your device specifications automatically for the most accurate protection steps.
+                        </p>
+                        <div className="absolute -right-4 md:-right-4 top-0 bottom-0 hidden md:flex items-center">
+                          <motion.div 
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            className="rotate-180 [writing-mode:vertical-lr] text-[11px] text-white/40 tracking-[0.25em] uppercase"
+                          >
+                            no data stored
+                          </motion.div>
+                        </div>
+                        <div className="md:hidden mt-6">
+                          <motion.div 
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            className="text-[11px] text-white/40 tracking-[0.25em] uppercase"
+                          >
+                            no data stored
+                          </motion.div>
+                        </div>
+                      </div>
+                    </motion.button>
+
+                    <motion.button
+                      onClick={() => {
+                        setStep('manual');
+                        setShowOSTooltip(true);
+                        setTimeout(() => setShowOSTooltip(false), 8000);
+                      }}
+                      className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-white/10 to-white/5 p-8 text-left transition-all duration-300"
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                    >
+                      <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                      <div className="relative space-y-4">
+                        <div className="text-3xl text-white font-light">manual.</div>
+                        <p className="text-lg text-white/70 font-light">
+                          tell us about your device and we'll guide you through the protection process step by step.
+                        </p>
+                      </div>
+                    </motion.button>
+                  </div>
+                </motion.div>
+              )}
+
+              {step === 'detection' && (
+                <motion.div 
+                  className="space-y-12 pt-16 md:pt-20"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -20 }}
+                >
+                  <div className="text-center space-y-6">
+                    <h2 className="text-5xl md:text-6xl text-white font-light">analyzing your device.</h2>
+                    <p className="text-xl text-white/80 font-light max-w-2xl mx-auto">
+                      we're scanning your system to provide the most relevant protection steps.
+                    </p>
+                  </div>
+
+                  {isAnalyzing ? (
+                    <div className="flex flex-col items-center justify-center space-y-8">
+                      <div className="relative w-24 h-24">
+                        <div className="absolute inset-0 rounded-full border-2 border-white/20" />
+                        <div className="absolute inset-0 rounded-full border-2 border-white border-t-transparent animate-spin" />
+                      </div>
+                      <p className="text-xl text-white/60 font-light">analyzing system specifications...</p>
+                    </div>
+                  ) : detectedDevice && (
+                    <motion.div 
+                      className="space-y-8"
+                      initial={{ opacity: 0, scale: 0.95 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                    >
+                      <div className="bg-gradient-to-br from-white/10 to-white/5 rounded-2xl p-8 space-y-8">
+                        <div className="space-y-2">
+                          <h3 className="text-3xl text-white font-light">detected system.</h3>
+                          <p className="text-lg text-white/60">
+                            here's what we found. if this doesn't look right, you can try again or enter your device manually.
+                          </p>
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                          <div className="space-y-2">
+                            <div className="text-lg text-white/60 font-light">system</div>
+                            <div className="text-2xl text-white">{detectedDevice.type}</div>
+                          </div>
+                          <div className="space-y-2">
+                            <div className="text-lg text-white/60 font-light">os</div>
+                            <div className="text-2xl text-white">{detectedDevice.os}</div>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="flex flex-col md:flex-row gap-4">
+                        <motion.button
+                          onClick={() => setStep('results')}
+                          className="flex-1 bg-white hover:bg-white/90 text-[#801336] px-8 py-6 rounded-xl font-medium transition-all duration-300"
+                          whileHover={{ scale: 1.02 }}
+                          whileTap={{ scale: 0.98 }}
+                        >
+                          <span className="block text-xl">get protection steps</span>
+                          <span className="block text-sm mt-1 opacity-60">this looks correct</span>
+                        </motion.button>
+
+                        <motion.button
+                          onClick={() => setStep('manual')}
+                          className="px-8 py-6 rounded-xl bg-white/5 hover:bg-white/10 text-white transition-all duration-300"
+                          whileHover={{ scale: 1.02 }}
+                          whileTap={{ scale: 0.98 }}
+                        >
+                          enter manually instead
+                        </motion.button>
+                      </div>
+                    </motion.div>
+                  )}
+                </motion.div>
+              )}
+
+              {step === 'manual' && (
+                <motion.div 
+                  className="space-y-12 pt-16 md:pt-20"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -20 }}
+                >
+                  <div className="text-center space-y-6">
+                    <h2 className="text-5xl md:text-6xl text-white font-light">tell us about your device.</h2>
+                    <p className="text-xl text-white/80 font-light max-w-2xl mx-auto">
+                      start by entering your operating system for core protection steps.
+                    </p>
+                  </div>
+
+                  <div className="space-y-8">
+                    <div className="relative">
+                      <input
+                        type="text"
+                        value={searchQuery}
+                        onChange={(e) => {
+                          setSearchQuery(e.target.value);
+                          setSelectedDevice(null);
+                          if (!hasStartedTyping) {
+                            setHasStartedTyping(true);
+                            setShowOSTooltip(false);
+                          }
+                        }}
+                        onFocus={() => {
+                          if (!hasStartedTyping) {
+                            setShowOSTooltip(true);
+                            setTimeout(() => setShowOSTooltip(false), 12000);
+                          }
+                        }}
+                        placeholder="enter your operating system (e.g., Windows, Android, iOS)"
+                        className="w-full bg-white text-[#801336] border border-white/10 focus:border-white/20 rounded-xl px-8 py-6 text-2xl placeholder:text-[#801336]/40 focus:outline-none focus:ring-0 transition-all duration-300"
+                      />
+                      <OSTooltip />
+                    </div>
+
+                    {searchQuery && !suggestions.length && (
+                      <motion.div
+                        initial={{ opacity: 0, y: -10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="bg-gradient-to-br from-white/10 to-white/5 rounded-xl p-8 space-y-4"
+                      >
+                        <p className="text-xl text-white/80 font-light">
+                          we couldn't recognize that operating system.
+                        </p>
+                        <p className="text-lg text-white/60 font-light">
+                          please try entering one of: Windows, Android, iOS, macOS, iPadOS, or Linux
+                        </p>
+                      </motion.div>
+                    )}
+
+                    {Object.entries(groupedSuggestions).length > 0 && (
+                      <div className="space-y-8">
+                        {Object.entries(groupedSuggestions).map(([category, devices]) => (
+                          <div key={category} className="space-y-4">
+                            <div className="text-sm text-white/40 uppercase tracking-wider">{category}</div>
+                            <div className="grid grid-cols-1 gap-4">
+                              {devices.map((device) => (
+                                <motion.button
+                                  key={device.id}
+                                  onClick={() => setSelectedDevice(device)}
+                                  className={`w-full relative overflow-hidden rounded-xl transition-all duration-300 ${
+                                    selectedDevice?.id === device.id ? 'bg-white/20' : 'bg-gradient-to-br from-white/10 to-white/5 hover:from-white/15 hover:to-white/10'
+                                  }`}
+                                  whileHover={{ scale: 1.02 }}
+                                  whileTap={{ scale: 0.98 }}
+                                >
+                                  <div className="p-6 flex justify-between items-center">
+                                    <div className="space-y-1 text-left">
+                                      <div className="text-xl text-white font-light">{device.model}</div>
+                                      <div className="text-base text-white/60">{device.os}</div>
+                                    </div>
+                                    <div className="text-white/40 text-2xl">
+                                      {selectedDevice?.id === device.id ? '✓' : '+'}
+                                    </div>
+                                  </div>
+                                </motion.button>
+                              ))}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+
+                    {selectedDevice && (
+                      <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="flex flex-col md:flex-row gap-4"
+                      >
+                        <motion.button
+                          onClick={() => setStep('results')}
+                          className="flex-1 bg-white hover:bg-white/90 text-[#801336] px-8 py-6 rounded-xl font-medium transition-all duration-300"
+                          whileHover={{ scale: 1.02 }}
+                          whileTap={{ scale: 0.98 }}
+                        >
+                          <span className="block text-xl">get protection steps</span>
+                          <span className="block text-sm mt-1 opacity-60">for {selectedDevice.model}</span>
+                        </motion.button>
+
+                        <motion.button
+                          onClick={() => {
+                            setSelectedDevice(null);
+                            setSearchQuery('');
+                            setHasStartedTyping(false);
+                          }}
+                          className="px-8 py-6 rounded-xl bg-white/5 hover:bg-white/10 text-white transition-all duration-300"
+                          whileHover={{ scale: 1.02 }}
+                          whileTap={{ scale: 0.98 }}
+                        >
+                          clear selection
+                        </motion.button>
+                      </motion.div>
+                    )}
+                  </div>
+                </motion.div>
+              )}
+
+              {step === 'results' && (
+                <motion.div 
+                  className="w-full"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                >
+                  {/* Render protection guide based on OS */}
+                  {(selectedDevice?.os.toLowerCase() === 'windows' || 
+                    detectedDevice?.os.toLowerCase() === 'windows') && (
+                    <WindowsProtection onBack={() => setStep('initial')} />
+                  )}
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </motion.div>
+        </div>
+      </div>
+    </section>
   );
 
   return (
     <main className="relative min-h-screen" style={{ backgroundColor: '#801336' }}>
       <ScrollIndicator />
-      
-      {/* Hero Section */}
-      <section className="relative min-h-[100svh] flex items-start md:items-center justify-center overflow-hidden">
-        <div className="max-w-screen-xl mx-auto px-6 w-full flex flex-col md:flex-row items-start md:items-center justify-between pt-32 md:pt-0">
-          {/* Main Title Group */}
-          <div className="relative flex-1 flex items-start md:items-center justify-start w-full">
-            <div className="relative">
-              <motion.div
-                className="absolute -inset-x-20 -inset-y-20 bg-white/10 blur-3xl rounded-full hidden md:block"
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={{ 
-                  opacity: [0.05, 0.1, 0.05],
-                  scale: [0.8, 1, 0.8]
-                }}
-                transition={{ 
-                  duration: 6,
-                  repeat: Infinity,
-                  ease: "easeInOut"
-                }}
-              />
-
-              <div className="relative">
-                <motion.div 
-                  className="flex flex-col items-start"
-                  initial={{ opacity: 0, x: -50 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ duration: 1, delay: 0.2 }}
-                >
-                  <h1 
-                    className="text-[clamp(4rem,15vw,8rem)] font-bold tracking-tighter text-white leading-[0.85]"
-                    style={{ fontFamily: 'var(--font-geist-sans)' }}
-                  >
-                    <span className="block">protect</span>
-                    <span className="block">yourself.</span>
-                  </h1>
-                </motion.div>
-              </div>
-            </div>
-          </div>
-
-          {/* Right Side Content */}
-          <div className="flex-1 max-w-full md:max-w-lg w-full mt-16 md:mt-0">
-            <div className="space-y-10 md:space-y-12">
-              {/* Description */}
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8 }}
-                className="relative"
-              >
-                <div className="absolute -left-3 top-0 w-[1px] h-full bg-gradient-to-b from-white/0 via-white to-white/0" />
-                <motion.div 
-                  className="pl-8 space-y-5 md:space-y-6"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ duration: 1, delay: 0.4 }}
-                >
-                  <div className="text-sm text-white/90 tracking-widest uppercase">your digital safety</div>
-                  <p className="text-2xl md:text-2xl lg:text-3xl text-white font-light leading-[1.15]">
-                    let us help you stay safe.<br/>
-                    <span className="text-white/90">we'll guide you every step.</span>
-                  </p>
-                </motion.div>
-              </motion.div>
-
-              {/* Stats */}
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 0.8, delay: 0.6 }}
-                className="grid grid-cols-2 gap-12 md:gap-8 px-0"
-              >
-                <div>
-                  <div className="text-4xl md:text-4xl font-bold text-white mb-3">94%</div>
-                  <p className="text-sm text-white/90">threats preventable</p>
-                </div>
-                <div>
-                  <div className="text-4xl md:text-4xl font-bold text-white mb-3">3min</div>
-                  <p className="text-sm text-white/90">to secure device</p>
-                </div>
-              </motion.div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Device Analysis Section */}
-      <section className="w-full py-24 md:py-32 relative">
-        <div className="absolute -left-4 top-0 bottom-0 flex items-center">
-          <div className="rotate-180 [writing-mode:vertical-lr] text-white/40 text-sm tracking-widest">
-            DEVICE ANALYSIS
-          </div>
-        </div>
-
-        <div className="container mx-auto px-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-16 md:gap-24">
-            {/* Auto Detection Column */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              className="space-y-12"
-            >
-              <div className="space-y-6">
-                <h2 className="text-4xl text-white font-light tracking-tight">automatic.</h2>
-                <p className="text-xl text-white/80 font-light">
-                  let us analyze your device and provide personalized protection.
-                </p>
-
-                <div className="text-sm text-white/60 leading-relaxed">
-                  note: we only analyze your device specifications to provide relevant security recommendations. 
-                  no data is stored or processed externally. all analysis happens in your browser.
-                </div>
-
-                {!detectedDevice ? (
-                  <motion.button
-                    onClick={detectDevice}
-                    disabled={isAnalyzing}
-                    className="relative w-full overflow-hidden bg-white hover:bg-white/90 text-[#801336] px-8 py-6 rounded-lg font-medium transition-all duration-500 text-center text-lg mt-8"
-                    whileHover={{ scale: 1.01 }}
-                    whileTap={{ scale: 0.99 }}
-                  >
-                    {isAnalyzing ? (
-                      <span className="block text-xl">analyzing your device...</span>
-                    ) : (
-                      <>
-                        <span className="block text-xl">start analysis.</span>
-                        <span className="block text-sm mt-1 opacity-60">detect your system automatically</span>
-                      </>
-                    )}
-                  </motion.button>
-                ) : (
-                  <div className="space-y-8 mt-8">
-                    <div className="p-8 bg-white/10 rounded-lg space-y-8">
-                      <div className="space-y-2">
-                        <div className="text-2xl text-white font-light">detected system.</div>
-                      </div>
-
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                        <div className="space-y-2">
-                          <div className="text-lg text-white/60 font-light">system</div>
-                          <div className="text-2xl text-white">{detectedDevice.type}</div>
-                        </div>
-                        <div className="space-y-2">
-                          <div className="text-lg text-white/60 font-light">os</div>
-                          <div className="text-2xl text-white">{detectedDevice.os}</div>
-                        </div>
-                        <div className="space-y-2">
-                          <div className="text-lg text-white/60 font-light">browser</div>
-                          <div className="text-2xl text-white">{detectedDevice.browser}</div>
-                        </div>
-                        <div className="space-y-2">
-                          <div className="text-lg text-white/60 font-light">version</div>
-                          <div className="text-2xl text-white">{detectedDevice.version}</div>
-                        </div>
-                      </div>
-                    </div>
-
-                    <motion.button
-                      onClick={() => setDetectedDevice(null)}
-                      className="group relative overflow-hidden px-6 py-3 rounded-lg transition-all duration-300"
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
-                    >
-                      <div className="absolute inset-0 bg-white/5 group-hover:bg-white/10 transition-colors duration-300 rounded-lg" />
-                      <span className="relative text-lg text-white/60 group-hover:text-white font-light">
-                        analyze again.
-                      </span>
-                    </motion.button>
-                  </div>
-                )}
-              </div>
-            </motion.div>
-
-            {/* Manual Selection Column */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.2 }}
-              className="space-y-12"
-            >
-              <div className="space-y-6">
-                <h2 className="text-4xl text-white font-light tracking-tight">manual.</h2>
-                <p className="text-xl text-white/80 font-light">
-                  tell us about your device.
-                </p>
-
-                <div className="space-y-8 mt-8">
-                  {/* Search Input */}
-                  <div className="space-y-6">
-                    <div className="relative">
-                      <input
-                        type="text"
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                        placeholder="what type of device do you use?"
-                        className="w-full bg-white/5 border border-white/10 focus:border-white/20 rounded-lg px-6 py-4 text-white placeholder:text-white/40 focus:outline-none focus:ring-0 transition-colors duration-300"
-                      />
-                    </div>
-
-                    <div className="grid grid-cols-1 gap-3">
-                      {filteredSystems.map((system) => (
-                        <motion.button
-                          key={system.id}
-                          onClick={() => setSelectedOS(system.id)}
-                          className={`relative overflow-hidden rounded-lg transition-all duration-300 ${
-                            selectedOS === system.id ? 'bg-white/20' : 'bg-white/5 hover:bg-white/10'
-                          }`}
-                          whileHover={{ scale: 1.02 }}
-                          whileTap={{ scale: 0.98 }}
-                        >
-                          <div className="p-6">
-                            <div className="text-xl text-white font-light">{system.label}</div>
-                          </div>
-                        </motion.button>
-                      ))}
-                    </div>
-                  </div>
-
-                  {selectedOS && (
-                    <motion.button
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      className="w-full overflow-hidden bg-white hover:bg-white/90 text-[#801336] px-8 py-6 rounded-lg font-medium transition-all duration-500 text-center"
-                      whileHover={{ scale: 1.01 }}
-                      whileTap={{ scale: 0.99 }}
-                    >
-                      <span className="block text-xl">get protection steps.</span>
-                      <span className="block text-sm mt-1 opacity-60">personalized for your system</span>
-                    </motion.button>
-                  )}
-                </div>
-              </div>
-            </motion.div>
-          </div>
-        </div>
-      </section>
+      {heroSection}
+      <div className="w-full">
+        {step !== 'results' && deviceDetectionSection}
+        {step === 'results' && (
+          <motion.div 
+            className="w-full"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
+            {(selectedDevice?.os.toLowerCase() === 'windows' || 
+              detectedDevice?.os.toLowerCase() === 'windows') && (
+              <WindowsProtection onBack={() => setStep('initial')} />
+            )}
+          </motion.div>
+        )}
+      </div>
     </main>
   );
 } 
