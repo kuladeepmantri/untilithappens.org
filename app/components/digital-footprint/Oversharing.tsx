@@ -2,258 +2,196 @@
 
 import { motion } from 'framer-motion';
 import Link from 'next/link';
-import { ExternalLink } from 'lucide-react';
+
+const fadeIn = {
+  initial: { opacity: 0, y: 20 },
+  animate: { opacity: 1, y: 0 },
+  transition: { duration: 0.6 }
+};
+
+const stats = [
+  { value: "70%", label: "share personal details weekly" },
+  { value: "15M", label: "identity theft victims" },
+  { value: "78%", label: "of burglars use social media" },
+  { value: "40%", label: "admit posting sensitive info" }
+];
+
+const risks = [
+  {
+    title: "Identity Theft",
+    impact: "Criminals piece together your life from public posts",
+    stat: "1 in 5 identity theft victims had info taken from social media",
+    suggestion: "Use unique usernames and limit personal details across platforms"
+  },
+  {
+    title: "Physical Safety",
+    impact: "Real-time location sharing exposes your daily patterns",
+    stat: "79% have location sharing enabled by default",
+    suggestion: "Share locations after events, not during them"
+  },
+  {
+    title: "Digital Footprint",
+    impact: "Everything you share becomes a permanent record",
+    stat: "40% admit posting sensitive personal information",
+    suggestion: "Think twice before sharing personal milestones"
+  }
+];
+
+const solutions = [
+  {
+    category: "Email Protection",
+    description: "86% use multiple emails for privacy",
+    suggestion: "Create separate emails for different purposes - personal, shopping, and subscriptions",
+    tools: [
+      { name: "SimpleLogin", desc: "Create unlimited aliases", url: "https://simplelogin.io" },
+      { name: "Firefox Relay", desc: "Mask your real email", url: "https://relay.firefox.com" },
+      { name: "ProtonMail", desc: "Encrypted email service", url: "https://proton.me/mail" }
+    ]
+  },
+  {
+    category: "Identity Protection",
+    description: "70% use pseudonyms for better privacy",
+    suggestion: "Use different usernames across platforms to prevent cross-platform tracking",
+    tools: [
+      { name: "MySudo", desc: "Digital identity manager", url: "https://mysudo.com" },
+      { name: "Bitwarden", desc: "Secure password manager", url: "https://bitwarden.com" },
+      { name: "KnowEm", desc: "Username checker", url: "https://knowem.com" }
+    ]
+  },
+  {
+    category: "Phone Privacy",
+    description: "Your number is a unique identifier",
+    suggestion: "Use temporary numbers for non-essential services and online shopping",
+    tools: [
+      { name: "Google Voice", desc: "Free virtual number", url: "https://voice.google.com" },
+      { name: "Burner", desc: "Temporary numbers", url: "https://burner.com" },
+      { name: "TextNow", desc: "Free text & calls", url: "https://textnow.com" }
+    ]
+  },
+  {
+    category: "Location Privacy",
+    description: "55% unknowingly share their location",
+    suggestion: "Regularly audit app permissions and location sharing settings",
+    tools: [
+      { name: "DuckDuckGo", desc: "Private browsing", url: "https://duckduckgo.com" },
+      { name: "Brave Browser", desc: "Built-in protection", url: "https://brave.com" },
+      { name: "Tor Browser", desc: "Anonymous browsing", url: "https://torproject.org" }
+    ]
+  }
+];
 
 export default function Oversharing() {
   return (
-    <section className="relative min-h-screen bg-[#0D3A3F] py-24">
-      {/* Vertical Category Indicator */}
-      <div className="absolute -left-4 top-0 bottom-0 flex items-center">
-        <div className="rotate-180 [writing-mode:vertical-lr] text-white/40 text-sm tracking-widest">
-          DIGITAL PROTECTION
+    <section className="relative bg-gradient-to-b from-[#0D3A3F] to-[#092528] py-16 md:py-24">
+      <div className="container mx-auto px-4 md:px-6">
+        {/* Hero Section */}
+        <div className="max-w-4xl mx-auto mb-32">
+          <motion.div className="space-y-8" {...fadeIn}>
+            <h2 className="text-5xl md:text-7xl font-bold text-white leading-tight">
+              Your data never sleeps.
+              <span className="block text-white/80 mt-2">Neither do those who want it.</span>
+            </h2>
+            <p className="text-xl md:text-2xl text-white/70 leading-relaxed">
+              Every post, every check-in, every detail you share becomes a permanent part of your digital identity.
+              Learn how to protect yourself.
+            </p>
+          </motion.div>
         </div>
-      </div>
 
-      <div className="container mx-auto px-6">
-        {/* Main Content */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
-          {/* Left Column - Impact Stats */}
-          <div className="space-y-16">
-            {/* Title Group */}
-            <div className="relative">
-              <motion.div
-                className="absolute -inset-x-20 -inset-y-20 bg-white/10 blur-3xl rounded-full hidden md:block"
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={{ 
-                  opacity: [0.05, 0.1, 0.05],
-                  scale: [0.8, 1, 0.8]
-                }}
-                transition={{ 
-                  duration: 6,
-                  repeat: Infinity,
-                  ease: "easeInOut"
-                }}
-              />
-              
-              <div className="relative space-y-6">
-                <motion.h2 
-                  initial={{ opacity: 0, x: -20 }}
-                  whileInView={{ opacity: 1, x: 0 }}
-                  viewport={{ once: true }}
-                  className="text-[clamp(2.5rem,5vw,4rem)] font-bold tracking-tight text-white leading-[0.85]"
-                >
-                  your data<br/>
-                  never sleeps.
-                </motion.h2>
-                <motion.div 
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: 0.2 }}
-                  className="space-y-4"
-                >
-                  <div className="text-sm text-white/90 tracking-widest uppercase">oversharing impact</div>
-                  <p className="text-xl md:text-2xl text-white/80 font-light leading-relaxed">
-                    Every detail you share becomes a permanent part of your digital identity.
-                  </p>
-                </motion.div>
-              </div>
-            </div>
-
-            {/* Key Stats Grid */}
-            <div className="grid grid-cols-2 gap-8">
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                className="space-y-3"
-              >
-                <div className="text-5xl md:text-6xl font-bold text-white">86%</div>
-                <p className="text-sm text-white/70">use multiple emails for privacy</p>
-              </motion.div>
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: 0.1 }}
-                className="space-y-3"
-              >
-                <div className="text-5xl md:text-6xl font-bold text-white">70%</div>
-                <p className="text-sm text-white/70">use pseudonyms online</p>
-              </motion.div>
-            </div>
-
-            {/* Risk Categories */}
-            <motion.div
+        {/* Statistics Grid */}
+        <motion.div 
+          className="grid grid-cols-2 md:grid-cols-4 gap-12 md:gap-16 mb-32"
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+        >
+          {stats.map((stat, i) => (
+            <motion.div 
+              key={i} 
+              className="text-center"
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ delay: 0.2 }}
-              className="space-y-8"
+              transition={{ delay: i * 0.1 }}
             >
-              <div className="text-sm text-white/60 uppercase tracking-widest">Critical Risks</div>
-              <div className="grid gap-6">
-                {[
-                  {
-                    title: "Identity Theft",
-                    desc: "Your real name + birthday = stolen identity"
-                  },
-                  {
-                    title: "Location Tracking",
-                    desc: "79% have location sharing always on"
-                  },
-                  {
-                    title: "Data Aggregation",
-                    desc: "Every post builds your digital profile"
-                  }
-                ].map((risk, i) => (
-                  <motion.div
-                    key={i}
-                    initial={{ opacity: 0, x: -20 }}
-                    whileInView={{ opacity: 1, x: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ delay: 0.1 * i }}
-                    className="p-6 bg-[#0A2C30] rounded-lg space-y-2 hover:bg-[#0B3236] transition-colors"
-                  >
-                    <h3 className="text-lg font-medium text-white">{risk.title}</h3>
-                    <p className="text-sm text-white/70">{risk.desc}</p>
-                  </motion.div>
-                ))}
-              </div>
+              <div className="text-6xl md:text-7xl lg:text-8xl font-bold text-white mb-4">{stat.value}</div>
+              <p className="text-base md:text-lg text-white/60 leading-tight">{stat.label}</p>
             </motion.div>
+          ))}
+        </motion.div>
+
+        {/* Risks Section */}
+        <div className="mb-32">
+          <motion.h3 
+            className="text-3xl md:text-4xl font-bold text-white mb-16 text-center"
+            {...fadeIn}
+          >
+            The Hidden Costs of Oversharing
+          </motion.h3>
+          <div className="grid md:grid-cols-3 gap-8">
+            {risks.map((risk, i) => (
+              <motion.div
+                key={risk.title}
+                className="flex flex-col h-full bg-[#0A2C30]/50 backdrop-blur-sm p-8 rounded-2xl border border-white/5"
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.1 }}
+              >
+                <h4 className="text-2xl font-bold text-white mb-4">{risk.title}</h4>
+                <p className="text-white/70 mb-4">{risk.impact}</p>
+                <div className="text-sm text-white/60 mb-6">{risk.stat}</div>
+                <p className="text-sm text-white/50 mt-auto italic">
+                  Suggestion: {risk.suggestion}
+                </p>
+              </motion.div>
+            ))}
           </div>
+        </div>
 
-          {/* Right Column - Protection Tools */}
-          <div className="relative space-y-16">
-            <motion.div
-              initial={{ opacity: 0 }}
-              whileInView={{ opacity: 1 }}
-              viewport={{ once: true }}
-              className="absolute -inset-x-20 -inset-y-20 bg-white/5 blur-3xl rounded-full"
-            />
-            
-            {/* Email Protection */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              className="relative space-y-8"
-            >
-              <h3 className="text-xl font-semibold text-white">Email Protection</h3>
-              <div className="grid gap-4">
-                {[
-                  {
-                    name: "SimpleLogin",
-                    desc: "Create unlimited email aliases",
-                    type: "Email Alias",
-                    url: "https://simplelogin.io"
-                  },
-                  {
-                    name: "Firefox Relay",
-                    desc: "Mozilla's email masking service",
-                    type: "Email Mask",
-                    url: "https://relay.firefox.com"
-                  },
-                  {
-                    name: "ProtonMail",
-                    desc: "End-to-end encrypted email",
-                    type: "Secure Email",
-                    url: "https://proton.me/mail"
-                  }
-                ].map((tool, i) => (
-                  <motion.div
-                    key={i}
-                    initial={{ opacity: 0, x: 20 }}
-                    whileInView={{ opacity: 1, x: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ delay: 0.1 * i }}
-                    className="group relative overflow-hidden rounded-lg bg-[#0A2C30] hover:bg-[#0B3236] transition-all duration-300"
-                  >
-                    <div className="p-4 md:p-6 space-y-3">
-                      <div className="flex items-start justify-between">
-                        <div className="space-y-1">
-                          <h4 className="text-base font-medium text-white">{tool.name}</h4>
-                          <div className="text-sm text-white/60">{tool.type}</div>
-                        </div>
-                        {tool.url && (
-                          <Link
-                            href={tool.url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="p-2 rounded-full hover:bg-[#144C52] transition-colors"
-                          >
-                            <ExternalLink className="w-4 h-4 text-white/60 group-hover:text-white" />
-                          </Link>
-                        )}
-                      </div>
-                      <p className="text-sm text-white/70 group-hover:text-white/80">{tool.desc}</p>
-                    </div>
-                  </motion.div>
-                ))}
-              </div>
-            </motion.div>
-
-            {/* Identity Protection */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.3 }}
-              className="relative space-y-8"
-            >
-              <h3 className="text-xl font-semibold text-white">Identity Protection</h3>
-              <div className="grid gap-4">
-                {[
-                  {
-                    name: "MySudo",
-                    desc: "Create multiple digital identities",
-                    type: "Identity Management",
-                    url: "https://mysudo.com"
-                  },
-                  {
-                    name: "Burner",
-                    desc: "Temporary phone numbers",
-                    type: "Phone Privacy",
-                    url: "https://burner.com"
-                  },
-                  {
-                    name: "DuckDuckGo",
-                    desc: "Private browser with tracker blocking",
-                    type: "Browser Privacy",
-                    url: "https://duckduckgo.com"
-                  }
-                ].map((tool, i) => (
-                  <motion.div
-                    key={i}
-                    initial={{ opacity: 0, x: 20 }}
-                    whileInView={{ opacity: 1, x: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ delay: 0.1 * i }}
-                    className="group relative overflow-hidden rounded-lg bg-[#0A2C30] hover:bg-[#0B3236] transition-all duration-300"
-                  >
-                    <div className="p-4 md:p-6 space-y-3">
-                      <div className="flex items-start justify-between">
-                        <div className="space-y-1">
-                          <h4 className="text-base font-medium text-white">{tool.name}</h4>
-                          <div className="text-sm text-white/60">{tool.type}</div>
-                        </div>
-                        {tool.url && (
-                          <Link
-                            href={tool.url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="p-2 rounded-full hover:bg-[#144C52] transition-colors"
-                          >
-                            <ExternalLink className="w-4 h-4 text-white/60 group-hover:text-white" />
-                          </Link>
-                        )}
-                      </div>
-                      <p className="text-sm text-white/70 group-hover:text-white/80">{tool.desc}</p>
-                    </div>
-                  </motion.div>
-                ))}
-              </div>
-            </motion.div>
+        {/* Solutions Section */}
+        <div>
+          <motion.h3 
+            className="text-3xl md:text-4xl font-bold text-white mb-16 text-center"
+            {...fadeIn}
+          >
+            Take Control of Your Privacy
+          </motion.h3>
+          <div className="grid gap-12">
+            {solutions.map((solution, i) => (
+              <motion.div
+                key={solution.category}
+                className="bg-[#0A2C30]/50 backdrop-blur-sm p-8 rounded-2xl border border-white/5"
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.1 }}
+              >
+                <div className="grid md:grid-cols-[1fr,2fr] gap-8">
+                  <div className="space-y-4">
+                    <h4 className="text-2xl font-bold text-white">{solution.category}</h4>
+                    <p className="text-white/70">{solution.description}</p>
+                    <p className="text-sm text-white/50 italic">{solution.suggestion}</p>
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                    {solution.tools.map((tool) => (
+                      <Link
+                        key={tool.name}
+                        href={tool.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex flex-col justify-center p-4 bg-[#072326]/70 rounded-lg hover:bg-[#0E3438]/70 transition-colors group"
+                      >
+                        <span className="text-white font-medium mb-1">{tool.name}</span>
+                        <span className="text-sm text-white/50 group-hover:text-white/70 transition-colors">
+                          {tool.desc}
+                        </span>
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+              </motion.div>
+            ))}
           </div>
         </div>
       </div>
