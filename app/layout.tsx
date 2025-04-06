@@ -5,8 +5,8 @@ import { Navigation } from '@/components/ui/navigation';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata = {
-  title: 'Amisafe? - Protecting Your Digital Life',
-  description: 'We help protect your digital life through education, tools, and community support. Find your digital footprint and get personalized security recommendations.',
+  title: "Until It Happens | Digital safety shouldn't be complicated. We're here to help.",
+  description: "Digital safety shouldn't be complicated. We're here to help.",
   keywords: [
     'digital safety',
     'online security',
@@ -20,16 +20,16 @@ export const metadata = {
     'cyber awareness'
   ],
   openGraph: {
-    title: 'Amisafe? - Protecting Your Digital Life',
-    description: 'We help protect your digital life through education, tools, and community support. Find your digital footprint and get personalized security recommendations.',
+    title: "Until It Happens | Digital safety shouldn't be complicated. We're here to help.",
+    description: "Digital safety shouldn't be complicated. We're here to help.",
     type: 'website',
     locale: 'en_US',
-    url: 'https://amisafe.org',
+    url: 'https://untilithappens.org',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Amisafe? - Protecting Your Digital Life',
-    description: 'We help protect your digital life through education, tools, and community support. Find your digital footprint and get personalized security recommendations.',
+    title: "Until It Happens | Digital safety shouldn't be complicated. We're here to help.",
+    description: "Digital safety shouldn't be complicated. We're here to help.",
   },
 };
 
