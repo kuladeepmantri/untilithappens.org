@@ -4,7 +4,7 @@ const nextConfig = {
   images: {
     unoptimized: true,
   },
-  basePath: '/untilithappens.org',
+  basePath: process.env.NODE_ENV === 'production' ? '/untilithappens.org' : '',
 }
 
 module.exports = nextConfig 
