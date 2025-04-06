@@ -6,7 +6,6 @@ import Link from "next/link";
 import Image from "next/image";
 import { Hero } from "@/components/ui/hero-with-group-of-images-text-and-two-buttons";
 import { AnimatedGradient } from "@/components/ui/animated-gradient-with-svg";
-import { AnimatedTestimonials } from "@/components/ui/animated-testimonials";
 import { Cta11 } from "@/components/ui/call-to-action";
 import { AnimatedSection } from "@/components/ui/animated-section";
 import { Navigation } from "@/components/ui/navigation";
