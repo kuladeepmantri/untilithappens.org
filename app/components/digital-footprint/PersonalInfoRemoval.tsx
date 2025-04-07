@@ -129,7 +129,7 @@ export default function PersonalInfoRemoval() {
   const currentScenario = dataExposureScenarios[activeScenario];
 
   return (
-    <section className="relative bg-[#092528] py-8 md:py-24">
+    <section className="relative bg-gradient-to-b from-[#1F4B7C] via-[#2A5C91] to-[#2A5C91] py-8 md:py-24">
       <div className="container mx-auto px-4 md:px-6">
         {/* Hero Section */}
         <div className="max-w-4xl mx-auto mb-16 md:mb-32">
@@ -160,7 +160,7 @@ export default function PersonalInfoRemoval() {
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
         >
-          <div className="bg-[#0A2C30] p-4 md:p-8 rounded-2xl border border-white/5">
+          <div className="bg-[#2A5C91]/40 p-4 md:p-8 rounded-2xl border border-white/5">
             <div className="space-y-6">
               {/* Scenario Selector */}
               <div className="flex gap-2 md:gap-4 mb-6">
@@ -170,7 +170,7 @@ export default function PersonalInfoRemoval() {
                     onClick={() => setActiveScenario(index)}
                     className={`px-3 md:px-4 py-2 rounded-lg text-sm md:text-base transition-all ${
                       activeScenario === index
-                        ? 'bg-white text-[#092528] font-medium'
+                        ? 'bg-white text-[#1F4B7C] font-medium'
                         : 'bg-white/5 text-white/70 hover:bg-white/10'
                     }`}
                   >
@@ -204,7 +204,7 @@ export default function PersonalInfoRemoval() {
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: index * 0.1 }}
-                    className="bg-[#0D3A3F]/50 rounded-xl p-4 md:p-6"
+                    className="bg-[#3674B5]/40 rounded-xl p-4 md:p-6"
                   >
                     <div className="flex flex-col md:flex-row md:items-center justify-between gap-2 md:gap-8">
                       <div className="text-white/90 font-medium">{exposure.source}</div>
@@ -265,7 +265,7 @@ export default function PersonalInfoRemoval() {
                     {stage.tools.map((tool) => (
                       <motion.div
                         key={tool.name}
-                        className="bg-[#0A2C30]/50 rounded-2xl border border-white/5 overflow-hidden"
+                        className="bg-[#2A5C91]/40 backdrop-blur-sm rounded-2xl border border-white/5 overflow-hidden"
                         whileHover={{ y: -2 }}
                       >
                         <div className="p-4 md:p-6 space-y-4">
@@ -281,7 +281,7 @@ export default function PersonalInfoRemoval() {
                             {tool.services.map((service) => (
                               <span 
                                 key={service}
-                                className="px-2 md:px-3 py-1 rounded-full bg-[#144C52] text-white/80 text-xs md:text-sm"
+                                className="px-2 md:px-3 py-1 rounded-full bg-[#3674B5]/40 text-white/80 text-xs md:text-sm"
                               >
                                 {service}
                               </span>

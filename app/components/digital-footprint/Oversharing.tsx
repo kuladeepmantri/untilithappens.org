@@ -82,7 +82,7 @@ const solutions = [
 
 export default function Oversharing() {
   return (
-    <section className="relative bg-gradient-to-b from-[#0D3A3F] to-[#092528] py-16 md:py-24">
+    <section className="relative bg-gradient-to-b from-[#1F4B7C] via-[#2A5C91] to-[#2A5C91] py-16 md:py-24">
       <div className="container mx-auto px-4 md:px-6">
         {/* Hero Section */}
         <div className="max-w-4xl mx-auto mb-32">
@@ -132,7 +132,7 @@ export default function Oversharing() {
             {risks.map((risk, i) => (
               <motion.div
                 key={risk.title}
-                className="flex flex-col h-full bg-[#0A2C30]/50 backdrop-blur-sm p-8 rounded-2xl border border-white/5"
+                className="flex flex-col h-full bg-[#2A5C91]/40 backdrop-blur-sm p-8 rounded-2xl border border-white/5"
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
@@ -161,7 +161,7 @@ export default function Oversharing() {
             {solutions.map((solution, i) => (
               <motion.div
                 key={solution.category}
-                className="bg-[#0A2C30]/50 backdrop-blur-sm p-8 rounded-2xl border border-white/5"
+                className="bg-[#2A5C91]/40 backdrop-blur-sm p-8 rounded-2xl border border-white/5"
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
@@ -180,7 +180,7 @@ export default function Oversharing() {
                         href={tool.url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="flex flex-col justify-center p-4 bg-[#072326]/70 rounded-lg hover:bg-[#0E3438]/70 transition-colors group"
+                        className="flex flex-col justify-center p-4 bg-[#1F4B7C]/40 rounded-lg hover:bg-[#3674B5]/40 transition-colors group"
                       >
                         <span className="text-white font-medium mb-1">{tool.name}</span>
                         <span className="text-sm text-white/50 group-hover:text-white/70 transition-colors">

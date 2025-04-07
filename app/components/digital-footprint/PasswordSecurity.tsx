@@ -210,7 +210,7 @@ export default function PasswordSecurity() {
   const { strength, feedback } = checkPasswordStrength(password);
 
   return (
-    <section className="relative bg-gradient-to-b from-[#092528] to-[#0D3A3F] py-16 md:py-24">
+    <section className="relative bg-gradient-to-b from-[#2A5C91] via-[#2A5C91] to-[#1F4B7C] py-16 md:py-24">
       <div className="container mx-auto px-4 md:px-6">
         {/* Hero Section */}
         <div className="max-w-4xl mx-auto mb-32">
@@ -277,7 +277,7 @@ export default function PasswordSecurity() {
             {systemPasswordManagers.map((manager) => (
               <div
                 key={manager.ecosystem}
-                className="bg-[#0A2C30]/50 backdrop-blur-sm rounded-2xl border border-white/5 overflow-hidden"
+                className="bg-[#2A5C91]/40 backdrop-blur-sm rounded-2xl border border-white/5 overflow-hidden"
               >
                 <Link href={manager.url} target="_blank" rel="noopener noreferrer" className="block">
                   <div className="p-8">
@@ -331,7 +331,7 @@ export default function PasswordSecurity() {
             {passkeysAdvantages.map((advantage, i) => (
               <motion.div
                 key={advantage.title}
-                className="bg-[#0A2C30]/50 backdrop-blur-sm p-8 rounded-2xl border border-white/5"
+                className="bg-[#2A5C91]/40 backdrop-blur-sm p-8 rounded-2xl border border-white/5"
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
@@ -398,7 +398,7 @@ export default function PasswordSecurity() {
             {currentPasswordIssues.map((issue, i) => (
               <motion.div
                 key={issue.title}
-                className="bg-[#0A2C30]/50 backdrop-blur-sm p-8 rounded-2xl border border-white/5"
+                className="bg-[#2A5C91]/40 backdrop-blur-sm p-8 rounded-2xl border border-white/5"
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
@@ -432,7 +432,7 @@ export default function PasswordSecurity() {
                 {category.tools.map((tool) => (
                   <div
                     key={tool.name}
-                    className="bg-[#0A2C30]/50 backdrop-blur-sm rounded-2xl border border-white/5 overflow-hidden"
+                    className="bg-[#2A5C91]/40 backdrop-blur-sm rounded-2xl border border-white/5 overflow-hidden"
                   >
                     <Link
                       href={tool.url}

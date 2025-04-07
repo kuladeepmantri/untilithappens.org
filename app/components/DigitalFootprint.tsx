@@ -565,7 +565,7 @@ export default function DigitalFootprint() {
   const [hoveredTool, setHoveredTool] = useState<string | null>(null);
 
   return (
-    <div className="relative min-h-screen bg-gradient-to-b from-[#0D3A3F] via-[#144C52] to-[#0D3A3F]">
+    <div className="relative min-h-screen bg-gradient-to-b from-[#3674B5] via-[#2A5C91] to-[#2A5C91]">
       {/* Hero Section */}
       <section className="relative min-h-[100svh] flex items-start md:items-center justify-center overflow-hidden pt-32 md:pt-0">
         <ScrollIndicator />
@@ -655,7 +655,7 @@ export default function DigitalFootprint() {
       </section>
 
       {/* Tools Section - Now starts after full viewport height */}
-      <section className="w-full py-24 relative">
+      <section className="w-full py-24 relative bg-gradient-to-b from-[#2A5C91] via-[#2A5C91] to-[#1F4B7C]">
         {/* Vertical Category Indicator */}
         <div className="absolute -left-4 top-0 bottom-0 flex items-center">
           <div className="rotate-180 [writing-mode:vertical-lr] text-white/40 text-sm tracking-widest">
@@ -689,7 +689,7 @@ export default function DigitalFootprint() {
                 whileTap={{ scale: 0.98 }}
                 className={`px-6 py-3 rounded-lg transition-all duration-300 ${
                   selectedCategory === category.id 
-                  ? 'bg-white text-[#144C52] shadow-lg' 
+                  ? 'bg-white text-[#3674B5] shadow-lg' 
                   : 'bg-white/5 text-white/70 hover:bg-white/10 hover:text-white'
                 }`}
               >
@@ -733,7 +733,7 @@ export default function DigitalFootprint() {
                     {category.tools.map((tool) => (
                       <div
                         key={tool.name}
-                        className="group relative overflow-hidden rounded-lg bg-[#0A2C30] hover:bg-[#0B3236] transition-all duration-300"
+                        className="group relative overflow-hidden rounded-lg bg-[#2A5C91] hover:bg-[#3674B5] transition-all duration-300"
                       >
                         <div className="p-4 md:p-6 space-y-3 md:space-y-4">
                           <div className="flex items-start justify-between">
@@ -764,7 +764,7 @@ export default function DigitalFootprint() {
                           <div className="pt-2 flex items-center gap-3">
                             <span className={`px-2 md:px-3 py-1 rounded-full text-xs ${
                               tool.loginRequired 
-                              ? 'bg-[#144C52] text-white/80' 
+                              ? 'bg-[#3674B5] text-white/80' 
                               : 'bg-emerald-500/20 text-emerald-400'
                             }`}>
                               {tool.loginRequired ? 'Login Required' : 'No Login'}
@@ -787,7 +787,7 @@ export default function DigitalFootprint() {
       <PersonalInfoRemoval />
 
       {/* Footer */}
-      <footer className="w-full py-16 md:py-24 bg-[#144C52] relative border-t border-white/5">
+      <footer className="w-full py-16 md:py-24 bg-gradient-to-b from-[#2A5C91] via-[#3674B5] to-[#3674B5] relative">
         <div className="container mx-auto px-4 md:px-6">
           <div className="grid grid-cols-1 md:grid-cols-12 gap-12 md:gap-16">
             {/* Brand Column */}
@@ -905,7 +905,7 @@ export default function DigitalFootprint() {
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="mt-16 md:mt-24 pt-8 border-t border-white/5 flex flex-col md:flex-row items-center justify-between gap-4"
+            className="mt-16 md:mt-24 pt-8 flex flex-col md:flex-row items-center justify-between gap-4"
           >
             <div className="text-sm text-white/50">
               © 2025 until it happens

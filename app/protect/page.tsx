@@ -12,6 +12,7 @@ import IOSProtection from '../components/protection-guides/iOSProtection';
 import Link from 'next/link';
 import { WindowsIcon, AppleIcon } from '../components/icons';
 import Image from 'next/image';
+import { Footer } from '../components/ui/footer';
 
 // Import images statically to ensure they're included in the build
 import linuxIcon from '../../public/images/linux.png';
@@ -898,6 +899,11 @@ export default function Protect() {
           </motion.div>
         )}
       </div>
+
+      {/* Footer */}
+      {step !== 'results' && (
+        <Footer className="bg-gradient-to-b from-[#801336] via-[#801336] to-[#801336]" />
+      )}
     </main>
   );
 } 
