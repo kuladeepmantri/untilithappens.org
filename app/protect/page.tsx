@@ -7,6 +7,7 @@ import { BackButton } from '../components/ui/back-button';
 import WindowsProtection from '../components/protection-guides/WindowsProtection';
 import MacOSProtection from '../components/protection-guides/MacOSProtection';
 import Link from 'next/link';
+import { WindowsIcon, AppleIcon, LinuxIcon, AndroidIcon } from '../components/icons';
 
 interface DetectedDevice {
   type: string;
@@ -25,6 +26,24 @@ interface DeviceMatch {
   category: string;
   keywords: string[];
 }
+
+interface OS {
+  id: string;
+  name: string;
+  icon: React.ComponentType<{ className?: string }>;
+}
+
+const operatingSystems = {
+  desktop: [
+    { id: 'windows', name: 'Windows', icon: WindowsIcon },
+    { id: 'macos', name: 'macOS', icon: AppleIcon },
+    { id: 'linux', name: 'Linux', icon: LinuxIcon }
+  ],
+  mobile: [
+    { id: 'android', name: 'Android', icon: AndroidIcon },
+    { id: 'ios', name: 'iOS', icon: AppleIcon }
+  ]
+} as const;
 
 export default function Protect() {
   const [detectedDevice, setDetectedDevice] = useState<DetectedDevice | null>(null);
@@ -471,6 +490,7 @@ export default function Protect() {
 
                     <motion.button
                       onClick={() => {
+                        window.scrollTo({ top: 0, behavior: 'instant' });
                         setStep('manual');
                         setShowOSTooltip(true);
                         setTimeout(() => setShowOSTooltip(false), 8000);
@@ -582,121 +602,77 @@ export default function Protect() {
 
               {step === 'manual' && (
                 <motion.div 
-                  className="space-y-12 pt-16 md:pt-20"
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -20 }}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  className="min-h-screen"
                 >
-                  <div className="text-center space-y-6">
-                    <h2 className="text-5xl md:text-6xl text-white font-light">tell us about your device.</h2>
-                    <p className="text-xl text-white/80 font-light max-w-2xl mx-auto">
-                      start by entering your operating system for core protection steps.
-                    </p>
-                  </div>
+                  <div className="pt-24 pb-20">
+                    <div className="max-w-screen-xl mx-auto px-6">
+                      <div className="space-y-16">
+                        {/* Hero Section */}
+                        <div className="text-center space-y-6">
+                          <h1 
+                            className="text-[clamp(3.5rem,8vw,5rem)] font-bold tracking-tighter text-white leading-[0.85]"
+                            style={{ fontFamily: 'var(--font-geist-sans)' }}
+                          >
+                            select your<br/>
+                            <span className="text-white/90">operating system.</span>
+                          </h1>
+                        </div>
 
-                  <div className="space-y-8">
-                    <div className="relative">
-                      <input
-                        type="text"
-                        value={searchQuery}
-                        onChange={(e) => {
-                          setSearchQuery(e.target.value);
-                          setSelectedDevice(null);
-                          if (!hasStartedTyping) {
-                            setHasStartedTyping(true);
-                            setShowOSTooltip(false);
-                          }
-                        }}
-                        onFocus={() => {
-                          if (!hasStartedTyping) {
-                            setShowOSTooltip(true);
-                            setTimeout(() => setShowOSTooltip(false), 12000);
-                          }
-                        }}
-                        placeholder="enter your operating system (e.g., Windows, Android, iOS)"
-                        className="w-full bg-white text-[#801336] border border-white/10 focus:border-white/20 rounded-xl px-8 py-6 text-2xl placeholder:text-[#801336]/40 focus:outline-none focus:ring-0 transition-all duration-300"
-                      />
-                      <OSTooltip />
-                    </div>
-
-                    {searchQuery && !suggestions.length && (
-                      <motion.div
-                        initial={{ opacity: 0, y: -10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        className="bg-gradient-to-br from-white/10 to-white/5 rounded-xl p-8 space-y-4"
-                      >
-                        <p className="text-xl text-white/80 font-light">
-                          we couldn't recognize that operating system.
-                        </p>
-                        <p className="text-lg text-white/60 font-light">
-                          please try entering one of: Windows, Android, iOS, macOS, iPadOS, or Linux
-                        </p>
-                      </motion.div>
-                    )}
-
-                    {Object.entries(groupedSuggestions).length > 0 && (
-                      <div className="space-y-8">
-                        {Object.entries(groupedSuggestions).map(([category, devices]) => (
-                          <div key={category} className="space-y-4">
-                            <div className="text-sm text-white/40 uppercase tracking-wider">{category}</div>
-                            <div className="grid grid-cols-1 gap-4">
-                              {devices.map((device) => (
-                                <motion.button
-                                  key={device.id}
-                                  onClick={() => setSelectedDevice(device)}
-                                  className={`w-full relative overflow-hidden rounded-xl transition-all duration-300 ${
-                                    selectedDevice?.id === device.id ? 'bg-white/20' : 'bg-gradient-to-br from-white/10 to-white/5 hover:from-white/15 hover:to-white/10'
-                                  }`}
-                                  whileHover={{ scale: 1.02 }}
-                                  whileTap={{ scale: 0.98 }}
+                        <div className="space-y-12">
+                          {/* Desktop Systems */}
+                          <div className="space-y-6">
+                            <h2 className="text-2xl font-bold text-white text-center">Desktop & Laptop</h2>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 max-w-3xl mx-auto">
+                              {operatingSystems.desktop.map((os) => (
+                                <button
+                                  key={os.id}
+                                  onClick={() => handleOSSelect(os.id)}
+                                  className="group flex items-center justify-center gap-4 w-full p-6 rounded-xl bg-white/5 hover:bg-white/10 transition-all duration-300"
                                 >
-                                  <div className="p-6 flex justify-between items-center">
-                                    <div className="space-y-1 text-left">
-                                      <div className="text-xl text-white font-light">{device.model}</div>
-                                      <div className="text-base text-white/60">{device.os}</div>
-                                    </div>
-                                    <div className="text-white/40 text-2xl">
-                                      {selectedDevice?.id === device.id ? '✓' : '+'}
-                                    </div>
-                                  </div>
-                                </motion.button>
+                                  <os.icon className="w-8 h-8 text-white" />
+                                  <span className="text-xl text-white font-medium">{os.name}</span>
+                                </button>
                               ))}
                             </div>
                           </div>
-                        ))}
+
+                          {/* Mobile Systems */}
+                          <div className="space-y-6">
+                            <h2 className="text-2xl font-bold text-white text-center">Mobile Devices</h2>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 max-w-2xl mx-auto">
+                              {operatingSystems.mobile.map((os) => (
+                                <button
+                                  key={os.id}
+                                  onClick={() => handleOSSelect(os.id)}
+                                  className="group flex items-center justify-center gap-4 w-full p-6 rounded-xl bg-white/5 hover:bg-white/10 transition-all duration-300"
+                                >
+                                  <os.icon className="w-8 h-8 text-white" />
+                                  <span className="text-xl text-white font-medium">{os.name}</span>
+                                </button>
+                              ))}
+                            </div>
+                          </div>
+
+                          {/* Help Section */}
+                          <div className="space-y-4 text-center">
+                            <h3 className="text-xl text-white/90 font-medium">Not sure about your operating system?</h3>
+                            <a
+                              href={`https://www.google.com/search?q=how+to+check+what+operating+system+I+have`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center gap-2 text-white/60 hover:text-white transition-colors"
+                            >
+                              <span>Search on Google</span>
+                              <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                <path d="M7 17L17 7M17 7H7M17 7V17" />
+                              </svg>
+                            </a>
+                          </div>
+                        </div>
                       </div>
-                    )}
-
-                    {selectedDevice && (
-                      <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        className="flex flex-col md:flex-row gap-4"
-                      >
-                        <motion.button
-                          onClick={() => setStep('results')}
-                          className="flex-1 bg-white hover:bg-white/90 text-[#801336] px-8 py-6 rounded-xl font-medium transition-all duration-300"
-                          whileHover={{ scale: 1.02 }}
-                          whileTap={{ scale: 0.98 }}
-                        >
-                          <span className="block text-xl">get protection steps</span>
-                          <span className="block text-sm mt-1 opacity-60">for {selectedDevice.model}</span>
-                        </motion.button>
-
-                        <motion.button
-                          onClick={() => {
-                            setSelectedDevice(null);
-                            setSearchQuery('');
-                            setHasStartedTyping(false);
-                          }}
-                          className="px-8 py-6 rounded-xl bg-white/5 hover:bg-white/10 text-white transition-all duration-300"
-                          whileHover={{ scale: 1.02 }}
-                          whileTap={{ scale: 0.98 }}
-                        >
-                          clear selection
-                        </motion.button>
-                      </motion.div>
-                    )}
+                    </div>
                   </div>
                 </motion.div>
               )}
@@ -711,11 +687,19 @@ export default function Protect() {
                   {/* Render protection guide based on OS */}
                   {(selectedDevice?.os.toLowerCase() === 'windows' || 
                     detectedDevice?.os.toLowerCase() === 'windows') && (
-                    <WindowsProtection onBack={() => setStep('initial')} />
+                    <WindowsProtection onBack={() => {
+                      setStep('initial');
+                      // Scroll to top when going back
+                      window.scrollTo({ top: 0, behavior: 'instant' });
+                    }} />
                   )}
                   {(selectedDevice?.os.toLowerCase() === 'macos' || 
                     detectedDevice?.os.toLowerCase() === 'macos') && (
-                    <MacOSProtection onBack={() => setStep('initial')} />
+                    <MacOSProtection onBack={() => {
+                      setStep('initial');
+                      // Scroll to top when going back
+                      window.scrollTo({ top: 0, behavior: 'instant' });
+                    }} />
                   )}
                 </motion.div>
               )}
@@ -726,26 +710,58 @@ export default function Protect() {
     </section>
   );
 
+  const handleOSSelect = (osId: string) => {
+    // Scroll to top before showing the guide
+    window.scrollTo({ top: 0, behavior: 'instant' });
+    
+    setDetectedDevice({
+      type: osId === 'android' || osId === 'ios' ? 'Mobile' : 'Computer',
+      os: osId.charAt(0).toUpperCase() + osId.slice(1)
+    });
+    setStep('results');
+  };
+
   return (
     <main className="relative min-h-screen" style={{ backgroundColor: '#801336' }}>
-      <ScrollIndicator />
-      {heroSection}
+      {/* Only show ScrollIndicator on initial step */}
+      {step === 'initial' && <ScrollIndicator />}
+      
+      {/* Only show hero section on initial step */}
+      {step === 'initial' && heroSection}
+
       <div className="w-full">
-        {step !== 'results' && deviceDetectionSection}
-        {step === 'results' && (
-          <motion.div 
-            className="w-full"
+        {step !== 'results' && (
+          <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
+          >
+            {deviceDetectionSection}
+          </motion.div>
+        )}
+        
+        {step === 'results' && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.3 }}
+            className="w-full"
           >
             {(selectedDevice?.os.toLowerCase() === 'windows' || 
               detectedDevice?.os.toLowerCase() === 'windows') && (
-              <WindowsProtection onBack={() => setStep('initial')} />
+              <WindowsProtection onBack={() => {
+                setStep('initial');
+                // Scroll to top when going back
+                window.scrollTo({ top: 0, behavior: 'instant' });
+              }} />
             )}
             {(selectedDevice?.os.toLowerCase() === 'macos' || 
               detectedDevice?.os.toLowerCase() === 'macos') && (
-              <MacOSProtection onBack={() => setStep('initial')} />
+              <MacOSProtection onBack={() => {
+                setStep('initial');
+                // Scroll to top when going back
+                window.scrollTo({ top: 0, behavior: 'instant' });
+              }} />
             )}
           </motion.div>
         )}
