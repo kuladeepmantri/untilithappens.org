@@ -13,6 +13,11 @@ import Link from 'next/link';
 import { WindowsIcon, AppleIcon } from '../components/icons';
 import Image from 'next/image';
 
+// Import images statically to ensure they're included in the build
+import linuxIcon from '../../public/images/linux.png';
+import androidIcon from '../../public/images/android.png';
+import iosIcon from '../../public/images/ios.png';
+
 interface DetectedDevice {
   type: string;
   os: string;
@@ -46,11 +51,12 @@ const operatingSystems = {
       name: 'Linux', 
       icon: ({ className }: { className?: string }) => (
         <Image
-          src="/images/linux.png"
+          src={linuxIcon}
           alt="Linux"
           width={32}
           height={32}
           className={className}
+          priority
         />
       )
     }
@@ -61,11 +67,12 @@ const operatingSystems = {
       name: 'Android', 
       icon: ({ className }: { className?: string }) => (
         <Image
-          src="/images/android.png"
+          src={androidIcon}
           alt="Android"
           width={32}
           height={32}
           className={className}
+          priority
         />
       )
     },
@@ -74,11 +81,12 @@ const operatingSystems = {
       name: 'iOS', 
       icon: ({ className }: { className?: string }) => (
         <Image
-          src="/images/ios.png"
+          src={iosIcon}
           alt="iOS"
           width={32}
           height={32}
           className={className}
+          priority
         />
       )
     }
@@ -203,102 +211,93 @@ export default function Protect() {
 
   const detectDevice = async () => {
     setIsAnalyzing(true);
+    
     try {
-      const ua = window.navigator.userAgent;
-      const platform = window.navigator.platform;
-      const languages = window.navigator.languages;
-      const vendor = window.navigator.vendor;
-      const memory = (window.navigator as any).deviceMemory;
-      const cores = window.navigator.hardwareConcurrency;
+      const userAgent = window.navigator.userAgent.toLowerCase();
+      const platform = window.navigator.platform.toLowerCase();
       
+      let detectedOS = '';
+      let deviceType = '';
+      
+      // OS Detection
+      if (userAgent.includes('win')) {
+        detectedOS = 'Windows';
+      } else if (userAgent.includes('mac')) {
+        detectedOS = 'macOS';
+      } else if (userAgent.includes('linux')) {
+        detectedOS = 'Linux';
+      } else if (userAgent.includes('android')) {
+        detectedOS = 'Android';
+      } else if (userAgent.includes('iphone') || userAgent.includes('ipad') || userAgent.includes('ipod')) {
+        detectedOS = 'iOS';
+      }
+      
+      // Device Type Detection
+      if (userAgent.includes('mobile') || userAgent.includes('android') || userAgent.includes('iphone')) {
+        deviceType = 'Mobile';
+      } else if (userAgent.includes('ipad') || userAgent.includes('tablet')) {
+        deviceType = 'Tablet';
+      } else {
+        deviceType = 'Computer';
+      }
+
+      // If we couldn't detect the OS, transition to manual selection
+      if (!detectedOS) {
+        setTimeout(() => {
+          setIsAnalyzing(false);
+          setStep('manual');
+        }, 2000);
+        return;
+      }
+
       const detected: DetectedDevice = {
-        type: 'Computer',
-        os: 'Unknown',
+        type: deviceType,
+        os: detectedOS,
+        version: platform,
+        capabilities: 'Standard',
+        security: 'Unknown'
       };
 
-      // Enhanced OS Detection with multiple data points
-      if (ua.includes('Win') || platform.includes('Win')) {
-        detected.os = 'Windows';
-        // More precise Windows version detection
-        if (ua.includes('Windows NT 10.0')) {
-          const build = ua.match(/build\s(\d+)/i);
-          if (build && parseInt(build[1]) >= 22000) {
-            detected.version = '11';
-          } else {
-            detected.version = '10';
-          }
-        }
-        else if (ua.includes('Windows NT 6.3')) detected.version = '8.1';
-        else if (ua.includes('Windows NT 6.2')) detected.version = '8';
-        else if (ua.includes('Windows NT 6.1')) detected.version = '7';
-      } 
-      else if ((ua.includes('Mac') || platform.includes('Mac')) && vendor.includes('Apple')) {
-        detected.os = 'macOS';
-        // Enhanced macOS version detection
-        const macOSVersion = ua.match(/Mac OS X (\d+[._]\d+[._]\d+)/);
-        if (macOSVersion) {
-          const version = macOSVersion[1].replace(/_/g, '.');
-          const major = parseInt(version.split('.')[0]);
-          if (major >= 14) detected.version = 'Sonoma';
-          else if (major >= 13) detected.version = 'Ventura';
-          else if (major >= 12) detected.version = 'Monterey';
-          else if (major >= 11) detected.version = 'Big Sur';
-        }
-      } 
-      else if (ua.includes('Linux')) {
-        detected.os = 'Linux';
-        // Enhanced Linux distribution detection
-        if (ua.includes('Ubuntu')) detected.version = 'Ubuntu';
-        else if (ua.includes('Fedora')) detected.version = 'Fedora';
-        else if (ua.includes('SUSE')) detected.version = 'SUSE';
-        else if (ua.includes('Debian')) detected.version = 'Debian';
-        else if (ua.includes('Arch')) detected.version = 'Arch';
-      }
-
-      // Enhanced architecture detection
-      if (ua.includes('x64') || ua.includes('x86_64') || ua.includes('Win64') || ua.includes('amd64')) {
-        detected.architecture = 'x64';
-      } else if (ua.includes('arm64') || ua.includes('aarch64')) {
-        detected.architecture = 'ARM64';
-      } else if (ua.includes('x86') || ua.includes('i386') || ua.includes('i686')) {
-        detected.architecture = 'x86';
-      }
-
-      // System capabilities detection
-      const capabilities = [];
-      if (memory) capabilities.push(`${memory}GB RAM`);
-      if (cores) capabilities.push(`${cores} Cores`);
-      if (capabilities.length > 0) {
-        detected.capabilities = capabilities.join(', ');
-      }
-
-      // Security features detection
-      const securityFeatures = [];
-      try {
-        if ('security' in window && (window as any).security.isSecureContext) {
-          securityFeatures.push('Secure Context');
-        }
-        if ('crypto' in window) {
-          securityFeatures.push('Crypto API');
-        }
-      } catch (e) {
-        // Ignore errors in security detection
-      }
-      if (securityFeatures.length > 0) {
-        detected.security = securityFeatures.join(', ');
-      }
-
-      // Add a small delay to show the analysis animation
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
       setDetectedDevice(detected);
-      // Always show detection confirmation
-      setStep('detection');
+
+      // Find matching device in database
+      const matchingDevice = deviceDatabase.find(device => 
+        device.os.toLowerCase() === detectedOS.toLowerCase() &&
+        device.type.toLowerCase() === deviceType.toLowerCase()
+      );
+
+      if (matchingDevice) {
+        setSelectedDevice(matchingDevice);
+      } else {
+        // If no exact match found, find a generic match based on OS
+        const genericMatch = deviceDatabase.find(device => 
+          device.os.toLowerCase() === detectedOS.toLowerCase()
+        );
+        
+        if (genericMatch) {
+          setSelectedDevice(genericMatch);
+        } else {
+          // If still no match, transition to manual selection
+          setTimeout(() => {
+            setIsAnalyzing(false);
+            setStep('manual');
+          }, 2000);
+          return;
+        }
+      }
+
+      setTimeout(() => {
+        setIsAnalyzing(false);
+        setStep('results');
+      }, 2000);
+
     } catch (error) {
-      console.error('Error detecting device:', error);
-      setStep('manual');
-    } finally {
-      setIsAnalyzing(false);
+      console.error('Error during device detection:', error);
+      // On any error, transition to manual selection
+      setTimeout(() => {
+        setIsAnalyzing(false);
+        setStep('manual');
+      }, 2000);
     }
   };
 
