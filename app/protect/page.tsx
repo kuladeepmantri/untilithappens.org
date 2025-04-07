@@ -6,6 +6,9 @@ import { ScrollIndicator } from '../components/ui/scroll-indicator';
 import { BackButton } from '../components/ui/back-button';
 import WindowsProtection from '../components/protection-guides/WindowsProtection';
 import MacOSProtection from '../components/protection-guides/MacOSProtection';
+import LinuxProtection from '../components/protection-guides/LinuxProtection';
+import AndroidProtection from '../components/protection-guides/AndroidProtection';
+import IOSProtection from '../components/protection-guides/iOSProtection';
 import Link from 'next/link';
 import { WindowsIcon, AppleIcon } from '../components/icons';
 import Image from 'next/image';
@@ -730,7 +733,6 @@ export default function Protect() {
                     detectedDevice?.os.toLowerCase() === 'windows') && (
                     <WindowsProtection onBack={() => {
                       setStep('initial');
-                      // Scroll to top when going back
                       window.scrollTo({ top: 0, behavior: 'instant' });
                     }} />
                   )}
@@ -738,7 +740,27 @@ export default function Protect() {
                     detectedDevice?.os.toLowerCase() === 'macos') && (
                     <MacOSProtection onBack={() => {
                       setStep('initial');
-                      // Scroll to top when going back
+                      window.scrollTo({ top: 0, behavior: 'instant' });
+                    }} />
+                  )}
+                  {(selectedDevice?.os.toLowerCase() === 'linux' || 
+                    detectedDevice?.os.toLowerCase() === 'linux') && (
+                    <LinuxProtection onBack={() => {
+                      setStep('initial');
+                      window.scrollTo({ top: 0, behavior: 'instant' });
+                    }} />
+                  )}
+                  {(selectedDevice?.os.toLowerCase() === 'android' || 
+                    detectedDevice?.os.toLowerCase() === 'android') && (
+                    <AndroidProtection onBack={() => {
+                      setStep('initial');
+                      window.scrollTo({ top: 0, behavior: 'instant' });
+                    }} />
+                  )}
+                  {(selectedDevice?.os.toLowerCase() === 'ios' || 
+                    detectedDevice?.os.toLowerCase() === 'ios') && (
+                    <IOSProtection onBack={() => {
+                      setStep('initial');
                       window.scrollTo({ top: 0, behavior: 'instant' });
                     }} />
                   )}
@@ -792,7 +814,6 @@ export default function Protect() {
               detectedDevice?.os.toLowerCase() === 'windows') && (
               <WindowsProtection onBack={() => {
                 setStep('initial');
-                // Scroll to top when going back
                 window.scrollTo({ top: 0, behavior: 'instant' });
               }} />
             )}
@@ -800,7 +821,27 @@ export default function Protect() {
               detectedDevice?.os.toLowerCase() === 'macos') && (
               <MacOSProtection onBack={() => {
                 setStep('initial');
-                // Scroll to top when going back
+                window.scrollTo({ top: 0, behavior: 'instant' });
+              }} />
+            )}
+            {(selectedDevice?.os.toLowerCase() === 'linux' || 
+              detectedDevice?.os.toLowerCase() === 'linux') && (
+              <LinuxProtection onBack={() => {
+                setStep('initial');
+                window.scrollTo({ top: 0, behavior: 'instant' });
+              }} />
+            )}
+            {(selectedDevice?.os.toLowerCase() === 'android' || 
+              detectedDevice?.os.toLowerCase() === 'android') && (
+              <AndroidProtection onBack={() => {
+                setStep('initial');
+                window.scrollTo({ top: 0, behavior: 'instant' });
+              }} />
+            )}
+            {(selectedDevice?.os.toLowerCase() === 'ios' || 
+              detectedDevice?.os.toLowerCase() === 'ios') && (
+              <IOSProtection onBack={() => {
+                setStep('initial');
                 window.scrollTo({ top: 0, behavior: 'instant' });
               }} />
             )}
