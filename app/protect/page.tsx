@@ -23,8 +23,10 @@ interface DetectedDevice {
   os: string;
   version?: string;
   architecture?: string;
-  capabilities?: string;
-  security?: string;
+  detectionData?: {
+    userAgent: string;
+    platform: string;
+  };
 }
 
 interface DeviceMatch {
@@ -211,38 +213,77 @@ export default function Protect() {
 
   const detectDevice = async () => {
     setIsAnalyzing(true);
+    setStep('detection');
     
     try {
       const userAgent = window.navigator.userAgent.toLowerCase();
-      const platform = window.navigator.platform.toLowerCase();
+      let platform = window.navigator.platform.toLowerCase();
+      const vendor = window.navigator.vendor;
       
       let detectedOS = '';
       let deviceType = '';
+      let version = '';
       
-      // OS Detection
-      if (userAgent.includes('win')) {
+      // Enhanced OS Detection with multiple checks
+      if (userAgent.includes('win') || platform.includes('win')) {
         detectedOS = 'Windows';
-      } else if (userAgent.includes('mac')) {
+        if (userAgent.includes('windows nt 10.0')) {
+          const build = userAgent.match(/build\s(\d+)/i);
+          version = build && parseInt(build[1]) >= 22000 ? 'Windows 11' : 'Windows 10';
+        } else if (userAgent.includes('windows nt 6.3')) version = 'Windows 8.1';
+        else if (userAgent.includes('windows nt 6.2')) version = 'Windows 8';
+        else if (userAgent.includes('windows nt 6.1')) version = 'Windows 7';
+      } else if ((userAgent.includes('mac') || platform.includes('mac')) && vendor?.includes('Apple')) {
         detectedOS = 'macOS';
-      } else if (userAgent.includes('linux')) {
-        detectedOS = 'Linux';
+        const macOSVersion = userAgent.match(/mac os x (\d+[._]\d+[._]\d+)/i);
+        if (macOSVersion) {
+          const versionStr = macOSVersion[1].replace(/_/g, '.');
+          const major = parseInt(versionStr.split('.')[0]);
+          if (major >= 14) version = 'Sonoma';
+          else if (major >= 13) version = 'Ventura';
+          else if (major >= 12) version = 'Monterey';
+          else if (major >= 11) version = 'Big Sur';
+        }
+        // Override platform display for Mac
+        platform = 'Mac';
       } else if (userAgent.includes('android')) {
         detectedOS = 'Android';
+        const match = userAgent.match(/android\s([0-9.]*)/i);
+        if (match) version = `Android ${match[1]}`;
       } else if (userAgent.includes('iphone') || userAgent.includes('ipad') || userAgent.includes('ipod')) {
         detectedOS = 'iOS';
+        const match = userAgent.match(/os\s([0-9_]*)/i);
+        if (match) version = `iOS ${match[1].replace(/_/g, '.')}`;
+      } else if (userAgent.includes('linux')) {
+        detectedOS = 'Linux';
+        if (userAgent.includes('ubuntu')) version = 'Ubuntu';
+        else if (userAgent.includes('fedora')) version = 'Fedora';
+        else if (userAgent.includes('debian')) version = 'Debian';
+        else if (userAgent.includes('arch')) version = 'Arch';
       }
       
       // Device Type Detection
       if (userAgent.includes('mobile') || userAgent.includes('android') || userAgent.includes('iphone')) {
         deviceType = 'Mobile';
-      } else if (userAgent.includes('ipad') || userAgent.includes('tablet')) {
+      } else if (userAgent.includes('ipad') || (userAgent.includes('tablet') && !userAgent.includes('mobile'))) {
         deviceType = 'Tablet';
       } else {
         deviceType = 'Computer';
       }
 
+      // Architecture detection (important for security features)
+      let architecture = '';
+      if (userAgent.includes('x64') || userAgent.includes('x86_64') || userAgent.includes('win64') || userAgent.includes('amd64')) {
+        architecture = 'x64';
+      } else if (userAgent.includes('arm64') || userAgent.includes('aarch64')) {
+        architecture = 'ARM64';
+      } else if (userAgent.includes('x86') || userAgent.includes('i386') || userAgent.includes('i686')) {
+        architecture = 'x86';
+      }
+
       // If we couldn't detect the OS, transition to manual selection
       if (!detectedOS) {
+        console.log('No OS detected, transitioning to manual selection');
         setTimeout(() => {
           setIsAnalyzing(false);
           setStep('manual');
@@ -253,47 +294,46 @@ export default function Protect() {
       const detected: DetectedDevice = {
         type: deviceType,
         os: detectedOS,
-        version: platform,
-        capabilities: 'Standard',
-        security: 'Unknown'
+        version: version || platform,
+        architecture,
+        detectionData: {
+          userAgent,
+          platform
+        }
       };
 
+      console.log('Device detected:', detected);
       setDetectedDevice(detected);
 
-      // Find matching device in database
-      const matchingDevice = deviceDatabase.find(device => 
-        device.os.toLowerCase() === detectedOS.toLowerCase() &&
-        device.type.toLowerCase() === deviceType.toLowerCase()
-      );
+      // Create a matching device entry based on detected OS
+      const baseDevice: DeviceMatch = {
+        id: detectedOS.toLowerCase(),
+        type: deviceType,
+        os: detectedOS,
+        model: `${detectedOS} Device`,
+        category: deviceType,
+        keywords: [detectedOS.toLowerCase()]
+      };
 
-      if (matchingDevice) {
-        setSelectedDevice(matchingDevice);
-      } else {
-        // If no exact match found, find a generic match based on OS
-        const genericMatch = deviceDatabase.find(device => 
-          device.os.toLowerCase() === detectedOS.toLowerCase()
-        );
-        
-        if (genericMatch) {
-          setSelectedDevice(genericMatch);
-        } else {
-          // If still no match, transition to manual selection
-          setTimeout(() => {
-            setIsAnalyzing(false);
-            setStep('manual');
-          }, 2000);
-          return;
-        }
-      }
+      setSelectedDevice(baseDevice);
 
+      // Show loading animation for 2 seconds
       setTimeout(() => {
         setIsAnalyzing(false);
-        setStep('results');
       }, 2000);
+
+      // Show detection results for 5 seconds, then transition to protection guide
+      setTimeout(() => {
+        if (detectedOS) {
+          setStep('results');
+          window.scrollTo({ top: 0, behavior: 'instant' });
+        } else {
+          setStep('manual');
+        }
+      }, 7000); // 2s loading + 5s results = 7s total
 
     } catch (error) {
       console.error('Error during device detection:', error);
-      // On any error, transition to manual selection
       setTimeout(() => {
         setIsAnalyzing(false);
         setStep('manual');
@@ -565,14 +605,37 @@ export default function Protect() {
                   </div>
 
                   {isAnalyzing ? (
-                    <div className="flex flex-col items-center justify-center space-y-8">
+                    <div className="flex flex-col items-center justify-center space-y-12">
                       <div className="relative w-24 h-24">
                         <div className="absolute inset-0 rounded-full border-2 border-white/20" />
                         <div className="absolute inset-0 rounded-full border-2 border-white border-t-transparent animate-spin" />
                       </div>
-                      <div className="space-y-4 text-center">
-                        <p className="text-xl text-white/60 font-light">analyzing system specifications...</p>
-                        <p className="text-sm text-white/40">this will only take a moment</p>
+                      <div className="space-y-8 text-center max-w-2xl mx-auto">
+                        <div className="space-y-4">
+                          <p className="text-xl text-white/60 font-light">analyzing your system...</p>
+                          <p className="text-sm text-white/40">this will only take a moment</p>
+                        </div>
+                        
+                        <div className="space-y-4">
+                          <div className="text-sm text-white/60 uppercase tracking-wider">Essential Data Being Collected</div>
+                          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-left">
+                            <div className="bg-white/5 rounded-lg p-4">
+                              <div className="text-white/40 text-xs uppercase mb-1">Operating System</div>
+                              <div className="text-white/80 text-sm">Type & Version</div>
+                            </div>
+                            <div className="bg-white/5 rounded-lg p-4">
+                              <div className="text-white/40 text-xs uppercase mb-1">Device Type</div>
+                              <div className="text-white/80 text-sm">Computer/Mobile/Tablet</div>
+                            </div>
+                            <div className="bg-white/5 rounded-lg p-4">
+                              <div className="text-white/40 text-xs uppercase mb-1">Architecture</div>
+                              <div className="text-white/80 text-sm">System Architecture</div>
+                            </div>
+                          </div>
+                          <p className="text-xs text-white/40 italic">
+                            * We only collect essential data needed for security recommendations. All processing is done locally.
+                          </p>
+                        </div>
                       </div>
                     </div>
                   ) : detectedDevice && (
@@ -583,15 +646,15 @@ export default function Protect() {
                     >
                       <div className="bg-gradient-to-br from-white/10 to-white/5 rounded-2xl p-8 space-y-8">
                         <div className="space-y-2">
-                          <h3 className="text-3xl text-white font-light">we detected your system.</h3>
+                          <h3 className="text-3xl text-white font-light">system detected.</h3>
                           <p className="text-lg text-white/60">
-                            please confirm if this is correct. accuracy ensures you get the right protection steps.
+                            redirecting to protection steps in a moment...
                           </p>
                         </div>
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                           <div className="space-y-2">
-                            <div className="text-lg text-white/60 font-light">system type</div>
+                            <div className="text-lg text-white/60 font-light">device type</div>
                             <div className="text-2xl text-white">{detectedDevice.type}</div>
                           </div>
                           <div className="space-y-2">
@@ -612,27 +675,15 @@ export default function Protect() {
                             </div>
                           )}
                         </div>
-                      </div>
 
-                      <div className="flex flex-col md:flex-row gap-4">
-                        <motion.button
-                          onClick={() => setStep('results')}
-                          className="flex-1 bg-white hover:bg-white/90 text-[#801336] px-8 py-6 rounded-xl font-medium transition-all duration-300"
-                          whileHover={{ scale: 1.02 }}
-                          whileTap={{ scale: 0.98 }}
-                        >
-                          <span className="block text-xl">yes, this is correct</span>
-                          <span className="block text-sm mt-1 opacity-60">show me protection steps</span>
-                        </motion.button>
-
-                        <motion.button
-                          onClick={() => setStep('manual')}
-                          className="px-8 py-6 rounded-xl bg-white/5 hover:bg-white/10 text-white transition-all duration-300"
-                          whileHover={{ scale: 1.02 }}
-                          whileTap={{ scale: 0.98 }}
-                        >
-                          no, let me select manually
-                        </motion.button>
+                        <div className="w-full bg-white/10 rounded-full h-1 overflow-hidden">
+                          <motion.div 
+                            className="h-full bg-white"
+                            initial={{ width: "0%" }}
+                            animate={{ width: "100%" }}
+                            transition={{ duration: 5, ease: "linear" }}
+                          />
+                        </div>
                       </div>
                     </motion.div>
                   )}
