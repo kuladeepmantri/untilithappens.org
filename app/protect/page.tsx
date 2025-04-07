@@ -5,13 +5,16 @@ import { useState } from 'react';
 import { ScrollIndicator } from '../components/ui/scroll-indicator';
 import { BackButton } from '../components/ui/back-button';
 import WindowsProtection from '../components/protection-guides/WindowsProtection';
+import MacOSProtection from '../components/protection-guides/MacOSProtection';
 import Link from 'next/link';
 
 interface DetectedDevice {
   type: string;
   os: string;
-  browser: string;
-  version: string;
+  version?: string;
+  architecture?: string;
+  capabilities?: string;
+  security?: string;
 }
 
 interface DeviceMatch {
@@ -139,18 +142,105 @@ export default function Protect() {
     }
   ];
 
-  const detectDevice = () => {
+  const detectDevice = async () => {
     setIsAnalyzing(true);
-    setStep('detection');
-    setTimeout(() => {
-      setDetectedDevice({
-        type: 'Desktop',
-        os: 'macOS',
-        browser: 'Chrome',
-        version: '122.0.0'
-      });
+    try {
+      const ua = window.navigator.userAgent;
+      const platform = window.navigator.platform;
+      const languages = window.navigator.languages;
+      const vendor = window.navigator.vendor;
+      const memory = (window.navigator as any).deviceMemory;
+      const cores = window.navigator.hardwareConcurrency;
+      
+      const detected: DetectedDevice = {
+        type: 'Computer',
+        os: 'Unknown',
+      };
+
+      // Enhanced OS Detection with multiple data points
+      if (ua.includes('Win') || platform.includes('Win')) {
+        detected.os = 'Windows';
+        // More precise Windows version detection
+        if (ua.includes('Windows NT 10.0')) {
+          const build = ua.match(/build\s(\d+)/i);
+          if (build && parseInt(build[1]) >= 22000) {
+            detected.version = '11';
+          } else {
+            detected.version = '10';
+          }
+        }
+        else if (ua.includes('Windows NT 6.3')) detected.version = '8.1';
+        else if (ua.includes('Windows NT 6.2')) detected.version = '8';
+        else if (ua.includes('Windows NT 6.1')) detected.version = '7';
+      } 
+      else if ((ua.includes('Mac') || platform.includes('Mac')) && vendor.includes('Apple')) {
+        detected.os = 'macOS';
+        // Enhanced macOS version detection
+        const macOSVersion = ua.match(/Mac OS X (\d+[._]\d+[._]\d+)/);
+        if (macOSVersion) {
+          const version = macOSVersion[1].replace(/_/g, '.');
+          const major = parseInt(version.split('.')[0]);
+          if (major >= 14) detected.version = 'Sonoma';
+          else if (major >= 13) detected.version = 'Ventura';
+          else if (major >= 12) detected.version = 'Monterey';
+          else if (major >= 11) detected.version = 'Big Sur';
+        }
+      } 
+      else if (ua.includes('Linux')) {
+        detected.os = 'Linux';
+        // Enhanced Linux distribution detection
+        if (ua.includes('Ubuntu')) detected.version = 'Ubuntu';
+        else if (ua.includes('Fedora')) detected.version = 'Fedora';
+        else if (ua.includes('SUSE')) detected.version = 'SUSE';
+        else if (ua.includes('Debian')) detected.version = 'Debian';
+        else if (ua.includes('Arch')) detected.version = 'Arch';
+      }
+
+      // Enhanced architecture detection
+      if (ua.includes('x64') || ua.includes('x86_64') || ua.includes('Win64') || ua.includes('amd64')) {
+        detected.architecture = 'x64';
+      } else if (ua.includes('arm64') || ua.includes('aarch64')) {
+        detected.architecture = 'ARM64';
+      } else if (ua.includes('x86') || ua.includes('i386') || ua.includes('i686')) {
+        detected.architecture = 'x86';
+      }
+
+      // System capabilities detection
+      const capabilities = [];
+      if (memory) capabilities.push(`${memory}GB RAM`);
+      if (cores) capabilities.push(`${cores} Cores`);
+      if (capabilities.length > 0) {
+        detected.capabilities = capabilities.join(', ');
+      }
+
+      // Security features detection
+      const securityFeatures = [];
+      try {
+        if ('security' in window && (window as any).security.isSecureContext) {
+          securityFeatures.push('Secure Context');
+        }
+        if ('crypto' in window) {
+          securityFeatures.push('Crypto API');
+        }
+      } catch (e) {
+        // Ignore errors in security detection
+      }
+      if (securityFeatures.length > 0) {
+        detected.security = securityFeatures.join(', ');
+      }
+
+      // Add a small delay to show the analysis animation
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      
+      setDetectedDevice(detected);
+      // Always show detection confirmation
+      setStep('detection');
+    } catch (error) {
+      console.error('Error detecting device:', error);
+      setStep('manual');
+    } finally {
       setIsAnalyzing(false);
-    }, 2000);
+    }
   };
 
   const getDeviceSuggestions = (query: string) => {
@@ -421,7 +511,10 @@ export default function Protect() {
                         <div className="absolute inset-0 rounded-full border-2 border-white/20" />
                         <div className="absolute inset-0 rounded-full border-2 border-white border-t-transparent animate-spin" />
                       </div>
-                      <p className="text-xl text-white/60 font-light">analyzing system specifications...</p>
+                      <div className="space-y-4 text-center">
+                        <p className="text-xl text-white/60 font-light">analyzing system specifications...</p>
+                        <p className="text-sm text-white/40">this will only take a moment</p>
+                      </div>
                     </div>
                   ) : detectedDevice && (
                     <motion.div 
@@ -431,21 +524,34 @@ export default function Protect() {
                     >
                       <div className="bg-gradient-to-br from-white/10 to-white/5 rounded-2xl p-8 space-y-8">
                         <div className="space-y-2">
-                          <h3 className="text-3xl text-white font-light">detected system.</h3>
+                          <h3 className="text-3xl text-white font-light">we detected your system.</h3>
                           <p className="text-lg text-white/60">
-                            here's what we found. if this doesn't look right, you can try again or enter your device manually.
+                            please confirm if this is correct. accuracy ensures you get the right protection steps.
                           </p>
                         </div>
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                           <div className="space-y-2">
-                            <div className="text-lg text-white/60 font-light">system</div>
+                            <div className="text-lg text-white/60 font-light">system type</div>
                             <div className="text-2xl text-white">{detectedDevice.type}</div>
                           </div>
                           <div className="space-y-2">
-                            <div className="text-lg text-white/60 font-light">os</div>
-                            <div className="text-2xl text-white">{detectedDevice.os}</div>
+                            <div className="text-lg text-white/60 font-light">operating system</div>
+                            <div className="text-2xl text-white">
+                              {detectedDevice.os}
+                              {detectedDevice.version && (
+                                <span className="text-white/60 ml-2 text-lg">
+                                  {detectedDevice.version}
+                                </span>
+                              )}
+                            </div>
                           </div>
+                          {detectedDevice.architecture && (
+                            <div className="space-y-2">
+                              <div className="text-lg text-white/60 font-light">architecture</div>
+                              <div className="text-2xl text-white">{detectedDevice.architecture}</div>
+                            </div>
+                          )}
                         </div>
                       </div>
 
@@ -456,8 +562,8 @@ export default function Protect() {
                           whileHover={{ scale: 1.02 }}
                           whileTap={{ scale: 0.98 }}
                         >
-                          <span className="block text-xl">get protection steps</span>
-                          <span className="block text-sm mt-1 opacity-60">this looks correct</span>
+                          <span className="block text-xl">yes, this is correct</span>
+                          <span className="block text-sm mt-1 opacity-60">show me protection steps</span>
                         </motion.button>
 
                         <motion.button
@@ -466,7 +572,7 @@ export default function Protect() {
                           whileHover={{ scale: 1.02 }}
                           whileTap={{ scale: 0.98 }}
                         >
-                          enter manually instead
+                          no, let me select manually
                         </motion.button>
                       </div>
                     </motion.div>
@@ -607,6 +713,10 @@ export default function Protect() {
                     detectedDevice?.os.toLowerCase() === 'windows') && (
                     <WindowsProtection onBack={() => setStep('initial')} />
                   )}
+                  {(selectedDevice?.os.toLowerCase() === 'macos' || 
+                    detectedDevice?.os.toLowerCase() === 'macos') && (
+                    <MacOSProtection onBack={() => setStep('initial')} />
+                  )}
                 </motion.div>
               )}
             </AnimatePresence>
@@ -632,6 +742,10 @@ export default function Protect() {
             {(selectedDevice?.os.toLowerCase() === 'windows' || 
               detectedDevice?.os.toLowerCase() === 'windows') && (
               <WindowsProtection onBack={() => setStep('initial')} />
+            )}
+            {(selectedDevice?.os.toLowerCase() === 'macos' || 
+              detectedDevice?.os.toLowerCase() === 'macos') && (
+              <MacOSProtection onBack={() => setStep('initial')} />
             )}
           </motion.div>
         )}
