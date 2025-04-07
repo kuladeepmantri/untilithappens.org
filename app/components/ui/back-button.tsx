@@ -12,6 +12,7 @@ interface BackButtonProps {
 export function BackButton({ onClick, variant = 'default', className = '' }: BackButtonProps) {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const [isProtectionPage, setIsProtectionPage] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -22,8 +23,16 @@ export function BackButton({ onClick, variant = 'default', className = '' }: Bac
       setIsMobile(window.innerWidth < 768);
     };
 
+    // Check if we're on a protection page
+    const checkProtectionPage = () => {
+      // Check if we're on a protection page by looking for the red background
+      const hasRedBackground = document.querySelector('div[class*="bg-[#801336]"]') !== null;
+      setIsProtectionPage(hasRedBackground);
+    };
+
     handleScroll();
     handleResize();
+    checkProtectionPage();
 
     window.addEventListener('scroll', handleScroll);
     window.addEventListener('resize', handleResize);
@@ -34,6 +43,7 @@ export function BackButton({ onClick, variant = 'default', className = '' }: Bac
     };
   }, []);
 
+  // For floating variant, always show on protection pages regardless of mobile
   if (variant === 'floating') {
     return (
       <motion.button
@@ -46,17 +56,18 @@ export function BackButton({ onClick, variant = 'default', className = '' }: Bac
         `}
       >
         <span className="text-lg">←</span>
-        <span className="font-medium tracking-wide">Back</span>
+        {!isMobile && <span className="font-medium tracking-wide">Back</span>}
       </motion.button>
     );
   }
 
+  // For default variant, show on protection pages regardless of mobile
   return (
     <div 
       className={`fixed left-0 right-0 z-40 transition-all duration-300 ${
         isScrolled 
           ? 'top-[4.5rem] bg-gradient-to-b from-[#801336]/80 to-transparent backdrop-blur-sm' 
-          : isMobile 
+          : isMobile
             ? 'top-16 bg-gradient-to-b from-[#801336]/80 to-transparent backdrop-blur-sm'
             : 'top-24'
       } ${className}`}
@@ -71,7 +82,7 @@ export function BackButton({ onClick, variant = 'default', className = '' }: Bac
           whileTap={{ scale: 0.98 }}
         >
           <span className="text-lg">←</span>
-          <span className="font-medium tracking-wide">Back</span>
+          {!isMobile && <span className="font-medium tracking-wide">Back</span>}
         </motion.button>
       </div>
     </div>

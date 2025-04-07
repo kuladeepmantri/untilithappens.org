@@ -49,16 +49,27 @@ export function Navigation() {
             </Link>
           </div>
 
-          {/* Mobile Menu Button */}
-          <button
-            onClick={() => setIsOpen(!isOpen)}
-            className="md:hidden relative group"
-          >
-            <div className="absolute inset-0 bg-white/5 group-hover:bg-white/10 rounded-lg transition-all duration-300 -m-2" />
-            <div className="relative text-white/80 group-hover:text-white transition-colors">
-              {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-            </div>
-          </button>
+          {/* Mobile Menu Button and Back Button */}
+          <div className="md:hidden flex items-center gap-4">
+            <button
+              onClick={() => window.history.back()}
+              className="relative group"
+            >
+              <div className="absolute inset-0 bg-white/5 group-hover:bg-white/10 rounded-lg transition-all duration-300 -m-2" />
+              <div className="relative text-white/80 group-hover:text-white transition-colors">
+                <span className="text-lg">←</span>
+              </div>
+            </button>
+            <button
+              onClick={() => setIsOpen(!isOpen)}
+              className="relative group"
+            >
+              <div className="absolute inset-0 bg-white/5 group-hover:bg-white/10 rounded-lg transition-all duration-300 -m-2" />
+              <div className="relative text-white/80 group-hover:text-white transition-colors">
+                {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+              </div>
+            </button>
+          </div>
         </div>
       </div>
 
