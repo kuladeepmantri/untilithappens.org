@@ -168,7 +168,7 @@ export default function AndroidProtection({ onBack }: { onBack: () => void }) {
 
   return (
     <div className="relative w-full min-h-screen bg-[#801336]">
-      <BackButton onClick={onBack} variant="floating" className="!fixed !top-6 !left-6 !z-50" />
+      <BackButton onClick={onBack} variant="floating" />
       
       {/* Progress Bar */}
       <div className="fixed top-0 left-0 right-0 h-0.5 bg-white/5 z-40">
@@ -181,7 +181,7 @@ export default function AndroidProtection({ onBack }: { onBack: () => void }) {
       </div>
 
       {/* Main Content */}
-      <div className="relative pt-32 pb-32">
+      <div className="relative pt-24 md:pt-32 pb-32">
         <div className="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8">
           <AnimatePresence mode="wait" initial={false}>
             <motion.div
@@ -193,11 +193,11 @@ export default function AndroidProtection({ onBack }: { onBack: () => void }) {
                 duration: 0.6,
                 ease: [0.32, 0.72, 0, 1]
               }}
-              className="space-y-20 md:space-y-32"
+              className="space-y-16 md:space-y-32"
             >
               {/* Section Header */}
-              <div className="space-y-16">
-                <div className="space-y-8">
+              <div className="space-y-12 md:space-y-16">
+                <div className="space-y-6 md:space-y-8">
                   <motion.div 
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
@@ -212,12 +212,12 @@ export default function AndroidProtection({ onBack }: { onBack: () => void }) {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.4, duration: 0.6 }}
-                    className="space-y-6"
+                    className="space-y-4 md:space-y-6"
                   >
-                    <h1 className="text-5xl md:text-7xl font-bold text-white tracking-tight">
+                    <h1 className="text-4xl md:text-7xl font-bold text-white tracking-tight">
                       {securityJourney[currentSection].title}
                     </h1>
-                    <p className="text-xl md:text-2xl text-white/80 max-w-3xl leading-relaxed">
+                    <p className="text-lg md:text-2xl text-white/80 max-w-3xl leading-relaxed">
                       {securityJourney[currentSection].description}
                     </p>
                   </motion.div>
@@ -225,7 +225,7 @@ export default function AndroidProtection({ onBack }: { onBack: () => void }) {
 
                 {/* Stats for Intro Section */}
                 {currentSection === 0 && securityJourney[0]?.stats && (
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-16 md:gap-24">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-12 md:gap-24">
                     {securityJourney[0].stats.map((stat, i) => (
                       <motion.div
                         key={i}
@@ -235,10 +235,10 @@ export default function AndroidProtection({ onBack }: { onBack: () => void }) {
                         className="relative"
                       >
                         <div className="space-y-6">
-                          <span className="text-6xl md:text-8xl font-bold text-white/90 tracking-tight">{stat.value}</span>
+                          <span className="text-5xl md:text-8xl font-bold text-white/90 tracking-tight">{stat.value}</span>
                           <div className="h-px w-16 bg-white/20" />
-                          <p className="text-lg text-white/60 uppercase tracking-wider">{stat.label}</p>
-                          <p className="text-xl text-white/80 leading-relaxed">{stat.context}</p>
+                          <p className="text-base md:text-lg text-white/60 uppercase tracking-wider">{stat.label}</p>
+                          <p className="text-lg md:text-xl text-white/80 leading-relaxed">{stat.context}</p>
                         </div>
                       </motion.div>
                     ))}
@@ -247,7 +247,7 @@ export default function AndroidProtection({ onBack }: { onBack: () => void }) {
 
                 {/* Security Sections */}
                 {currentSection > 0 && securityJourney[currentSection]?.sections && (
-                  <div className="space-y-16">
+                  <div className="space-y-12 md:space-y-16">
                     {securityJourney[currentSection].sections.map((section, i) => (
                       <motion.div
                         key={i}
@@ -266,14 +266,14 @@ export default function AndroidProtection({ onBack }: { onBack: () => void }) {
                           }}
                           className="w-full text-left"
                         >
-                          <div className="space-y-6 p-8 rounded-2xl transition-colors duration-300 hover:bg-white/[0.02]">
-                            <div className="flex justify-between items-start gap-8">
-                              <div className="space-y-6">
+                          <div className="space-y-6 p-4 md:p-8 rounded-xl md:rounded-2xl transition-colors duration-300 hover:bg-white/[0.02]">
+                            <div className="flex justify-between items-start gap-4 md:gap-8">
+                              <div className="space-y-4 md:space-y-6">
                                 <div className="text-sm text-white/60 uppercase tracking-widest">
                                   {section.importance}
                                 </div>
-                                <h3 className="text-3xl md:text-4xl font-bold text-white tracking-tight">{section.title}</h3>
-                                <p className="text-xl text-white/80 leading-relaxed max-w-3xl">{section.description}</p>
+                                <h3 className="text-2xl md:text-4xl font-bold text-white tracking-tight">{section.title}</h3>
+                                <p className="text-lg md:text-xl text-white/80 leading-relaxed max-w-3xl">{section.description}</p>
                               </div>
                               <motion.div
                                 animate={{ 
@@ -281,7 +281,7 @@ export default function AndroidProtection({ onBack }: { onBack: () => void }) {
                                   scale: expandedSection === section.title ? 1.2 : 1
                                 }}
                                 transition={{ duration: 0.4, ease: "easeInOut" }}
-                                className="text-white/40 text-2xl mt-2 transition-colors duration-300 group-hover:text-white/60"
+                                className="text-white/40 text-xl md:text-2xl mt-1 transition-colors duration-300 group-hover:text-white/60"
                               >
                                 ↓
                               </motion.div>
@@ -296,30 +296,30 @@ export default function AndroidProtection({ onBack }: { onBack: () => void }) {
                                   transition={{ duration: 0.4, ease: "easeInOut" }}
                                   className="overflow-hidden"
                                 >
-                                  <div className="mt-12 p-10 rounded-2xl bg-white/[0.03] space-y-16 border border-white/[0.05]">
-                                    <div className="space-y-12">
-                                      <div className="space-y-6">
+                                  <div className="mt-8 md:mt-12 p-6 md:p-10 rounded-xl md:rounded-2xl space-y-12 md:space-y-16 border border-white/[0.05]">
+                                    <div className="space-y-8 md:space-y-12">
+                                      <div className="space-y-4 md:space-y-6">
                                         <div className="text-white/40 uppercase tracking-wider text-sm">Action Required</div>
-                                        <div className="text-2xl md:text-3xl text-white font-medium tracking-tight">{section.action}</div>
-                                        <div className="text-lg text-white/60 font-mono bg-white/[0.03] px-4 py-3 rounded-lg inline-block">
+                                        <div className="text-xl md:text-3xl text-white font-medium tracking-tight">{section.action}</div>
+                                        <div className="text-base md:text-lg text-white/60 font-mono bg-white/[0.03] px-4 py-3 rounded-lg inline-block">
                                           {section.path}
                                         </div>
                                       </div>
                                       
-                                      <div className="space-y-8">
+                                      <div className="space-y-6 md:space-y-8">
                                         <div className="text-white/40 uppercase tracking-wider text-sm">Benefits</div>
-                                        <div className="space-y-6">
+                                        <div className="space-y-4 md:space-y-6">
                                           {section.details.map((detail, j) => (
-                                            <div key={j} className="text-xl text-white/80 leading-relaxed">
+                                            <div key={j} className="text-lg md:text-xl text-white/80 leading-relaxed">
                                               {detail}
                                             </div>
                                           ))}
                                         </div>
                                       </div>
                                       
-                                      <div className="space-y-6">
+                                      <div className="space-y-4 md:space-y-6">
                                         <div className="text-white/40 uppercase tracking-wider text-sm">Why It Matters</div>
-                                        <p className="text-xl text-white/80 leading-relaxed">
+                                        <p className="text-lg md:text-xl text-white/80 leading-relaxed">
                                           {section.context}
                                         </p>
                                       </div>
@@ -337,7 +337,7 @@ export default function AndroidProtection({ onBack }: { onBack: () => void }) {
               </div>
 
               {/* Navigation */}
-              <div className="fixed bottom-0 left-0 right-0 bg-gradient-to-t from-[#801336] via-[#801336]/95 to-transparent py-8 z-40">
+              <div className="fixed bottom-0 left-0 right-0 bg-gradient-to-t from-[#801336] via-[#801336]/95 to-transparent py-6 md:py-8 z-40">
                 <div className="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8">
                   <div className="flex justify-between items-center">
                     <motion.button
@@ -352,7 +352,7 @@ export default function AndroidProtection({ onBack }: { onBack: () => void }) {
                       }}
                       whileHover={{ x: -4 }}
                       whileTap={{ scale: 0.98 }}
-                      className={`px-8 py-4 text-lg transition-all duration-300 ${
+                      className={`px-6 md:px-8 py-3 md:py-4 text-base md:text-lg transition-all duration-300 ${
                         currentSection === 0 
                           ? 'opacity-50 cursor-not-allowed' 
                           : 'hover:text-white'
@@ -374,14 +374,14 @@ export default function AndroidProtection({ onBack }: { onBack: () => void }) {
                       }}
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
-                      className={`px-10 py-4 rounded-full transition-all duration-300 ${
+                      className={`px-8 md:px-10 py-3 md:py-4 rounded-full transition-all duration-300 ${
                         currentSection === securityJourney.length - 1 
                           ? 'opacity-50 cursor-not-allowed bg-white/10' 
                           : 'bg-white hover:bg-white/95 shadow-lg'
                       }`}
                       disabled={currentSection === securityJourney.length - 1 || isAnimating}
                     >
-                      <span className={`font-medium tracking-wide ${
+                      <span className={`text-base md:text-lg font-medium tracking-wide ${
                         currentSection === securityJourney.length - 1 
                           ? 'text-white/50' 
                           : 'text-[#801336]'

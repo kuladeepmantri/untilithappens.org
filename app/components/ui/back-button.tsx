@@ -38,26 +38,15 @@ export function BackButton({ onClick, variant = 'default', className = '' }: Bac
     return (
       <motion.button
         onClick={onClick}
-        className={`fixed ${isMobile ? 'top-4 left-4' : 'top-8 left-8'} z-50 p-3 rounded-xl bg-white/5 hover:bg-white/10 backdrop-blur-md transition-all duration-200 group ${className}`}
         whileHover={{ x: -4 }}
-        whileTap={{ scale: 0.95 }}
-        initial={{ opacity: 0, x: -20 }}
-        animate={{ opacity: 1, x: 0 }}
+        whileTap={{ scale: 0.98 }}
+        className={`
+          fixed z-50 flex items-center gap-2 transition-colors duration-200
+          ${isMobile ? 'top-6 left-6' : 'top-8 left-8 text-sm md:text-base text-white/80 hover:text-white'}
+        `}
       >
-        <div className="flex items-center gap-2">
-          <svg 
-            className="w-5 h-5 text-white/60 group-hover:text-white transition-colors" 
-            viewBox="0 0 24 24" 
-            fill="none" 
-            stroke="currentColor" 
-            strokeWidth="1.5"
-          >
-            <path d="M19 12H5M5 12L12 19M5 12L12 5" strokeLinecap="round" strokeLinejoin="round" />
-          </svg>
-          <span className="text-sm text-white/60 group-hover:text-white transition-colors font-medium">
-            Back
-          </span>
-        </div>
+        <span className="text-lg">←</span>
+        <span className="font-medium tracking-wide">Back</span>
       </motion.button>
     );
   }
@@ -77,18 +66,8 @@ export function BackButton({ onClick, variant = 'default', className = '' }: Bac
           whileHover={{ x: -4 }}
           whileTap={{ scale: 0.98 }}
         >
-          <svg 
-            className="w-5 h-5" 
-            viewBox="0 0 24 24" 
-            fill="none" 
-            stroke="currentColor" 
-            strokeWidth="1.5"
-          >
-            <path d="M19 12H5M5 12L12 19M5 12L12 5" strokeLinecap="round" strokeLinejoin="round" />
-          </svg>
-          <span className="text-sm font-medium tracking-wide">
-            Back to Device Selection
-          </span>
+          <span className="text-lg">←</span>
+          <span className="font-medium tracking-wide">Back</span>
         </motion.button>
       </div>
     </div>
