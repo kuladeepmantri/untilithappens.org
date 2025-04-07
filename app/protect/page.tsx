@@ -7,7 +7,8 @@ import { BackButton } from '../components/ui/back-button';
 import WindowsProtection from '../components/protection-guides/WindowsProtection';
 import MacOSProtection from '../components/protection-guides/MacOSProtection';
 import Link from 'next/link';
-import { WindowsIcon, AppleIcon, LinuxIcon, AndroidIcon } from '../components/icons';
+import { WindowsIcon, AppleIcon } from '../components/icons';
+import Image from 'next/image';
 
 interface DetectedDevice {
   type: string;
@@ -37,11 +38,47 @@ const operatingSystems = {
   desktop: [
     { id: 'windows', name: 'Windows', icon: WindowsIcon },
     { id: 'macos', name: 'macOS', icon: AppleIcon },
-    { id: 'linux', name: 'Linux', icon: LinuxIcon }
+    { 
+      id: 'linux', 
+      name: 'Linux', 
+      icon: ({ className }: { className?: string }) => (
+        <Image
+          src="/images/linux.png"
+          alt="Linux"
+          width={32}
+          height={32}
+          className={className}
+        />
+      )
+    }
   ],
   mobile: [
-    { id: 'android', name: 'Android', icon: AndroidIcon },
-    { id: 'ios', name: 'iOS', icon: AppleIcon }
+    { 
+      id: 'android', 
+      name: 'Android', 
+      icon: ({ className }: { className?: string }) => (
+        <Image
+          src="/images/android.png"
+          alt="Android"
+          width={32}
+          height={32}
+          className={className}
+        />
+      )
+    },
+    { 
+      id: 'ios', 
+      name: 'iOS', 
+      icon: ({ className }: { className?: string }) => (
+        <Image
+          src="/images/ios.png"
+          alt="iOS"
+          width={32}
+          height={32}
+          className={className}
+        />
+      )
+    }
   ]
 } as const;
 
@@ -631,7 +668,9 @@ export default function Protect() {
                                   onClick={() => handleOSSelect(os.id)}
                                   className="group flex items-center justify-center gap-4 w-full p-6 rounded-xl bg-white/5 hover:bg-white/10 transition-all duration-300"
                                 >
-                                  <os.icon className="w-8 h-8 text-white" />
+                                  <div className="w-8 h-8 flex items-center justify-center">
+                                    <os.icon className="w-8 h-8 text-white" />
+                                  </div>
                                   <span className="text-xl text-white font-medium">{os.name}</span>
                                 </button>
                               ))}
@@ -648,7 +687,9 @@ export default function Protect() {
                                   onClick={() => handleOSSelect(os.id)}
                                   className="group flex items-center justify-center gap-4 w-full p-6 rounded-xl bg-white/5 hover:bg-white/10 transition-all duration-300"
                                 >
-                                  <os.icon className="w-8 h-8 text-white" />
+                                  <div className="w-8 h-8 flex items-center justify-center">
+                                    <os.icon className="w-8 h-8 text-white" />
+                                  </div>
                                   <span className="text-xl text-white font-medium">{os.name}</span>
                                 </button>
                               ))}
