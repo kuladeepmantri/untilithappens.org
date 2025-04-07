@@ -25,7 +25,7 @@ export function ScrollIndicator() {
         duration: 0.4,
         ease: "easeOut"
       }}
-      className="fixed left-1/2 -translate-x-1/2 bottom-12 md:bottom-16 flex flex-col items-center justify-center z-50 pointer-events-none"
+      className="fixed left-1/2 -translate-x-1/2 bottom-12 md:bottom-16 flex flex-col items-center justify-center z-40 pointer-events-none"
     >
       <div className="relative flex flex-col items-center">
         <motion.div

@@ -73,7 +73,7 @@ export function Navigation({ showFullNav = true }: NavigationProps) {
           'fixed top-0 right-0 w-full transition-all duration-300',
           isScrolled ? 'bg-theme/80 backdrop-blur-2xl h-16' : 'bg-transparent h-20'
         )}
-        style={{ zIndex: 50 }}
+        style={{ zIndex: 100 }}
       >
         <div className="container mx-auto px-6 h-full flex items-center">
           {/* Desktop navigation */}
@@ -148,7 +148,7 @@ export function Navigation({ showFullNav = true }: NavigationProps) {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             className="fixed inset-0 bg-black/40 backdrop-blur-xl"
-            style={{ zIndex: 45 }}
+            style={{ zIndex: 95 }}
           >
             <motion.div
               initial={{ x: "100%" }}
