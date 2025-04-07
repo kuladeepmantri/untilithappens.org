@@ -234,7 +234,9 @@ export default function Protect() {
         } else if (userAgent.includes('windows nt 6.3')) version = 'Windows 8.1';
         else if (userAgent.includes('windows nt 6.2')) version = 'Windows 8';
         else if (userAgent.includes('windows nt 6.1')) version = 'Windows 7';
-      } else if ((userAgent.includes('mac') || platform.includes('mac')) && vendor?.includes('Apple')) {
+        else if (userAgent.includes('windows nt 6.0')) version = 'Windows Vista';
+        else if (userAgent.includes('windows nt 5.1')) version = 'Windows XP';
+      } else if ((userAgent.includes('mac') || platform.includes('mac')) && !userAgent.includes('iphone') && !userAgent.includes('ipad')) {
         detectedOS = 'macOS';
         const macOSVersion = userAgent.match(/mac os x (\d+[._]\d+[._]\d+)/i);
         if (macOSVersion) {
@@ -244,29 +246,80 @@ export default function Protect() {
           else if (major >= 13) version = 'Ventura';
           else if (major >= 12) version = 'Monterey';
           else if (major >= 11) version = 'Big Sur';
+          else if (major >= 10) version = 'Catalina';
+          else if (major >= 9) version = 'Mojave';
+          else if (major >= 8) version = 'High Sierra';
+          else if (major >= 7) version = 'Sierra';
+          else if (major >= 6) version = 'El Capitan';
+          else if (major >= 5) version = 'Yosemite';
+          else if (major >= 4) version = 'Mavericks';
+          else if (major >= 3) version = 'Mountain Lion';
+          else if (major >= 2) version = 'Lion';
+          else if (major >= 1) version = 'Snow Leopard';
         }
         // Override platform display for Mac
         platform = 'Mac';
       } else if (userAgent.includes('android')) {
         detectedOS = 'Android';
         const match = userAgent.match(/android\s([0-9.]*)/i);
-        if (match) version = `Android ${match[1]}`;
+        if (match) {
+          const androidVersion = parseFloat(match[1]);
+          if (androidVersion >= 14) version = 'Android 14';
+          else if (androidVersion >= 13) version = 'Android 13';
+          else if (androidVersion >= 12) version = 'Android 12';
+          else if (androidVersion >= 11) version = 'Android 11';
+          else if (androidVersion >= 10) version = 'Android 10';
+          else if (androidVersion >= 9) version = 'Android 9 (Pie)';
+          else if (androidVersion >= 8) version = 'Android 8 (Oreo)';
+          else if (androidVersion >= 7) version = 'Android 7 (Nougat)';
+          else if (androidVersion >= 6) version = 'Android 6 (Marshmallow)';
+          else if (androidVersion >= 5) version = 'Android 5 (Lollipop)';
+          else if (androidVersion >= 4) version = 'Android 4 (KitKat)';
+          else version = `Android ${match[1]}`;
+        }
       } else if (userAgent.includes('iphone') || userAgent.includes('ipad') || userAgent.includes('ipod')) {
-        detectedOS = 'iOS';
+        detectedOS = userAgent.includes('ipad') ? 'iPadOS' : 'iOS';
         const match = userAgent.match(/os\s([0-9_]*)/i);
-        if (match) version = `iOS ${match[1].replace(/_/g, '.')}`;
-      } else if (userAgent.includes('linux')) {
+        if (match) {
+          const iosVersion = parseFloat(match[1].replace(/_/g, '.'));
+          if (iosVersion >= 17) version = 'iOS 17';
+          else if (iosVersion >= 16) version = 'iOS 16';
+          else if (iosVersion >= 15) version = 'iOS 15';
+          else if (iosVersion >= 14) version = 'iOS 14';
+          else if (iosVersion >= 13) version = 'iOS 13';
+          else if (iosVersion >= 12) version = 'iOS 12';
+          else if (iosVersion >= 11) version = 'iOS 11';
+          else if (iosVersion >= 10) version = 'iOS 10';
+          else if (iosVersion >= 9) version = 'iOS 9';
+          else if (iosVersion >= 8) version = 'iOS 8';
+          else if (iosVersion >= 7) version = 'iOS 7';
+          else version = `iOS ${match[1].replace(/_/g, '.')}`;
+        }
+      } else if (userAgent.includes('linux') || platform.includes('linux')) {
         detectedOS = 'Linux';
         if (userAgent.includes('ubuntu')) version = 'Ubuntu';
         else if (userAgent.includes('fedora')) version = 'Fedora';
         else if (userAgent.includes('debian')) version = 'Debian';
         else if (userAgent.includes('arch')) version = 'Arch';
+        else if (userAgent.includes('centos')) version = 'CentOS';
+        else if (userAgent.includes('redhat') || userAgent.includes('rhel')) version = 'Red Hat';
+        else if (userAgent.includes('suse')) version = 'SUSE';
+        else if (userAgent.includes('gentoo')) version = 'Gentoo';
+        else if (userAgent.includes('elementary')) version = 'Elementary OS';
+        else if (userAgent.includes('mint')) version = 'Linux Mint';
+        else if (userAgent.includes('chrome')) version = 'Chrome OS';
+        else if (userAgent.includes('android')) version = 'Android (Linux-based)';
       }
       
-      // Device Type Detection
-      if (userAgent.includes('mobile') || userAgent.includes('android') || userAgent.includes('iphone')) {
+      // Device Type Detection - More accurate
+      if (userAgent.includes('mobile') || 
+          userAgent.includes('android') || 
+          (userAgent.includes('iphone') && !userAgent.includes('ipad')) || 
+          userAgent.includes('ipod')) {
         deviceType = 'Mobile';
-      } else if (userAgent.includes('ipad') || (userAgent.includes('tablet') && !userAgent.includes('mobile'))) {
+      } else if (userAgent.includes('ipad') || 
+                 (userAgent.includes('tablet') && !userAgent.includes('mobile')) || 
+                 (userAgent.includes('android') && !userAgent.includes('mobile'))) {
         deviceType = 'Tablet';
       } else {
         deviceType = 'Computer';
@@ -280,6 +333,8 @@ export default function Protect() {
         architecture = 'ARM64';
       } else if (userAgent.includes('x86') || userAgent.includes('i386') || userAgent.includes('i686')) {
         architecture = 'x86';
+      } else if (userAgent.includes('arm')) {
+        architecture = 'ARM';
       }
 
       // If we couldn't detect the OS, transition to manual selection

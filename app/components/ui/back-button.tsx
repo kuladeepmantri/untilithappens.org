@@ -56,13 +56,17 @@ export function BackButton({ onClick, variant = 'default', className = '' }: Bac
       className={`fixed left-0 right-0 z-40 transition-all duration-300 ${
         isScrolled 
           ? 'top-[4.5rem] bg-gradient-to-b from-[#801336]/80 to-transparent backdrop-blur-sm' 
-          : 'top-24'
+          : isMobile 
+            ? 'top-16 bg-gradient-to-b from-[#801336]/80 to-transparent backdrop-blur-sm'
+            : 'top-24'
       } ${className}`}
     >
       <div className="max-w-screen-xl mx-auto px-6">
         <motion.button
           onClick={onClick}
-          className="group flex items-center gap-2 py-4 text-white/60 hover:text-white transition-all duration-200"
+          className={`group flex items-center gap-2 py-4 text-white/60 hover:text-white transition-all duration-200 ${
+            isMobile ? 'text-sm' : ''
+          }`}
           whileHover={{ x: -4 }}
           whileTap={{ scale: 0.98 }}
         >
