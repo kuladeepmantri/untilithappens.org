@@ -1,5 +1,7 @@
 # Until It Happens
 
+### Website under Development
+
 "I never thought it would happen to me."
 These words echo through countless lives shattered by digital threats.
 
@@ -66,4 +68,4 @@ Until it did.
 
 For inquiries or to report vulnerabilities, reach out through our website or open an issue.
 
-Remember: Prevention isn't paranoia. It's protection.
+Remember: Prevention isn't paranoia. It's protection
