@@ -35,9 +35,9 @@ const sections = [
 
 export default function PrivacyPage() {
   return (
-    <div className="bg-[#09151c] pt-24">
+    <div className="aurora-bg relative overflow-hidden pt-24">
       <section className="mx-auto max-w-4xl px-6 pb-12 pt-14 md:pt-20">
-        <span className="inline-flex rounded-full border border-white/20 bg-white/5 px-4 py-2 text-xs uppercase tracking-[0.2em] text-white/70">
+        <span className="guide-chip">
           Privacy
         </span>
         <h1 className="mt-6 text-5xl font-semibold leading-[0.95] text-white sm:text-6xl">Privacy Policy</h1>

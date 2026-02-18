@@ -122,25 +122,26 @@ export const verifiedNotes: VerifiedNote[] = [
     metric: '$16.6B reported losses',
     detail:
       'The FBI Internet Crime Complaint Center received 859,532 complaints in 2024, with reported losses exceeding $16.6 billion.',
-    asOf: 'Latest IC3 annual report available on February 18, 2026: 2024 data (published April 2025)',
+    asOf: 'IC3 Internet Crime Report 2024 was published April 23, 2025 and remains the latest annual IC3 report posted as of February 18, 2026.',
     sourceLabel: 'FBI IC3 Internet Crime Report 2024',
     sourceUrl: 'https://www.ic3.gov/AnnualReport/Reports/2024_IC3Report.pdf',
   },
   {
-    metric: '$470M lost to text scams',
+    metric: '$12.5B fraud losses',
     detail:
-      'FTC data shows 2024 text-message scams caused $470 million in reported losses, with fake package, job, fraud-alert, toll, and wrong-number texts leading.',
-    asOf: 'FTC release dated April 16, 2025; still current on February 18, 2026',
-    sourceLabel: 'FTC text scam losses release',
-    sourceUrl: 'https://www.ftc.gov/news-events/news/press-releases/2025/04/new-ftc-data-show-top-text-message-scams-2024-overall-losses-text-scams-hit-470-million',
+      'FTC reported consumer fraud losses reached $12.5 billion in 2024, up 25% over 2023, based on reports submitted through official FTC channels.',
+    asOf: 'FTC press release dated March 10, 2025; latest FTC annual fraud-loss release available on February 18, 2026.',
+    sourceLabel: 'FTC annual fraud loss release (2024 data)',
+    sourceUrl: 'https://www.ftc.gov/news-events/news/press-releases/2025/03/new-ftc-data-show-big-jump-reported-losses-fraud-125-billion-2024',
   },
   {
-    metric: '100+ IC3 impersonation reports',
+    metric: '5,100+ account takeover complaints',
     detail:
-      'FBI warned of scammers pretending to be IC3 staff and offering fake fund recovery, with more than 100 reports filed between December 2023 and February 2025.',
-    asOf: 'FBI PSA issued April 18, 2025; still active guidance on February 18, 2026',
-    sourceLabel: 'FBI PSA: scammers impersonating IC3',
-    sourceUrl: 'https://www.fbi.gov/investigate/cyber/alerts/2025/fbi-warns-of-scammers-impersonating-the-ic3',
+      'FBI warned of active account-takeover fraud affecting U.S. financial services, with over 5,100 complaints and more than $262 million in reported losses since January 2025.',
+    asOf: 'FBI advisory issued November 25, 2025; still active guidance as of February 18, 2026.',
+    sourceLabel: 'FBI alert: account takeover fraud',
+    sourceUrl:
+      'https://www.fbi.gov/investigate/cyber/alerts/2025/the-fbi-warns-financial-services-about-customer-account-takeover-fraud-targeting-u-s-financial-sector',
   },
 ];
 
@@ -166,6 +167,18 @@ export const sourceIndex: LinkItem[] = [
   {
     label: 'FBI IC3 Annual Report 2024',
     href: 'https://www.ic3.gov/AnnualReport/Reports/2024_IC3Report.pdf',
+  },
+  {
+    label: 'FBI Cyber Alerts (2026 list)',
+    href: 'https://www.fbi.gov/investigate/cyber/alerts/2026',
+  },
+  {
+    label: 'FBI QR code spearphishing alert (Jan 8, 2026)',
+    href: 'https://www.fbi.gov/investigate/cyber/alerts/2026/threat-actors-employing-qr-codes-to-deliver-spearphishing-emails-to-state-and-federal-government-employees',
+  },
+  {
+    label: 'FBI account takeover advisory (Nov 25, 2025)',
+    href: 'https://www.fbi.gov/investigate/cyber/alerts/2025/the-fbi-warns-financial-services-about-customer-account-takeover-fraud-targeting-u-s-financial-sector',
   },
   {
     label: 'FTC Fraud Losses (2024 Data)',

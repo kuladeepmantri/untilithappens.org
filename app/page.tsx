@@ -95,7 +95,7 @@ export default function Home() {
                 <Link
                   key={item.step}
                   href={item.page}
-                  className="block rounded-xl border border-white/12 bg-black/25 p-4 transition hover:border-white/25 hover:bg-black/35"
+                  className="block rounded-xl border border-white/12 bg-white/[0.06] p-4 transition hover:border-white/25 hover:bg-white/[0.12]"
                 >
                   <div className="flex items-center justify-between gap-2">
                     <p className="font-ui-mono text-xs text-white/62">Step {item.step}</p>
@@ -109,7 +109,7 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="relative border-y border-white/10 bg-[#0b141a]/55 py-14">
+      <section className="relative border-y border-white/10 bg-white/[0.03] py-14">
         <div className="mx-auto max-w-7xl px-6">
           <div className="mb-6 flex flex-wrap items-end justify-between gap-3">
             <div>
@@ -167,7 +167,7 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="border-y border-white/10 bg-[#0b141a]/55 py-14">
+      <section className="border-y border-white/10 bg-white/[0.03] py-14">
         <div className="mx-auto grid max-w-7xl gap-8 px-6 lg:grid-cols-[1.3fr,1fr]">
           <div className="story-card p-6 md:p-8">
             <p className="font-ui-mono text-xs uppercase tracking-[0.2em] text-white/55">If something happened today</p>
@@ -182,7 +182,7 @@ export default function Home() {
                   href={resource.href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="rounded-xl border border-white/12 bg-black/25 p-4 transition hover:border-white/25 hover:bg-black/35"
+                  className="rounded-xl border border-white/12 bg-white/[0.06] p-4 transition hover:border-white/25 hover:bg-white/[0.12]"
                 >
                   <p className="text-sm font-medium text-white">{resource.name}</p>
                   <p className="mt-1 text-sm text-white/66">{resource.purpose}</p>

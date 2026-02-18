@@ -107,7 +107,7 @@ export default function LearnPage() {
               <p className="mt-3 text-sm text-white/74">{module.outcome}</p>
               <ul className="mt-4 grid gap-2 text-sm text-white/78 md:grid-cols-3">
                 {module.checkpoints.map((item) => (
-                  <li key={item} className="rounded-lg border border-white/12 bg-black/25 px-3 py-2">
+                  <li key={item} className="rounded-lg border border-white/12 bg-white/[0.06] px-3 py-2">
                     {item}
                   </li>
                 ))}
@@ -135,7 +135,7 @@ export default function LearnPage() {
         <PasswordStrengthLab />
       </section>
 
-      <section className="border-y border-white/10 bg-[#0b141a]/55 py-12">
+      <section className="border-y border-white/10 bg-white/[0.03] py-12">
         <div className="mx-auto max-w-7xl px-6">
           <h2 className="text-3xl font-semibold text-white">Cadence that keeps working</h2>
           <div className="mt-4 grid gap-3 md:grid-cols-2">

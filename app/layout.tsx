@@ -40,7 +40,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className="scroll-smooth">
-      <body className="bg-black text-white antialiased">
+      <body className="text-white antialiased">
         <Navigation />
         <main className="min-h-screen">{children}</main>
         <SiteFooter />

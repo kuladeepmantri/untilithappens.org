@@ -220,7 +220,9 @@ h3 {
 }
 
 .site-panel {
-  @apply rounded-2xl border border-white/10 bg-white/5 backdrop-blur-sm;
+  @apply rounded-2xl backdrop-blur-sm;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  background-color: rgba(255, 255, 255, 0.08);
 }
 
 .font-ui-mono {
@@ -229,27 +231,37 @@ h3 {
 
 .aurora-bg {
   background-image:
-    radial-gradient(circle at 12% 16%, rgba(90, 161, 149, 0.25), transparent 34%),
-    radial-gradient(circle at 88% 10%, rgba(100, 140, 158, 0.24), transparent 35%),
-    radial-gradient(circle at 52% 92%, rgba(187, 141, 88, 0.19), transparent 36%),
-    linear-gradient(180deg, #060d12 0%, #09151c 48%, #0d141b 100%);
+    radial-gradient(circle at 12% 16%, rgba(126, 197, 186, 0.24), transparent 34%),
+    radial-gradient(circle at 88% 10%, rgba(140, 184, 198, 0.22), transparent 35%),
+    radial-gradient(circle at 52% 92%, rgba(215, 171, 115, 0.18), transparent 36%),
+    linear-gradient(180deg, #0c1f2b 0%, #143246 46%, #1b4258 100%);
 }
 
 .guide-chip {
-  @apply inline-flex items-center rounded-full border border-[#76c6bb]/45 bg-[#76c6bb]/10 px-4 py-2 text-xs uppercase tracking-[0.2em] text-white/80;
+  @apply inline-flex items-center rounded-full px-4 py-2 text-xs uppercase tracking-[0.2em] text-white/90;
+  border: 1px solid rgba(148, 222, 208, 0.62);
+  background-color: rgba(148, 222, 208, 0.18);
 }
 
 .story-card {
-  @apply rounded-2xl border border-white/10 bg-black/30 backdrop-blur-sm;
-  box-shadow: 0 16px 54px rgba(4, 12, 16, 0.45);
+  @apply rounded-2xl backdrop-blur-sm;
+  border: 1px solid rgba(165, 205, 214, 0.32);
+  background-color: rgba(20, 46, 60, 0.5);
+  background: linear-gradient(
+    155deg,
+    rgba(140, 206, 199, 0.2) 0%,
+    rgba(129, 182, 198, 0.16) 55%,
+    rgba(215, 171, 115, 0.14) 100%
+  );
+  box-shadow: 0 16px 38px rgba(8, 22, 30, 0.24);
 }
 
 .panel-gradient {
   background: linear-gradient(
     135deg,
-    rgba(54, 112, 119, 0.36) 0%,
-    rgba(13, 35, 45, 0.52) 56%,
-    rgba(66, 47, 29, 0.36) 100%
+    rgba(136, 206, 198, 0.26) 0%,
+    rgba(109, 165, 181, 0.2) 52%,
+    rgba(208, 170, 120, 0.2) 100%
   );
 }
 

@@ -69,7 +69,7 @@ export default function RealStoriesPage() {
               <p className="mt-2 text-sm text-white/74">
                 <span className="font-medium text-white/90">Preventive control:</span> {story.control}
               </p>
-              <p className="mt-3 rounded-lg border border-white/12 bg-black/25 px-3 py-2 text-xs text-white/70">
+              <p className="mt-3 rounded-lg border border-white/12 bg-white/[0.06] px-3 py-2 text-xs text-white/70">
                 Expected detection speed: {story.detection}
               </p>
             </motion.article>

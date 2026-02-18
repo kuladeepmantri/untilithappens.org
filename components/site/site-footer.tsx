@@ -5,7 +5,7 @@ export function SiteFooter() {
   const year = new Date().getFullYear();
 
   return (
-    <footer className="relative overflow-hidden border-t border-white/10 bg-[#050f14]">
+    <footer className="relative overflow-hidden border-t border-white/12 bg-[linear-gradient(180deg,rgba(22,58,75,0.74),rgba(24,70,90,0.78))]">
       <div className="pointer-events-none absolute -left-16 top-0 h-56 w-56 rounded-full bg-[#76c6bb]/18 blur-3xl" />
       <div className="pointer-events-none absolute -right-16 top-8 h-56 w-56 rounded-full bg-[#d7ab73]/15 blur-3xl" />
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(78,139,148,0.18),transparent_52%)]" />

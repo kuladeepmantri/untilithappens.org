@@ -69,7 +69,7 @@ export default function ReportPage() {
         </div>
       </section>
 
-      <section className="border-y border-white/10 bg-[#0b141a]/55 py-12">
+      <section className="border-y border-white/10 bg-white/[0.03] py-12">
         <div className="mx-auto max-w-7xl px-6">
           <div className="space-y-3">
             {reportMatrix.map((item, index) => (

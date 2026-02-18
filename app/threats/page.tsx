@@ -21,95 +21,95 @@ type ThreatScenario = {
 
 const scenarios: ThreatScenario[] = [
   {
-    id: 'impersonation',
-    name: 'AI text + voice impersonation',
-    signal: 'Urgent request + pressure to switch apps + financial action',
+    id: 'qr-spearphishing',
+    name: 'QR-code spearphishing in email',
+    signal: 'Unexpected QR image, urgent verification language, login or file request',
     pattern:
-      'Recent FBI alerts describe coordinated text and voice impersonation campaigns targeting trusted relationships.',
-    latest: 'FBI PSA I-121925-PSA (December 19, 2025)',
-    impact: 'High account and payment takeover risk',
-    actionWindow: 'First 2 minutes',
+      'FBI reported threat actors embedding QR codes in spearphishing emails to redirect users into credential-harvesting flows.',
+    latest: 'FBI Cyber Alert published January 8, 2026',
+    impact: 'Credential theft and mailbox/account takeover',
+    actionWindow: 'Before scanning',
     defense: [
-      'Stop the live conversation and call back using a saved trusted number.',
-      'Require a private verification phrase for money, passwords, or recovery requests.',
-      'Do not use links delivered in first-contact messages.',
+      'Do not scan QR codes from unexpected email messages.',
+      'Open the official service directly from your own bookmark or manually typed URL.',
+      'Forward suspicious message to security/helpdesk and then report phishing.',
     ],
     drill: [
-      'Pause and read the request out loud.',
-      'Verify identity through your independent channel.',
-      'Only continue after positive confirmation.',
+      'Pause before scanning and inspect sender/domain carefully.',
+      'Open the destination manually without using the QR code.',
+      'Report and delete after preserving evidence.',
     ],
-    sourceLabel: 'FBI: senior U.S. officials impersonated',
+    sourceLabel: 'FBI: QR codes used in spearphishing',
     sourceUrl:
-      'https://www.fbi.gov/investigate/cyber/alerts/2025/senior-us-officials-continue-to-be-impersonated-in-malicious-messaging-campaign',
+      'https://www.fbi.gov/investigate/cyber/alerts/2026/threat-actors-employing-qr-codes-to-deliver-spearphishing-emails-to-state-and-federal-government-employees',
   },
   {
-    id: 'toll-smishing',
-    name: 'Toll and payment text smishing',
-    signal: '“Final notice” payment text with short deadline and unknown URL',
+    id: 'file-share-lures',
+    name: 'Malicious file-sharing lures',
+    signal: 'Unfamiliar file-sharing invite with urgency and a login prompt',
     pattern:
-      'Field-office reports showed mass waves of fake toll payment texts that harvest card and account credentials.',
-    latest: 'FBI Atlanta warning (March 14, 2025)',
-    impact: 'Fast theft of payment details and identity data',
-    actionWindow: 'Under 60 seconds',
+      'FBI warned that threat actors are sending weaponized file-sharing links designed to steal credentials and stage follow-on compromise.',
+    latest: 'FBI Cyber Alert published January 15, 2026',
+    impact: 'Initial access into email, collaboration suites, and internal systems',
+    actionWindow: 'First click decision',
     defense: [
-      'Never pay tolls through text links.',
-      'Open your official toll account manually in browser/app.',
-      'Capture screenshot, block sender, then report.',
+      'Never authenticate through unsolicited file-share links.',
+      'Verify request context with sender through a second trusted channel.',
+      'Open the official workspace directly instead of clicking the message link.',
     ],
     drill: [
-      'Inspect sender and domain mismatch.',
-      'Open official portal manually.',
-      'Report as phishing before deleting.',
+      'Validate sender identity and business context.',
+      'Open official platform manually and check for the file there.',
+      'Escalate suspicious invitations to security/reporting channels.',
     ],
-    sourceLabel: 'FBI Atlanta: smishing text scam',
+    sourceLabel: 'FBI: malicious file-sharing links',
     sourceUrl:
-      'https://www.fbi.gov/contact-us/field-offices/atlanta/news/fbi-atlanta-warns-of-smishing-text-message-scam',
+      'https://www.fbi.gov/investigate/cyber/alerts/2026/threat-actors-are-sending-malicious-file-sharing-links-to-federal-and-state-government-employees',
+  },
+  {
+    id: 'account-takeover',
+    name: 'Financial account takeover fraud',
+    signal: 'Unexpected MFA prompts, account resets, or support outreach you did not initiate',
+    pattern:
+      'FBI warned financial services about active account takeover campaigns with significant reported victim losses.',
+    latest: 'FBI Cyber Alert published November 25, 2025',
+    impact: 'Direct financial theft and lockout of legitimate account owner',
+    actionWindow: 'First 5 minutes',
+    defense: [
+      'Lock down the account through official provider channels immediately.',
+      'Reset password from a trusted device and revoke unknown sessions/tokens.',
+      'Call provider fraud line using verified contact details from official site/app.',
+    ],
+    drill: [
+      'Confirm whether sign-in attempts were yours or unauthorized.',
+      'Force sign-out across sessions and rotate credentials.',
+      'Document IDs/timestamps and submit incident reports quickly.',
+    ],
+    sourceLabel: 'FBI: account takeover fraud alert',
+    sourceUrl:
+      'https://www.fbi.gov/investigate/cyber/alerts/2025/the-fbi-warns-financial-services-about-customer-account-takeover-fraud-targeting-u-s-financial-sector',
   },
   {
     id: 'ic3-impersonation',
     name: 'Fake recovery agents (IC3 impersonation)',
-    signal: 'Claim that lost funds were recovered, asks for fee or account proof',
+    signal: 'Claim that funds were recovered, asks for payment or identity packet',
     pattern:
-      'FBI documented 100+ reports of criminals impersonating IC3 contacts to revictimize prior fraud victims.',
+      'FBI documented criminals impersonating IC3 contacts to target previous fraud victims with secondary scams.',
     latest: 'FBI PSA I-041825-PSA (April 18, 2025)',
-    impact: 'Secondary victimization after initial fraud',
+    impact: 'Secondary victimization and identity data theft',
     actionWindow: 'Before any reply',
     defense: [
-      'IC3 does not request payment or direct-message victims for fund release.',
-      'Use only official .gov channels you typed yourself.',
-      'Never submit full identity packets to unsolicited “recovery” outreach.',
+      'IC3 does not request payment to release recovered funds.',
+      'Use only official .gov channels entered manually.',
+      'Do not submit sensitive identity packets to unsolicited outreach.',
     ],
     drill: [
-      'Stop and verify domain authenticity.',
-      'Cross-check contact through official IC3/FBI pages.',
+      'Stop and verify domain/contact authenticity.',
+      'Cross-check through official IC3/FBI pages.',
       'Report impersonation attempt immediately.',
     ],
     sourceLabel: 'FBI: scammers impersonating IC3',
     sourceUrl: 'https://www.fbi.gov/investigate/cyber/alerts/2025/fbi-warns-of-scammers-impersonating-the-ic3',
-  },
-  {
-    id: 'ic3-spoof',
-    name: 'Spoofed IC3 websites',
-    signal: 'Site looks official but URL is not exact ic3.gov',
-    pattern:
-      'FBI warned actors were spoofing IC3 properties to harvest identity and financial information.',
-    latest: 'FBI PSA I-091925-PSA (September 19, 2025)',
-    impact: 'Identity theft + account compromise',
-    actionWindow: 'Immediately on domain mismatch',
-    defense: [
-      'Type known government URLs manually; do not trust redirects.',
-      'Validate the full domain before form submission.',
-      'Avoid uploading SSN, account credentials, or ID documents to unverified pages.',
-    ],
-    drill: [
-      'Check exact domain and TLS lock details.',
-      'Compare against bookmarked official source.',
-      'Abort and report lookalike page.',
-    ],
-    sourceLabel: 'FBI: threat actors spoofing IC3',
-    sourceUrl:
-      'https://www.fbi.gov/investigate/cyber/alerts/2025/threat-actors-spoofing-the-fbi-ic3-website-for-possible-malicious-activity',
   },
 ];
 
@@ -149,7 +149,7 @@ export default function ThreatsPage() {
         </div>
       </section>
 
-      <section className="border-y border-white/10 bg-[#0b141a]/55 py-12">
+      <section className="border-y border-white/10 bg-white/[0.03] py-12">
         <div className="mx-auto grid max-w-7xl gap-6 px-6 lg:grid-cols-[0.95fr,1.2fr]">
           <div className="space-y-2">
             <p className="font-ui-mono text-xs uppercase tracking-[0.2em] text-white/55">Choose threat pattern</p>
@@ -188,15 +188,15 @@ export default function ThreatsPage() {
               </p>
 
               <div className="mt-4 grid gap-3 sm:grid-cols-3">
-                <div className="rounded-lg border border-white/12 bg-black/25 px-3 py-2">
+                <div className="rounded-lg border border-white/12 bg-white/[0.06] px-3 py-2">
                   <p className="text-xs text-white/58">Latest advisory</p>
                   <p className="mt-1 text-sm text-white/88">{scenario.latest}</p>
                 </div>
-                <div className="rounded-lg border border-white/12 bg-black/25 px-3 py-2">
+                <div className="rounded-lg border border-white/12 bg-white/[0.06] px-3 py-2">
                   <p className="text-xs text-white/58">Impact</p>
                   <p className="mt-1 text-sm text-white/88">{scenario.impact}</p>
                 </div>
-                <div className="rounded-lg border border-white/12 bg-black/25 px-3 py-2">
+                <div className="rounded-lg border border-white/12 bg-white/[0.06] px-3 py-2">
                   <p className="text-xs text-white/58">Action window</p>
                   <p className="mt-1 text-sm text-white/88">{scenario.actionWindow}</p>
                 </div>
@@ -207,7 +207,7 @@ export default function ThreatsPage() {
                   <p className="font-ui-mono text-xs uppercase tracking-[0.16em] text-white/55">Immediate actions</p>
                   <ul className="mt-2 space-y-2">
                     {scenario.defense.map((item) => (
-                      <li key={item} className="rounded-lg border border-white/12 bg-black/25 px-3 py-2 text-sm text-white/78">
+                      <li key={item} className="rounded-lg border border-white/12 bg-white/[0.06] px-3 py-2 text-sm text-white/78">
                         {item}
                       </li>
                     ))}
@@ -217,7 +217,7 @@ export default function ThreatsPage() {
                   <p className="font-ui-mono text-xs uppercase tracking-[0.16em] text-white/55">30-second drill</p>
                   <ol className="mt-2 space-y-2">
                     {scenario.drill.map((item, index) => (
-                      <li key={item} className="rounded-lg border border-white/12 bg-black/25 px-3 py-2 text-sm text-white/78">
+                      <li key={item} className="rounded-lg border border-white/12 bg-white/[0.06] px-3 py-2 text-sm text-white/78">
                         {index + 1}. {item}
                       </li>
                     ))}

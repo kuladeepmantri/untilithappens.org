@@ -50,8 +50,8 @@ export function Navigation() {
         className={cn(
           'fixed inset-x-0 top-0 z-[100] border-b transition-all duration-300',
           isScrolled
-            ? 'border-white/10 bg-[#08141a]/88 backdrop-blur-xl'
-            : 'border-transparent bg-gradient-to-b from-[#08141a]/72 to-transparent'
+            ? 'border-white/14 bg-[#123142]/82 backdrop-blur-xl'
+            : 'border-transparent bg-gradient-to-b from-[#0f2a39]/72 to-transparent'
         )}
       >
         <div className="mx-auto flex h-20 max-w-7xl items-center justify-between px-6">
@@ -69,14 +69,14 @@ export function Navigation() {
                   isActive(item.href) ? 'text-white' : 'text-white/70 hover:text-white'
                 )}
               >
-                  <span>{item.label}</span>
+                <span>{item.label}</span>
                 <span
                   className={cn(
                     'absolute -bottom-1 left-0 h-[1px] w-full origin-left scale-x-0 bg-gradient-to-r from-[#76c6bb] to-[#d7ab73] transition-transform duration-300',
                     isActive(item.href) && 'scale-x-100'
                   )}
                 />
-                <span className="pointer-events-none absolute left-1/2 top-full mt-2 hidden w-max -translate-x-1/2 rounded-md border border-white/10 bg-black/70 px-2 py-1 text-xs text-white/70 group-hover:block">
+                <span className="pointer-events-none absolute left-1/2 top-full mt-2 hidden w-max -translate-x-1/2 rounded-md border border-white/12 bg-[#1a3f52]/90 px-2 py-1 text-xs text-white/75 group-hover:block">
                   {item.description}
                 </span>
               </Link>
@@ -138,14 +138,14 @@ export function Navigation() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[95] bg-black/55 backdrop-blur-lg lg:hidden"
+            className="fixed inset-0 z-[95] overflow-hidden bg-[#164256]/55 backdrop-blur-lg lg:hidden"
           >
             <motion.div
               initial={{ x: '100%' }}
               animate={{ x: 0 }}
               exit={{ x: '100%' }}
               transition={{ type: 'spring', stiffness: 280, damping: 28 }}
-              className="absolute inset-0 h-[100dvh] w-full overflow-y-auto bg-[#09161cf5] px-5 pb-[calc(env(safe-area-inset-bottom)+1.5rem)] pt-24"
+              className="absolute inset-y-0 right-0 h-[100svh] w-full overflow-y-auto bg-[#102531f2] px-5 pb-[calc(env(safe-area-inset-bottom)+1.75rem)] pt-[calc(env(safe-area-inset-top)+5.5rem)]"
             >
               <div className="mx-auto max-w-xl space-y-3">
                 {siteNavItems.map((item) => (

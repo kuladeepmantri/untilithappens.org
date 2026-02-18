@@ -185,6 +185,7 @@ function detectPlatformId(): string | null {
 export default function ProtectPage() {
   const [active, setActive] = useState(guides[0].id);
   const [detectedId, setDetectedId] = useState<string | null>(null);
+  const [detecting, setDetecting] = useState(true);
 
   useEffect(() => {
     const detected = detectPlatformId();
@@ -192,11 +193,16 @@ export default function ProtectPage() {
       setDetectedId(detected);
       setActive(detected);
     }
+    setDetecting(false);
   }, []);
 
   const currentGuide = useMemo(
     () => guides.find((guide) => guide.id === active) ?? guides[0],
     [active]
+  );
+  const detectedGuide = useMemo(
+    () => guides.find((guide) => guide.id === detectedId) ?? null,
+    [detectedId]
   );
 
   return (
@@ -212,21 +218,28 @@ export default function ProtectPage() {
         <p className="mt-5 max-w-3xl text-lg text-white/77">
           We auto-select a recommended playbook from your current device. Finish one platform fully before switching.
         </p>
+        <p className="mt-3 text-sm text-white/70">
+          {detecting
+            ? 'Detecting your platform from browser metadata...'
+            : detectedGuide
+              ? `Detected platform: ${detectedGuide.platform}. You can switch manually below.`
+              : 'Could not auto-detect your platform. Select one manually below.'}
+        </p>
       </section>
 
       <section className="mx-auto max-w-7xl px-6 pb-10">
         <div className="story-card panel-gradient p-6">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <p className="font-ui-mono text-xs uppercase tracking-[0.2em] text-white/55">Universal baseline</p>
-            {detectedId && (
+            {detectedGuide && (
               <p className="rounded-full border border-[#86d8ca]/60 bg-[#86d8ca]/12 px-3 py-1 text-xs text-white/85">
-                Recommended for this device: {guides.find((item) => item.id === detectedId)?.platform}
+                Recommended now: {detectedGuide.platform}
               </p>
             )}
           </div>
           <div className="mt-4 grid gap-3 md:grid-cols-3">
             {baseline.map((item) => (
-              <p key={item} className="rounded-lg border border-white/10 bg-black/25 px-3 py-3 text-sm text-white/77">
+              <p key={item} className="rounded-lg border border-white/10 bg-white/[0.06] px-3 py-3 text-sm text-white/77">
                 {item}
               </p>
             ))}
@@ -234,7 +247,7 @@ export default function ProtectPage() {
         </div>
       </section>
 
-      <section className="border-y border-white/10 bg-[#0b141a]/55 py-10">
+      <section className="border-y border-white/10 bg-white/[0.03] py-10">
         <div className="mx-auto max-w-7xl px-6">
           <p className="font-ui-mono text-xs uppercase tracking-[0.2em] text-white/55">Select platform</p>
           <div className="mt-4 flex flex-wrap gap-2">
@@ -262,81 +275,84 @@ export default function ProtectPage() {
 
       <section className="mx-auto max-w-7xl px-6 py-12">
         <AnimatePresence mode="wait">
-          <motion.article
+          <motion.div
             key={currentGuide.id}
             initial={{ opacity: 0, y: 18 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -18 }}
             transition={{ duration: 0.25 }}
-            className="story-card p-6 md:p-8"
+            className="space-y-6"
           >
-            <h2 className="text-3xl font-semibold text-white">{currentGuide.platform}</h2>
-            <p className="mt-3 max-w-3xl text-sm text-white/74">{currentGuide.summary}</p>
+            <section className="story-card p-6 md:p-8">
+              <h2 className="text-3xl font-semibold text-white">{currentGuide.platform}</h2>
+              <p className="mt-3 max-w-3xl text-sm text-white/74">{currentGuide.summary}</p>
 
-            <div className="mt-4 grid gap-3 sm:grid-cols-3">
-              <div className="rounded-lg border border-white/10 bg-black/25 px-3 py-2">
-                <p className="text-xs text-white/58">Estimated setup time</p>
-                <p className="mt-1 text-sm text-white/90">{currentGuide.setupTime}</p>
+              <div className="mt-4 grid gap-3 sm:grid-cols-3">
+                <div className="rounded-lg border border-white/10 bg-white/[0.06] px-3 py-2">
+                  <p className="text-xs text-white/58">Estimated setup time</p>
+                  <p className="mt-1 text-sm text-white/90">{currentGuide.setupTime}</p>
+                </div>
+                <div className="rounded-lg border border-white/10 bg-white/[0.06] px-3 py-2">
+                  <p className="text-xs text-white/58">Expected impact</p>
+                  <p className="mt-1 text-sm text-white/90">{currentGuide.riskCut}</p>
+                </div>
+                <div className="rounded-lg border border-white/10 bg-white/[0.06] px-3 py-2">
+                  <p className="text-xs text-white/58">Verification points</p>
+                  <p className="mt-1 text-sm text-white/90">{currentGuide.checks}</p>
+                </div>
               </div>
-              <div className="rounded-lg border border-white/10 bg-black/25 px-3 py-2">
-                <p className="text-xs text-white/58">Expected impact</p>
-                <p className="mt-1 text-sm text-white/90">{currentGuide.riskCut}</p>
-              </div>
-              <div className="rounded-lg border border-white/10 bg-black/25 px-3 py-2">
-                <p className="text-xs text-white/58">Verification points</p>
-                <p className="mt-1 text-sm text-white/90">{currentGuide.checks}</p>
-              </div>
-            </div>
+            </section>
 
-            <div className="mt-6 grid gap-4 md:grid-cols-3">
-              <div>
-                <p className="font-ui-mono text-xs uppercase tracking-[0.16em] text-white/55">Step 1: Essentials</p>
-                <ul className="mt-2 space-y-2">
-                  {currentGuide.essentials.map((item) => (
-                    <li key={item} className="rounded-lg border border-white/10 bg-black/25 px-3 py-2 text-sm text-white/77">
-                      {item}
-                    </li>
-                  ))}
-                </ul>
-              </div>
+            <section className="story-card p-6 md:p-8">
+              <p className="font-ui-mono text-xs uppercase tracking-[0.16em] text-white/55">Step 1</p>
+              <h3 className="mt-2 text-2xl font-semibold text-white">Essentials first</h3>
+              <ul className="mt-3 space-y-2">
+                {currentGuide.essentials.map((item) => (
+                  <li key={item} className="rounded-lg border border-white/10 bg-white/[0.06] px-3 py-2 text-sm text-white/77">
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            </section>
 
-              <div>
-                <p className="font-ui-mono text-xs uppercase tracking-[0.16em] text-white/55">Step 2: Hardening</p>
-                <ul className="mt-2 space-y-2">
-                  {currentGuide.hardening.map((item) => (
-                    <li key={item} className="rounded-lg border border-white/10 bg-black/25 px-3 py-2 text-sm text-white/77">
-                      {item}
-                    </li>
-                  ))}
-                </ul>
-              </div>
+            <section className="story-card p-6 md:p-8">
+              <p className="font-ui-mono text-xs uppercase tracking-[0.16em] text-white/55">Step 2</p>
+              <h3 className="mt-2 text-2xl font-semibold text-white">Hardening controls</h3>
+              <ul className="mt-3 space-y-2">
+                {currentGuide.hardening.map((item) => (
+                  <li key={item} className="rounded-lg border border-white/10 bg-white/[0.06] px-3 py-2 text-sm text-white/77">
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            </section>
 
-              <div>
-                <p className="font-ui-mono text-xs uppercase tracking-[0.16em] text-white/55">Step 3: Recovery</p>
-                <ul className="mt-2 space-y-2">
-                  {currentGuide.recovery.map((item) => (
-                    <li key={item} className="rounded-lg border border-white/10 bg-black/25 px-3 py-2 text-sm text-white/77">
-                      {item}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </div>
+            <section className="story-card p-6 md:p-8">
+              <p className="font-ui-mono text-xs uppercase tracking-[0.16em] text-white/55">Step 3</p>
+              <h3 className="mt-2 text-2xl font-semibold text-white">Recovery readiness</h3>
+              <ul className="mt-3 space-y-2">
+                {currentGuide.recovery.map((item) => (
+                  <li key={item} className="rounded-lg border border-white/10 bg-white/[0.06] px-3 py-2 text-sm text-white/77">
+                    {item}
+                  </li>
+                ))}
+              </ul>
 
-            <div className="mt-6 flex flex-wrap gap-2">
-              {currentGuide.links.map((link) => (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="rounded-md border border-white/20 px-3 py-2 text-xs text-white/75 transition hover:border-white/35 hover:text-white"
-                >
-                  {link.label}
-                </Link>
-              ))}
-            </div>
-          </motion.article>
+              <div className="mt-6 flex flex-wrap gap-2">
+                {currentGuide.links.map((link) => (
+                  <Link
+                    key={link.href}
+                    href={link.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="rounded-md border border-white/20 px-3 py-2 text-xs text-white/75 transition hover:border-white/35 hover:text-white"
+                  >
+                    {link.label}
+                  </Link>
+                ))}
+              </div>
+            </section>
+          </motion.div>
         </AnimatePresence>
       </section>
 

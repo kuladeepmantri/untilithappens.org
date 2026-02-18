@@ -1,80 +1,70 @@
 'use client';
 
 import Link from 'next/link';
-import { usePathname, useRouter } from 'next/navigation';
-import { AnimatePresence, motion } from 'framer-motion';
+import { usePathname } from 'next/navigation';
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { ArrowRight, ChevronLeft, Sparkles, X } from 'lucide-react';
 import * as THREE from 'three';
 import { guideJourney } from '@/lib/site-data';
-import { cn } from '@/lib/utils';
 
-type JourneyNodeMesh = THREE.Mesh<
-  THREE.IcosahedronGeometry,
-  THREE.MeshStandardMaterial
-> & { userData: { href: string } };
+function normalizePath(path: string): string {
+  let normalized = path || '/';
+  const configuredBasePath = '/untilithappens.org';
 
-type HaloMesh = THREE.Mesh<
-  THREE.TorusGeometry,
-  THREE.MeshBasicMaterial
->;
+  if (normalized.startsWith(configuredBasePath)) {
+    normalized = normalized.slice(configuredBasePath.length) || '/';
+  }
 
-type FlowOrb = {
-  mesh: THREE.Mesh<THREE.SphereGeometry, THREE.MeshStandardMaterial>;
-  offset: number;
-  speed: number;
-};
+  if (normalized.length > 1 && normalized.endsWith('/')) {
+    normalized = normalized.slice(0, -1);
+  }
+
+  return normalized;
+}
+
+function resolveStepIndex(pathname: string): number {
+  const normalized = normalizePath(pathname);
+
+  const exact = guideJourney.findIndex((step) => step.href === normalized);
+  if (exact !== -1) {
+    return exact;
+  }
+
+  return guideJourney.findIndex((step) => {
+    if (step.href === '/') {
+      return false;
+    }
+    return normalized.startsWith(`${step.href}/`);
+  });
+}
 
 export function GuideFlow() {
   const pathname = usePathname();
-  const router = useRouter();
-  const currentIndex = guideJourney.findIndex((step) => step.href === pathname);
-
-  const [isOpen, setIsOpen] = useState(false);
-  const [isMobile, setIsMobile] = useState(false);
-  const [renderError, setRenderError] = useState(false);
+  const currentIndex = useMemo(() => resolveStepIndex(pathname), [pathname]);
+  const [focusIndex, setFocusIndex] = useState<number | null>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const nodeButtonRefs = useRef<Array<HTMLButtonElement | null>>([]);
 
-  const progress = (currentIndex / Math.max(guideJourney.length - 1, 1)) * 100;
-  const previous = currentIndex > 0 ? guideJourney[currentIndex - 1] : null;
-  const next = currentIndex < guideJourney.length - 1 ? guideJourney[currentIndex + 1] : null;
+  const points = useMemo(() => {
+    const spread = 2.2;
+    const offset = (guideJourney.length - 1) / 2;
+    const denominator = Math.max(guideJourney.length - 1, 1);
+    return guideJourney.map((step, index) => {
+      const t = index / denominator;
+      const x = (index - offset) * spread;
+      const y = Math.sin(t * Math.PI) * 1.2 - 0.45;
+      const z = Math.cos(index * 0.52) * 0.42;
 
-  useEffect(() => {
-    const query = window.matchMedia('(max-width: 1023px)');
-    const sync = () => setIsMobile(query.matches);
-    sync();
-    query.addEventListener('change', sync);
-    return () => query.removeEventListener('change', sync);
+      if (step.href === '/' || step.href === '/community') {
+        return new THREE.Vector3(x, y + 0.2, z);
+      }
+
+      return new THREE.Vector3(x, y, z);
+    });
   }, []);
 
   useEffect(() => {
-    document.body.style.overflow = isOpen ? 'hidden' : '';
-    return () => {
-      document.body.style.overflow = '';
-    };
-  }, [isOpen]);
-
-  const points = useMemo(() => {
-    const spread = isMobile ? 2.15 : 2.75;
-    const vertical = isMobile ? 1.06 : 1.35;
-    const depth = isMobile ? 0.92 : 1.18;
-    const offset = (guideJourney.length - 1) / 2;
-
-    return guideJourney.map((_, index) => {
-      const x = (index - offset) * spread;
-      const y = Math.sin(index * 0.73) * vertical;
-      const z = Math.cos(index * 0.48) * depth;
-      return new THREE.Vector3(x, y, z);
-    });
-  }, [isMobile]);
-
-  useEffect(() => {
-    if (!isOpen || !canvasRef.current || currentIndex === -1) {
+    if (!canvasRef.current || currentIndex === -1) {
       return;
     }
-
-    setRenderError(false);
 
     const canvas = canvasRef.current;
     const container = canvas.parentElement;
@@ -83,167 +73,121 @@ export function GuideFlow() {
     }
 
     const scene = new THREE.Scene();
-    scene.fog = new THREE.Fog(0x050d12, 18, 56);
+    const camera = new THREE.PerspectiveCamera(44, 1, 0.1, 100);
+    camera.position.set(0, 1.8, 15);
 
-    const camera = new THREE.PerspectiveCamera(isMobile ? 52 : 42, 1, 0.1, 100);
-    camera.position.set(0, 1.75, isMobile ? 18 : 20);
-
-    let renderer: THREE.WebGLRenderer;
-    try {
-      renderer = new THREE.WebGLRenderer({
-        canvas,
-        alpha: true,
-        antialias: true,
-        powerPreference: 'high-performance',
-      });
-    } catch {
-      setRenderError(true);
-      return;
-    }
-
+    const renderer = new THREE.WebGLRenderer({
+      canvas,
+      alpha: true,
+      antialias: true,
+      powerPreference: 'high-performance',
+    });
     renderer.setClearColor(0x000000, 0);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, isMobile ? 1.6 : 2));
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
-    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    const hasNext = currentIndex < guideJourney.length - 1;
-    const fromT = currentIndex / Math.max(guideJourney.length - 1, 1);
-    const toT = hasNext
-      ? (currentIndex + 1) / Math.max(guideJourney.length - 1, 1)
-      : Math.min(0.99, fromT + 0.08);
+    const ambient = new THREE.AmbientLight(0xffffff, 0.72);
+    const key = new THREE.PointLight(0x83d4c5, 1.2, 70);
+    key.position.set(-8, 8, 8);
+    const fill = new THREE.PointLight(0xd7ab73, 1, 70);
+    fill.position.set(8, -4, 8);
+    scene.add(ambient, key, fill);
 
-    const ambient = new THREE.AmbientLight(0xffffff, 0.6);
-    const topLight = new THREE.PointLight(0x8ec9bc, 1.45, 85);
-    topLight.position.set(-10, 10, 12);
-    const warmLight = new THREE.PointLight(0xd7ab73, 1.1, 90);
-    warmLight.position.set(12, -4, 10);
-    scene.add(ambient, topLight, warmLight);
-
-    const curve = new THREE.CatmullRomCurve3(points, false, 'catmullrom', 0.38);
-
-    const tubeGeometry = new THREE.TubeGeometry(curve, 380, isMobile ? 0.08 : 0.07, 14, false);
+    const curve = new THREE.CatmullRomCurve3(points, false, 'catmullrom', 0.4);
+    const tubeGeometry = new THREE.TubeGeometry(curve, 360, 0.06, 12, false);
     const tubeMaterial = new THREE.MeshStandardMaterial({
-      color: 0x4f7f8d,
-      emissive: 0x264651,
-      emissiveIntensity: 0.44,
-      roughness: 0.44,
-      metalness: 0.22,
+      color: 0x76c6bb,
+      emissive: 0x2e5a63,
+      emissiveIntensity: 0.3,
+      roughness: 0.4,
+      metalness: 0.25,
       transparent: true,
-      opacity: 0.74,
+      opacity: 0.72,
     });
     const tube = new THREE.Mesh(tubeGeometry, tubeMaterial);
     scene.add(tube);
 
-    const completedPoints = curve.getPoints(Math.max(2, Math.floor((progress / 100) * 380)));
-    const completedGeometry = new THREE.BufferGeometry().setFromPoints(completedPoints);
-    const completedMaterial = new THREE.LineBasicMaterial({
+    const targetIndex = focusIndex ?? currentIndex;
+    const progress = targetIndex / Math.max(guideJourney.length - 1, 1);
+    const activePoints = curve.getPoints(Math.max(2, Math.floor(progress * 360) + 1));
+    const activeGeometry = new THREE.BufferGeometry().setFromPoints(activePoints);
+    const activeMaterial = new THREE.LineBasicMaterial({
       color: 0xd7ab73,
       transparent: true,
-      opacity: 0.95,
+      opacity: 0.94,
     });
-    const completedLine = new THREE.Line(completedGeometry, completedMaterial);
-    scene.add(completedLine);
+    const activeLine = new THREE.Line(activeGeometry, activeMaterial);
+    scene.add(activeLine);
 
-    const dustGeometry = new THREE.BufferGeometry();
-    const dustCount = isMobile ? 140 : 220;
-    const dustPositions = new Float32Array(dustCount * 3);
-    for (let index = 0; index < dustCount; index += 1) {
-      dustPositions[index * 3] = (Math.random() - 0.5) * 46;
-      dustPositions[index * 3 + 1] = (Math.random() - 0.5) * 16;
-      dustPositions[index * 3 + 2] = -7 - Math.random() * 14;
-    }
-    dustGeometry.setAttribute('position', new THREE.BufferAttribute(dustPositions, 3));
-    const dustMaterial = new THREE.PointsMaterial({
-      color: 0x90b8c2,
-      size: isMobile ? 0.06 : 0.05,
-      transparent: true,
-      opacity: 0.44,
-    });
-    const dust = new THREE.Points(dustGeometry, dustMaterial);
-    scene.add(dust);
-
-    const nodeMeshes: JourneyNodeMesh[] = [];
-    const halos: HaloMesh[] = [];
-
+    const nodes: Array<THREE.Mesh<THREE.SphereGeometry, THREE.MeshStandardMaterial>> = [];
+    const rings: Array<THREE.Mesh<THREE.TorusGeometry, THREE.MeshStandardMaterial>> = [];
     points.forEach((point, index) => {
       const done = index < currentIndex;
       const current = index === currentIndex;
-      const color = done ? 0xd7ab73 : current ? 0x9ee0d1 : 0x5d7681;
-
-      const nodeGeometry = new THREE.IcosahedronGeometry(current ? 0.27 : 0.22, 1);
-      const nodeMaterial = new THREE.MeshStandardMaterial({
+      const preview = index === targetIndex;
+      const color = done ? 0xd7ab73 : current ? 0xa2e6d7 : preview ? 0xe8debd : 0x5a7f8b;
+      const geometry = new THREE.SphereGeometry(current ? 0.18 : 0.14, 16, 16);
+      const material = new THREE.MeshStandardMaterial({
         color,
         emissive: color,
-        emissiveIntensity: current ? 0.76 : done ? 0.38 : 0.16,
+        emissiveIntensity: current ? 0.8 : done ? 0.3 : preview ? 0.42 : 0.14,
         roughness: 0.28,
-        metalness: 0.3,
+        metalness: 0.2,
       });
-      const node = new THREE.Mesh(nodeGeometry, nodeMaterial) as JourneyNodeMesh;
+      const node = new THREE.Mesh(geometry, material);
       node.position.copy(point);
-      node.userData.href = guideJourney[index].href;
       scene.add(node);
-      nodeMeshes.push(node);
+      nodes.push(node);
 
-      const haloGeometry = new THREE.TorusGeometry(current ? 0.4 : 0.33, 0.012, 16, 60);
-      const haloMaterial = new THREE.MeshBasicMaterial({
-        color,
-        transparent: true,
-        opacity: current ? 0.95 : 0.6,
+      const ringGeometry = new THREE.TorusGeometry(current ? 0.3 : 0.26, 0.015, 10, 24);
+      const ringMaterial = new THREE.MeshStandardMaterial({
+        color: current ? 0xa2e6d7 : done ? 0xd7ab73 : preview ? 0xe8debd : 0x648995,
+        emissive: current ? 0x86d8ca : done ? 0xd7ab73 : 0x4c6870,
+        emissiveIntensity: current ? 0.65 : done ? 0.24 : preview ? 0.34 : 0.14,
+        roughness: 0.3,
+        metalness: 0.2,
       });
-      const halo = new THREE.Mesh(haloGeometry, haloMaterial);
-      halo.position.copy(point);
-      halo.rotation.x = Math.PI / 2;
-      scene.add(halo);
-      halos.push(halo);
+      const ring = new THREE.Mesh(ringGeometry, ringMaterial);
+      ring.position.copy(point);
+      ring.rotation.x = Math.PI / 2;
+      scene.add(ring);
+      rings.push(ring);
     });
 
-    const markerGeometry = new THREE.SphereGeometry(0.14, 18, 18);
+    const markerGeometry = new THREE.SphereGeometry(0.11, 14, 14);
     const markerMaterial = new THREE.MeshStandardMaterial({
       color: 0xffe7c7,
       emissive: 0xd7ab73,
-      emissiveIntensity: 0.82,
+      emissiveIntensity: 0.8,
       roughness: 0.12,
-      metalness: 0.2,
+      metalness: 0.18,
     });
     const marker = new THREE.Mesh(markerGeometry, markerMaterial);
     scene.add(marker);
 
-    const flowOrbGeometry = new THREE.SphereGeometry(0.06, 10, 10);
-    const flowOrbs: FlowOrb[] = [];
-    const orbCount = isMobile ? 16 : 24;
-
-    for (let index = 0; index < orbCount; index += 1) {
-      const material = new THREE.MeshStandardMaterial({
-        color: index % 2 === 0 ? 0xbcefe0 : 0xd7ab73,
-        emissive: index % 2 === 0 ? 0x76c6bb : 0xd7ab73,
-        emissiveIntensity: 0.45,
-        roughness: 0.22,
-        metalness: 0.12,
-      });
-      const mesh = new THREE.Mesh(flowOrbGeometry, material);
-      scene.add(mesh);
-      flowOrbs.push({
-        mesh,
-        offset: index / orbCount,
-        speed: 0.045 + Math.random() * 0.03,
-      });
+    const particlesGeometry = new THREE.BufferGeometry();
+    const particleCount = 120;
+    const particlePositions = new Float32Array(particleCount * 3);
+    for (let index = 0; index < particleCount; index += 1) {
+      particlePositions[index * 3] = (Math.random() - 0.5) * 34;
+      particlePositions[index * 3 + 1] = (Math.random() - 0.5) * 8;
+      particlePositions[index * 3 + 2] = -4 - Math.random() * 8;
     }
+    particlesGeometry.setAttribute('position', new THREE.BufferAttribute(particlePositions, 3));
+    const particlesMaterial = new THREE.PointsMaterial({
+      color: 0xa7c7ce,
+      size: 0.05,
+      transparent: true,
+      opacity: 0.4,
+    });
+    const particles = new THREE.Points(particlesGeometry, particlesMaterial);
+    scene.add(particles);
 
-    const cameraDrift = { x: 0, y: 0 };
-    const cameraTarget = { x: 0, y: 0 };
-    const projected = new THREE.Vector3();
-
-    const onPointerMove = (event: PointerEvent) => {
-      const rect = container.getBoundingClientRect();
-      const x = (event.clientX - rect.left) / rect.width;
-      const y = (event.clientY - rect.top) / rect.height;
-      cameraTarget.x = (x - 0.5) * (isMobile ? 0.4 : 0.8);
-      cameraTarget.y = (0.5 - y) * (isMobile ? 0.25 : 0.5);
-    };
-
-    const onPointerLeave = () => {
-      cameraTarget.x = 0;
-      cameraTarget.y = 0;
-    };
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const fromT = currentIndex / Math.max(guideJourney.length - 1, 1);
+    const targetT = targetIndex / Math.max(guideJourney.length - 1, 1);
+    const startT = Math.min(fromT, targetT);
+    const endT = Math.max(fromT, targetT);
+    const hasSpan = Math.abs(endT - startT) > 0.002;
 
     const resize = () => {
       const width = container.clientWidth;
@@ -255,65 +199,34 @@ export function GuideFlow() {
 
     resize();
     window.addEventListener('resize', resize);
-    container.addEventListener('pointermove', onPointerMove);
-    container.addEventListener('pointerleave', onPointerLeave);
 
     let raf = 0;
     let tick = 0;
-    const tempPoint = new THREE.Vector3();
 
     const animate = () => {
-      tick += reducedMotion ? 0.0025 : 0.0085;
+      tick += reducedMotion ? 0.002 : 0.008;
 
       const markerT = reducedMotion
         ? fromT
-        : fromT + (Math.sin(tick * 2.2) * 0.5 + 0.5) * (toT - fromT);
+        : hasSpan
+          ? startT + (Math.sin(tick * 2.1) * 0.5 + 0.5) * (endT - startT)
+          : Math.min(0.99, fromT + (Math.sin(tick * 2.1) * 0.5 + 0.5) * 0.08);
       curve.getPointAt(Math.min(0.99, markerT), marker.position);
 
-      cameraDrift.x += (cameraTarget.x - cameraDrift.x) * 0.06;
-      cameraDrift.y += (cameraTarget.y - cameraDrift.y) * 0.06;
+      camera.position.x = Math.sin(tick * 0.25) * 0.35;
+      camera.position.y = 1.7 + Math.cos(tick * 0.22) * 0.12;
+      camera.lookAt(0, 0.15, 0);
 
-      const orbitRadius = reducedMotion ? 0.2 : isMobile ? 0.9 : 1.35;
-      camera.position.x = Math.sin(tick * 0.44) * orbitRadius + cameraDrift.x;
-      camera.position.y = 1.7 + Math.cos(tick * 0.31) * (reducedMotion ? 0.08 : 0.34) + cameraDrift.y;
-      camera.lookAt(0, 0, 0);
-
-      dust.rotation.y += reducedMotion ? 0.0001 : 0.00045;
-
-      halos.forEach((halo, index) => {
-        const pulse = index === currentIndex
-          ? 1 + Math.sin(tick * 4.2) * 0.14
-          : 1 + Math.sin(tick * 2 + index) * 0.03;
-        halo.scale.setScalar(pulse);
-        halo.rotation.z += reducedMotion ? 0.0015 : 0.0065;
-      });
-
-      nodeMeshes.forEach((node, index) => {
-        const pulse = index === currentIndex ? 1 + Math.sin(tick * 4.2) * 0.1 : 1;
+      nodes.forEach((node, index) => {
+        const pulse = index === currentIndex ? 1 + Math.sin(tick * 4) * 0.08 : index === targetIndex ? 1.04 : 1;
         node.scale.setScalar(pulse);
       });
-
-      flowOrbs.forEach((orb, index) => {
-        const t = (orb.offset + tick * orb.speed) % 1;
-        curve.getPointAt(t, tempPoint);
-        orb.mesh.position.copy(tempPoint);
-        orb.mesh.material.emissiveIntensity = 0.35 + Math.sin((tick + index) * 4.8) * 0.2;
+      rings.forEach((ring, index) => {
+        const pulse = index === currentIndex ? 1 + Math.sin(tick * 3.2) * 0.08 : index === targetIndex ? 1.06 : 1;
+        ring.scale.setScalar(pulse);
       });
 
-      nodeMeshes.forEach((node, index) => {
-        const stepButton = nodeButtonRefs.current[index];
-        if (!stepButton) {
-          return;
-        }
-
-        projected.copy(node.position).project(camera);
-        const x = (projected.x * 0.5 + 0.5) * container.clientWidth;
-        const y = (-projected.y * 0.5 + 0.5) * container.clientHeight;
-
-        stepButton.style.transform = `translate(${x}px, ${y}px) translate(-50%, -50%)`;
-        const visible = projected.z > -1 && projected.z < 1;
-        stepButton.style.opacity = visible ? '1' : '0';
-      });
+      particles.rotation.y += reducedMotion ? 0.0001 : 0.0004;
 
       renderer.render(scene, camera);
       raf = window.requestAnimationFrame(animate);
@@ -324,200 +237,110 @@ export function GuideFlow() {
     return () => {
       window.cancelAnimationFrame(raf);
       window.removeEventListener('resize', resize);
-      container.removeEventListener('pointermove', onPointerMove);
-      container.removeEventListener('pointerleave', onPointerLeave);
 
-      flowOrbGeometry.dispose();
-      flowOrbs.forEach((orb) => orb.mesh.material.dispose());
       markerGeometry.dispose();
       markerMaterial.dispose();
       tubeGeometry.dispose();
       tubeMaterial.dispose();
-      completedGeometry.dispose();
-      completedMaterial.dispose();
-      dustGeometry.dispose();
-      dustMaterial.dispose();
-
-      nodeMeshes.forEach((node) => {
+      activeGeometry.dispose();
+      activeMaterial.dispose();
+      particlesGeometry.dispose();
+      particlesMaterial.dispose();
+      nodes.forEach((node) => {
         node.geometry.dispose();
         node.material.dispose();
       });
-
-      halos.forEach((halo) => {
-        halo.geometry.dispose();
-        halo.material.dispose();
+      rings.forEach((ring) => {
+        ring.geometry.dispose();
+        ring.material.dispose();
       });
 
       renderer.dispose();
     };
-  }, [currentIndex, isMobile, isOpen, points, progress]);
+  }, [currentIndex, focusIndex, points]);
 
   if (currentIndex === -1) {
     return null;
   }
 
+  const previous = currentIndex > 0 ? guideJourney[currentIndex - 1] : null;
+  const next = currentIndex < guideJourney.length - 1 ? guideJourney[currentIndex + 1] : null;
+
   return (
-    <>
-      <div className="pointer-events-none fixed bottom-4 right-4 z-[90] flex max-w-[92vw] flex-col items-end gap-2">
-        <div className="pointer-events-auto rounded-xl border border-white/15 bg-[#08131acc] px-3 py-2 text-xs text-white/75 shadow-[0_12px_45px_rgba(2,8,10,0.45)] backdrop-blur-xl">
-          Step {currentIndex + 1}/{guideJourney.length}
+    <section className="relative border-t border-[#8ebec8]/28 bg-[linear-gradient(180deg,rgba(20,57,74,0.33),rgba(27,68,88,0.26))] py-12 md:py-14">
+      <div className="mx-auto max-w-7xl px-6">
+        <div className="mb-4 flex flex-wrap items-end justify-between gap-3">
+          <div>
+            <p className="font-ui-mono text-[11px] uppercase tracking-[0.2em] text-white/55">Guided journey</p>
+            <p className="mt-1 text-sm text-white/80">
+              Step {currentIndex + 1} of {guideJourney.length}: {guideJourney[currentIndex].title}
+            </p>
+          </div>
+          <p className="max-w-md text-xs text-white/70">{guideJourney[focusIndex ?? currentIndex].intent}</p>
         </div>
 
-        <div className="pointer-events-auto flex flex-wrap items-center justify-end gap-2">
-          {previous && !isMobile && (
-            <Link
-              href={previous.href}
-              className="inline-flex items-center gap-1 rounded-lg border border-white/20 bg-[#08131acc] px-3 py-2 text-xs text-white/80 backdrop-blur-xl transition hover:bg-white/10"
-            >
-              <ChevronLeft className="h-3.5 w-3.5" />
-              {previous.short}
-            </Link>
-          )}
+        <div className="relative h-56 overflow-hidden rounded-2xl border border-[#92c3ce]/32 bg-[linear-gradient(135deg,rgba(36,92,110,0.31),rgba(112,85,54,0.24))] sm:h-64 md:h-72">
+          <canvas ref={canvasRef} className="h-full w-full" />
+          <div className="pointer-events-none absolute bottom-3 right-3 text-[11px] text-white/68">
+            route animation and progress gates
+          </div>
+        </div>
 
-          <button
-            type="button"
-            onClick={() => setIsOpen(true)}
-            className="inline-flex items-center gap-2 rounded-lg border border-[#7dd2c3]/55 bg-[#0f2328e6] px-3 py-2 text-xs font-medium text-white shadow-[0_10px_35px_rgba(3,12,14,0.45)] transition hover:border-[#a4e1d6] hover:bg-[#143139]"
-          >
-            <Sparkles className="h-3.5 w-3.5" />
-            3D Map
-          </button>
+        <div className="mt-3 flex flex-wrap gap-2 text-[11px] text-white/72">
+          <span className="rounded-full border border-[#d7ab73]/55 bg-[#d7ab73]/15 px-2 py-1">completed</span>
+          <span className="rounded-full border border-[#9ce5d7]/60 bg-[#9ce5d7]/18 px-2 py-1">current</span>
+          <span className="rounded-full border border-[#e8debd]/60 bg-[#e8debd]/18 px-2 py-1">preview</span>
+        </div>
+
+        <div className="mt-5 overflow-x-auto">
+          <div className="flex min-w-max gap-2 pb-1">
+            {guideJourney.map((step, index) => {
+              const isCurrent = index === currentIndex;
+              const isDone = index < currentIndex;
+              return (
+                <Link
+                  key={step.href}
+                  href={step.href}
+                  onMouseEnter={() => setFocusIndex(index)}
+                  onMouseLeave={() => setFocusIndex(null)}
+                  onFocus={() => setFocusIndex(index)}
+                  onBlur={() => setFocusIndex(null)}
+                  className={`rounded-full border px-3 py-2 text-xs transition ${
+                    isCurrent && focusIndex === null
+                      ? 'border-[#9ce5d7] bg-[#9ce5d7]/18 text-white'
+                      : focusIndex === index
+                        ? 'border-[#e8debd]/65 bg-[#e8debd]/20 text-white'
+                      : isDone
+                        ? 'border-[#d7ab73]/55 bg-[#d7ab73]/14 text-white/85'
+                        : 'border-white/20 text-white/70 hover:border-white/35 hover:text-white'
+                  }`}
+                >
+                  {step.short}
+                </Link>
+              );
+            })}
+          </div>
+        </div>
+
+        <div className="mt-6 flex flex-wrap items-center justify-between gap-3">
+          {previous ? (
+            <Link href={previous.href} className="text-sm text-white/78 underline underline-offset-4 hover:text-white">
+              Back: {previous.title}
+            </Link>
+          ) : (
+            <span className="text-sm text-white/45">You are at the start of the journey</span>
+          )}
 
           {next && (
             <Link
               href={next.href}
-              className="inline-flex items-center gap-1 rounded-lg bg-[#d7ab73] px-3 py-2 text-xs font-medium text-[#11191e] transition hover:bg-[#e2bc8f]"
+              className="inline-flex rounded-md bg-[#d7ab73] px-4 py-2 text-sm font-medium text-[#11191e] transition hover:bg-[#e1b988]"
             >
-              {isMobile ? 'Next' : next.short}
-              <ArrowRight className="h-3.5 w-3.5" />
+              Continue: {next.short}
             </Link>
           )}
         </div>
       </div>
-
-      <AnimatePresence>
-        {isOpen && (
-          <motion.div
-            className="fixed inset-0 z-[130] bg-[#03080be6] p-2 backdrop-blur-md sm:p-4"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-          >
-            <motion.section
-              initial={{ opacity: 0, y: 12, scale: 0.99 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: 12, scale: 0.99 }}
-              transition={{ duration: 0.22, ease: 'easeOut' }}
-              className="journey-modal mx-auto flex h-[calc(100dvh-1rem)] w-full max-w-6xl flex-col overflow-hidden rounded-2xl border border-white/15 bg-[#08131af3] sm:h-[calc(100dvh-2rem)]"
-            >
-              <header className="shrink-0 border-b border-white/10 px-4 py-3 sm:px-5 sm:py-4">
-                <div className="flex items-start justify-between gap-3">
-                  <div>
-                    <p className="font-ui-mono text-[10px] uppercase tracking-[0.22em] text-white/52">Interactive Journey</p>
-                    <h2 className="mt-2 text-lg font-semibold text-white sm:text-xl">Cinematic cybersecurity walkthrough</h2>
-                    <p className="mt-1 text-xs text-white/64 sm:text-sm">
-                      Navigate by tapping any node in 3D or selecting a step card. Current progress: {Math.round(progress)}%.
-                    </p>
-                  </div>
-
-                  <button
-                    type="button"
-                    onClick={() => setIsOpen(false)}
-                    className="rounded-lg border border-white/20 p-2 text-white/78 transition hover:bg-white/10 hover:text-white"
-                    aria-label="Close journey map"
-                  >
-                    <X className="h-4 w-4" />
-                  </button>
-                </div>
-              </header>
-
-              <div className="flex min-h-0 flex-1 flex-col gap-3 p-3 lg:grid lg:grid-cols-[1.35fr,1fr] lg:p-4">
-                <div className="story-map-surface relative h-[42dvh] min-h-[280px] overflow-hidden rounded-2xl border border-white/10 bg-black/30 lg:h-auto">
-                  {!renderError && (
-                    <canvas ref={canvasRef} className="absolute inset-0 h-full w-full touch-none" />
-                  )}
-
-                  {!renderError && (
-                    <div className="absolute inset-0">
-                      {guideJourney.map((step, index) => {
-                        const isCurrent = index === currentIndex;
-                        const isDone = index < currentIndex;
-
-                        return (
-                          <button
-                            key={`${step.href}-node`}
-                            type="button"
-                            ref={(element) => {
-                              nodeButtonRefs.current[index] = element;
-                            }}
-                            onClick={() => {
-                              setIsOpen(false);
-                              router.push(step.href);
-                            }}
-                            className={cn(
-                              'absolute left-0 top-0 h-9 rounded-full border px-3 text-[11px] font-medium shadow-[0_8px_24px_rgba(0,0,0,0.35)] transition',
-                              isCurrent && 'border-[#9fe4d6] bg-[#9fe4d6]/20 text-white',
-                              isDone && 'border-[#d7ab73] bg-[#d7ab73]/20 text-white',
-                              !isCurrent && !isDone && 'border-white/25 bg-[#0b1820]/85 text-white/85 hover:bg-[#132530]'
-                            )}
-                          >
-                            {step.short}
-                          </button>
-                        );
-                      })}
-                    </div>
-                  )}
-
-                  {renderError && (
-                    <div className="flex h-full items-center justify-center px-5 text-center text-sm text-white/72">
-                      3D acceleration is unavailable on this device. Use the step cards to continue the guided path.
-                    </div>
-                  )}
-
-                  <div className="pointer-events-none absolute bottom-3 left-3 rounded-md border border-white/15 bg-black/35 px-3 py-1 text-[11px] text-white/72">
-                    Tap a node to jump to that page
-                  </div>
-                </div>
-
-                <div className="min-h-0 overflow-y-auto rounded-2xl border border-white/10 bg-black/20 p-2">
-                  <div className="space-y-2">
-                    {guideJourney.map((step, index) => {
-                      const isCurrent = index === currentIndex;
-                      const isDone = index < currentIndex;
-                      const isNext = index === currentIndex + 1;
-
-                      return (
-                        <button
-                          key={step.href}
-                          type="button"
-                          onClick={() => {
-                            setIsOpen(false);
-                            router.push(step.href);
-                          }}
-                          className={cn(
-                            'w-full rounded-xl border px-3 py-3 text-left transition',
-                            isCurrent && 'border-[#86d8ca]/70 bg-[#86d8ca]/12 text-white',
-                            isDone && 'border-[#d7ab73]/50 bg-[#d7ab73]/10 text-white/85',
-                            !isCurrent && !isDone && 'border-white/10 bg-white/[0.03] text-white/72 hover:border-white/25 hover:text-white',
-                            isNext && 'ring-1 ring-[#d7ab73]/45'
-                          )}
-                        >
-                          <div className="flex items-center justify-between gap-2">
-                            <p className="font-ui-mono text-[10px] uppercase tracking-[0.18em]">{step.short}</p>
-                            <p className="text-[11px] text-white/58">Step {index + 1}</p>
-                          </div>
-                          <p className="mt-1 text-sm font-medium">{step.title}</p>
-                          <p className="mt-1 text-xs text-white/64">{step.intent}</p>
-                        </button>
-                      );
-                    })}
-                  </div>
-                </div>
-              </div>
-            </motion.section>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </>
+    </section>
   );
 }

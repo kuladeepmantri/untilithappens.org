@@ -60,7 +60,7 @@ export default function CommunityPage() {
             >
               <h2 className="text-2xl font-semibold text-white">{item.title}</h2>
               <p className="mt-3 text-sm text-white/74">{item.detail}</p>
-              <p className="mt-3 rounded-lg border border-white/12 bg-black/25 px-3 py-2 text-xs text-white/70">
+              <p className="mt-3 rounded-lg border border-white/12 bg-white/[0.06] px-3 py-2 text-xs text-white/70">
                 Quality target: {item.target}
               </p>
             </motion.article>
@@ -68,7 +68,7 @@ export default function CommunityPage() {
         </div>
       </section>
 
-      <section className="border-y border-white/10 bg-[#0b141a]/55 py-12">
+      <section className="border-y border-white/10 bg-white/[0.03] py-12">
         <div className="mx-auto max-w-7xl px-6">
           <h2 className="text-3xl font-semibold text-white">Contribution guardrails</h2>
           <ul className="mt-4 grid gap-3 md:grid-cols-2">

@@ -53,7 +53,7 @@ export default function GetHelpPage() {
         </div>
       </section>
 
-      <section className="border-y border-white/10 bg-[#0b141a]/55 py-12">
+      <section className="border-y border-white/10 bg-white/[0.03] py-12">
         <div className="mx-auto grid max-w-7xl gap-6 px-6 lg:grid-cols-3">
           <motion.article
             initial={{ opacity: 0, y: 16 }}
@@ -64,7 +64,7 @@ export default function GetHelpPage() {
             <h2 className="text-2xl font-semibold text-white">0-15 minutes</h2>
             <ol className="mt-4 space-y-2">
               {first15.map((item, index) => (
-                <li key={item} className="rounded-lg border border-white/12 bg-black/25 px-3 py-2 text-sm text-white/78">
+                <li key={item} className="rounded-lg border border-white/12 bg-white/[0.06] px-3 py-2 text-sm text-white/78">
                   {index + 1}. {item}
                 </li>
               ))}
@@ -81,7 +81,7 @@ export default function GetHelpPage() {
             <h2 className="text-2xl font-semibold text-white">15-60 minutes</h2>
             <ol className="mt-4 space-y-2">
               {firstHour.map((item, index) => (
-                <li key={item} className="rounded-lg border border-white/12 bg-black/25 px-3 py-2 text-sm text-white/78">
+                <li key={item} className="rounded-lg border border-white/12 bg-white/[0.06] px-3 py-2 text-sm text-white/78">
                   {index + 1}. {item}
                 </li>
               ))}
@@ -98,7 +98,7 @@ export default function GetHelpPage() {
             <h2 className="text-2xl font-semibold text-white">1-24 hours</h2>
             <ol className="mt-4 space-y-2">
               {firstDay.map((item, index) => (
-                <li key={item} className="rounded-lg border border-white/12 bg-black/25 px-3 py-2 text-sm text-white/78">
+                <li key={item} className="rounded-lg border border-white/12 bg-white/[0.06] px-3 py-2 text-sm text-white/78">
                   {index + 1}. {item}
                 </li>
               ))}
@@ -116,7 +116,7 @@ export default function GetHelpPage() {
               href={resource.href}
               target="_blank"
               rel="noopener noreferrer"
-              className="story-card p-4 transition hover:border-white/30 hover:bg-black/35"
+              className="story-card p-4 transition hover:border-white/30 hover:bg-white/[0.12]"
             >
               <p className="text-sm font-medium text-white">{resource.name}</p>
               <p className="mt-1 text-sm text-white/66">{resource.purpose}</p>

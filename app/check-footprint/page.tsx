@@ -125,7 +125,7 @@ export default function CheckFootprintPage() {
         </div>
       </section>
 
-      <section className="border-y border-white/10 bg-[#0b141a]/55 py-12">
+      <section className="border-y border-white/10 bg-white/[0.03] py-12">
         <div className="mx-auto grid max-w-7xl gap-6 px-6 lg:grid-cols-[0.95fr,1.2fr]">
           <div className="space-y-2">
             <p className="font-ui-mono text-xs uppercase tracking-[0.2em] text-white/55">Phase sequence</p>
@@ -170,7 +170,7 @@ export default function CheckFootprintPage() {
               <p className="mt-3 text-sm text-white/74">{phase.target}</p>
               <ol className="mt-4 space-y-2">
                 {phase.checklist.map((item, index) => (
-                  <li key={item} className="rounded-lg border border-white/12 bg-black/25 px-3 py-2 text-sm text-white/78">
+                  <li key={item} className="rounded-lg border border-white/12 bg-white/[0.06] px-3 py-2 text-sm text-white/78">
                     {index + 1}. {item}
                   </li>
                 ))}
@@ -209,7 +209,7 @@ export default function CheckFootprintPage() {
             value={query}
             onChange={(event) => setQuery(event.target.value)}
             placeholder={model.placeholder}
-            className="mt-4 w-full rounded-lg border border-white/20 bg-black/30 px-4 py-3 text-sm text-white placeholder:text-white/40 focus:border-white/40 focus:outline-none"
+            className="mt-4 w-full rounded-lg border border-white/20 bg-white/[0.08] px-4 py-3 text-sm text-white placeholder:text-white/40 focus:border-white/40 focus:outline-none"
           />
 
           <AnimatePresence mode="wait">
@@ -222,7 +222,7 @@ export default function CheckFootprintPage() {
                 className="mt-4 space-y-2"
               >
                 {model.findings.map((item) => (
-                  <li key={item} className="rounded-lg border border-white/10 bg-black/25 px-3 py-2 text-sm text-white/76">
+                  <li key={item} className="rounded-lg border border-white/10 bg-white/[0.06] px-3 py-2 text-sm text-white/76">
                     {item}
                   </li>
                 ))}
@@ -240,7 +240,7 @@ export default function CheckFootprintPage() {
                 href={tool.href}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="rounded-lg border border-white/12 bg-black/25 px-3 py-3 transition hover:border-white/25 hover:bg-black/35"
+                className="rounded-lg border border-white/12 bg-white/[0.06] px-3 py-3 transition hover:border-white/25 hover:bg-white/[0.12]"
               >
                 <p className="text-sm font-medium text-white">{tool.name}</p>
                 <p className="mt-1 text-xs text-white/65">{tool.note}</p>
