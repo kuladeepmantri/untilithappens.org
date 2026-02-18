@@ -1,964 +1,291 @@
-'use client';
-
-import { motion, AnimatePresence } from 'framer-motion';
-import { useState } from 'react';
-import { ScrollIndicator } from '../components/ui/scroll-indicator';
-import { BackButton } from '../components/ui/back-button';
-import WindowsProtection from '../components/protection-guides/WindowsProtection';
-import MacOSProtection from '../components/protection-guides/MacOSProtection';
-import LinuxProtection from '../components/protection-guides/LinuxProtection';
-import AndroidProtection from '../components/protection-guides/AndroidProtection';
-import IOSProtection from '../components/protection-guides/iOSProtection';
 import Link from 'next/link';
-import { WindowsIcon, AppleIcon } from '../components/icons';
-import Image from 'next/image';
-import { Footer } from '../components/ui/footer';
 
-// Import images statically to ensure they're included in the build
-import linuxIcon from '../../public/images/linux.png';
-import androidIcon from '../../public/images/android.png';
-import iosIcon from '../../public/images/ios.png';
-
-interface DetectedDevice {
-  type: string;
-  os: string;
-  version?: string;
-  architecture?: string;
-  detectionData?: {
-    userAgent: string;
-    platform: string;
-  };
-}
-
-interface DeviceMatch {
+type Guide = {
   id: string;
-  type: string;
-  os: string;
-  model: string;
-  category: string;
-  keywords: string[];
-}
+  platform: string;
+  summary: string;
+  essentials: string[];
+  hardening: string[];
+  recovery: string[];
+  links: { label: string; href: string }[];
+};
 
-interface OS {
-  id: string;
-  name: string;
-  icon: React.ComponentType<{ className?: string }>;
-}
+const baseline = [
+  'Turn on automatic updates for OS, browsers, and password managers.',
+  'Use a password manager and unique credentials for every account.',
+  'Enable MFA, preferring passkeys/security keys over SMS when possible.',
+  'Keep at least one offline or immutable backup of critical files.',
+  'Remove apps/extensions you do not actively use.',
+];
 
-const operatingSystems = {
-  desktop: [
-    { id: 'windows', name: 'Windows', icon: WindowsIcon },
-    { id: 'macos', name: 'macOS', icon: AppleIcon },
-    { 
-      id: 'linux', 
-      name: 'Linux', 
-      icon: ({ className }: { className?: string }) => (
-        <Image
-          src={linuxIcon}
-          alt="Linux"
-          width={32}
-          height={32}
-          className={className}
-          priority
-        />
-      )
-    }
-  ],
-  mobile: [
-    { 
-      id: 'android', 
-      name: 'Android', 
-      icon: ({ className }: { className?: string }) => (
-        <Image
-          src={androidIcon}
-          alt="Android"
-          width={32}
-          height={32}
-          className={className}
-          priority
-        />
-      )
-    },
-    { 
-      id: 'ios', 
-      name: 'iOS', 
-      icon: ({ className }: { className?: string }) => (
-        <Image
-          src={iosIcon}
-          alt="iOS"
-          width={32}
-          height={32}
-          className={className}
-          priority
-        />
-      )
-    }
-  ]
-} as const;
+const guides: Guide[] = [
+  {
+    id: 'windows',
+    platform: 'Windows',
+    summary: 'Use built-in Microsoft controls first: Defender, Firewall, BitLocker, and account hardening.',
+    essentials: [
+      'Confirm Microsoft Defender real-time protection is enabled.',
+      'Keep Windows Update on automatic install.',
+      'Turn on Microsoft Defender Firewall for every profile.',
+      'Enable BitLocker or device encryption where supported.',
+    ],
+    hardening: [
+      'Disable unused remote desktop exposure and old SMB shares.',
+      'Use a standard user account for daily use; reserve admin for changes.',
+      'Review startup apps and browser extensions monthly.',
+    ],
+    recovery: [
+      'Create a recovery key backup for encrypted drives.',
+      'Keep an offline backup disconnected after backup completes.',
+    ],
+    links: [
+      {
+        label: 'Windows Security app settings (Microsoft)',
+        href: 'https://support.microsoft.com/en-us/windows/windows-security-app-settings-1ea73c14-777c-1659-bdcc-fb3e2272a9d1',
+      },
+    ],
+  },
+  {
+    id: 'macos',
+    platform: 'macOS',
+    summary: 'Center on updates, FileVault, app permission review, and strong Apple ID protection.',
+    essentials: [
+      'Enable automatic macOS updates and rapid security responses.',
+      'Turn on FileVault for full-disk encryption.',
+      'Review Privacy & Security permissions for camera, mic, files, and location.',
+      'Use a strong account password and disable automatic login.',
+    ],
+    hardening: [
+      'Use separate user accounts for admin and daily activity.',
+      'Audit login items and launch agents for unknown entries.',
+      'Enable iCloud Advanced Data Protection if your risk model requires it.',
+    ],
+    recovery: [
+      'Keep Time Machine backups with encryption enabled.',
+      'Store recovery keys and Apple recovery contacts securely.',
+    ],
+    links: [
+      {
+        label: 'Two-factor authentication for Apple ID',
+        href: 'https://support.apple.com/en-us/102660',
+      },
+      {
+        label: 'Turn on Advanced Data Protection for iCloud',
+        href: 'https://support.apple.com/en-mide/108756',
+      },
+    ],
+  },
+  {
+    id: 'android',
+    platform: 'Android',
+    summary: 'Prioritize update cadence, Play Protect, lock-screen strength, and permission hygiene.',
+    essentials: [
+      'Check Android version updates and install security patches quickly.',
+      'Enable Google Play Protect automatic scanning.',
+      'Use biometric + strong PIN/passphrase lock.',
+      'Restrict app permissions to "while in use" wherever possible.',
+    ],
+    hardening: [
+      'Disable sideloading unless explicitly required and verified.',
+      'Remove stale apps with broad permissions or no active maintenance.',
+      'Review accessibility permissions for unknown apps.',
+    ],
+    recovery: [
+      'Enable remote locate/lock/wipe before travel.',
+      'Back up photos/messages to a trusted encrypted destination.',
+    ],
+    links: [
+      {
+        label: 'Check and update your Android version',
+        href: 'https://support.google.com/android/answer/7680439?hl=en',
+      },
+      {
+        label: 'Google Play Protect overview',
+        href: 'https://support.google.com/googleplay/answer/2812853?hl=en',
+      },
+    ],
+  },
+  {
+    id: 'ios',
+    platform: 'iOS / iPadOS',
+    summary: 'Treat Apple ID controls and device lock configuration as your primary defense layer.',
+    essentials: [
+      'Enable automatic iOS/iPadOS updates.',
+      'Use a strong device passcode and Face ID / Touch ID.',
+      'Turn on two-factor authentication for Apple ID.',
+      'Review Privacy & Security permissions and lock-screen exposure.',
+    ],
+    hardening: [
+      'Disable lock-screen access for controls you do not need.',
+      'Use iCloud Private Relay and tracking protections where available.',
+      'Consider Lockdown Mode if you are at elevated targeting risk.',
+    ],
+    recovery: [
+      'Confirm Find My is active with recovery contacts configured.',
+      'Keep encrypted local/cloud backups for rapid restoration.',
+    ],
+    links: [
+      {
+        label: 'Two-factor authentication for Apple ID',
+        href: 'https://support.apple.com/en-us/102660',
+      },
+      {
+        label: 'Harden your iPhone with Lockdown Mode',
+        href: 'https://support.apple.com/en-mide/guide/iphone/iph845f6f40c/ios',
+      },
+    ],
+  },
+  {
+    id: 'linux',
+    platform: 'Linux',
+    summary: 'Security posture depends on configuration discipline: updates, service minimization, and logging.',
+    essentials: [
+      'Apply security updates on a fixed schedule (or automatic unattended upgrades).',
+      'Use a host firewall with deny-by-default for inbound services.',
+      'Disable password SSH login when key-based auth is available.',
+      'Limit sudo/admin membership and review it regularly.',
+    ],
+    hardening: [
+      'Enable mandatory access control (AppArmor/SELinux) where supported.',
+      'Remove unnecessary network services and open ports.',
+      'Monitor auth and system logs for repeated failed login patterns.',
+    ],
+    recovery: [
+      'Test restore from encrypted backups, not only backup creation.',
+      'Keep golden-image or config-as-code baselines for fast rebuilds.',
+    ],
+    links: [
+      {
+        label: 'Ubuntu security overview',
+        href: 'https://ubuntu.com/security',
+      },
+      {
+        label: 'Debian security management',
+        href: 'https://wiki.debian.org/SecurityManagement',
+      },
+    ],
+  },
+];
 
-export default function Protect() {
-  const [detectedDevice, setDetectedDevice] = useState<DetectedDevice | null>(null);
-  const [selectedDevice, setSelectedDevice] = useState<DeviceMatch | null>(null);
-  const [isAnalyzing, setIsAnalyzing] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [step, setStep] = useState<'initial' | 'detection' | 'manual' | 'results'>('initial');
-  const [showOSTooltip, setShowOSTooltip] = useState(false);
-  const [hasStartedTyping, setHasStartedTyping] = useState(false);
-
-  const deviceDatabase: DeviceMatch[] = [
-    // Samsung Devices
-    {
-      id: 'samsung-s-series',
-      type: 'Phone',
-      os: 'Android',
-      model: 'Samsung Galaxy S Series',
-      category: 'Mobile',
-      keywords: ['samsung', 'galaxy', 's23', 's22', 's21', 's20', 'ultra', 'plus', 'android']
-    },
-    {
-      id: 'samsung-fold',
-      type: 'Phone',
-      os: 'Android',
-      model: 'Samsung Galaxy Fold/Flip',
-      category: 'Mobile',
-      keywords: ['samsung', 'galaxy', 'fold', 'flip', 'z fold', 'z flip', 'android']
-    },
-    {
-      id: 'samsung-tablet',
-      type: 'Tablet',
-      os: 'Android',
-      model: 'Samsung Galaxy Tab',
-      category: 'Tablet',
-      keywords: ['samsung', 'galaxy', 'tab', 's8', 's7', 'tablet', 'android']
-    },
-    // Apple Devices
-    {
-      id: 'iphone',
-      type: 'Phone',
-      os: 'iOS',
-      model: 'iPhone',
-      category: 'Mobile',
-      keywords: ['iphone', 'apple', 'ios', '15', '14', '13', '12', 'pro', 'max', 'plus']
-    },
-    // Google Devices
-    {
-      id: 'pixel',
-      type: 'Phone',
-      os: 'Android',
-      model: 'Google Pixel',
-      category: 'Mobile',
-      keywords: ['google', 'pixel', '8', '7', '6', 'pro', 'android']
-    },
-    // OnePlus Devices
-    {
-      id: 'oneplus',
-      type: 'Phone',
-      os: 'Android',
-      model: 'OnePlus',
-      category: 'Mobile',
-      keywords: ['oneplus', '12', '11', '10', 'pro', 'android']
-    },
-    // Xiaomi Devices
-    {
-      id: 'xiaomi',
-      type: 'Phone',
-      os: 'Android',
-      model: 'Xiaomi',
-      category: 'Mobile',
-      keywords: ['xiaomi', 'redmi', 'poco', 'mi', 'android']
-    },
-    // OPPO Devices
-    {
-      id: 'oppo',
-      type: 'Phone',
-      os: 'Android',
-      model: 'OPPO',
-      category: 'Mobile',
-      keywords: ['oppo', 'find', 'reno', 'android']
-    },
-    // Computers
-    {
-      id: 'windows-hp',
-      type: 'Laptop',
-      os: 'Windows',
-      model: 'HP Laptop',
-      category: 'Computer',
-      keywords: ['hp', 'pavilion', 'envy', 'spectre', 'windows', 'laptop']
-    },
-    {
-      id: 'windows-dell',
-      type: 'Laptop',
-      os: 'Windows',
-      model: 'Dell Laptop',
-      category: 'Computer',
-      keywords: ['dell', 'xps', 'inspiron', 'latitude', 'windows', 'laptop']
-    },
-    {
-      id: 'windows-lenovo',
-      type: 'Laptop',
-      os: 'Windows',
-      model: 'Lenovo Laptop',
-      category: 'Computer',
-      keywords: ['lenovo', 'thinkpad', 'yoga', 'ideapad', 'windows', 'laptop']
-    },
-    // Add a generic Windows entry
-    {
-      id: 'windows-os',
-      type: 'Computer',
-      os: 'Windows',
-      model: 'Windows PC',
-      category: 'Computer',
-      keywords: ['windows', 'pc', 'computer', 'desktop']
-    }
-  ];
-
-  const detectDevice = async () => {
-    setIsAnalyzing(true);
-    setStep('detection');
-    
-    try {
-      const userAgent = window.navigator.userAgent.toLowerCase();
-      let platform = window.navigator.platform.toLowerCase();
-      const vendor = window.navigator.vendor;
-      
-      let detectedOS = '';
-      let deviceType = '';
-      let version = '';
-      
-      // Enhanced OS Detection with multiple checks
-      if (userAgent.includes('win') || platform.includes('win')) {
-        detectedOS = 'Windows';
-        if (userAgent.includes('windows nt 10.0')) {
-          const build = userAgent.match(/build\s(\d+)/i);
-          version = build && parseInt(build[1]) >= 22000 ? 'Windows 11' : 'Windows 10';
-        } else if (userAgent.includes('windows nt 6.3')) version = 'Windows 8.1';
-        else if (userAgent.includes('windows nt 6.2')) version = 'Windows 8';
-        else if (userAgent.includes('windows nt 6.1')) version = 'Windows 7';
-        else if (userAgent.includes('windows nt 6.0')) version = 'Windows Vista';
-        else if (userAgent.includes('windows nt 5.1')) version = 'Windows XP';
-      } else if ((userAgent.includes('mac') || platform.includes('mac')) && !userAgent.includes('iphone') && !userAgent.includes('ipad')) {
-        detectedOS = 'macOS';
-        const macOSVersion = userAgent.match(/mac os x (\d+[._]\d+[._]\d+)/i);
-        if (macOSVersion) {
-          const versionStr = macOSVersion[1].replace(/_/g, '.');
-          const major = parseInt(versionStr.split('.')[0]);
-          if (major >= 14) version = 'Sonoma';
-          else if (major >= 13) version = 'Ventura';
-          else if (major >= 12) version = 'Monterey';
-          else if (major >= 11) version = 'Big Sur';
-          else if (major >= 10) version = 'Catalina';
-          else if (major >= 9) version = 'Mojave';
-          else if (major >= 8) version = 'High Sierra';
-          else if (major >= 7) version = 'Sierra';
-          else if (major >= 6) version = 'El Capitan';
-          else if (major >= 5) version = 'Yosemite';
-          else if (major >= 4) version = 'Mavericks';
-          else if (major >= 3) version = 'Mountain Lion';
-          else if (major >= 2) version = 'Lion';
-          else if (major >= 1) version = 'Snow Leopard';
-        }
-        // Override platform display for Mac
-        platform = 'Mac';
-      } else if (userAgent.includes('android')) {
-        detectedOS = 'Android';
-        const match = userAgent.match(/android\s([0-9.]*)/i);
-        if (match) {
-          const androidVersion = parseFloat(match[1]);
-          if (androidVersion >= 14) version = 'Android 14';
-          else if (androidVersion >= 13) version = 'Android 13';
-          else if (androidVersion >= 12) version = 'Android 12';
-          else if (androidVersion >= 11) version = 'Android 11';
-          else if (androidVersion >= 10) version = 'Android 10';
-          else if (androidVersion >= 9) version = 'Android 9 (Pie)';
-          else if (androidVersion >= 8) version = 'Android 8 (Oreo)';
-          else if (androidVersion >= 7) version = 'Android 7 (Nougat)';
-          else if (androidVersion >= 6) version = 'Android 6 (Marshmallow)';
-          else if (androidVersion >= 5) version = 'Android 5 (Lollipop)';
-          else if (androidVersion >= 4) version = 'Android 4 (KitKat)';
-          else version = `Android ${match[1]}`;
-        }
-      } else if (userAgent.includes('iphone') || userAgent.includes('ipad') || userAgent.includes('ipod')) {
-        detectedOS = userAgent.includes('ipad') ? 'iPadOS' : 'iOS';
-        const match = userAgent.match(/os\s([0-9_]*)/i);
-        if (match) {
-          const iosVersion = parseFloat(match[1].replace(/_/g, '.'));
-          if (iosVersion >= 17) version = 'iOS 17';
-          else if (iosVersion >= 16) version = 'iOS 16';
-          else if (iosVersion >= 15) version = 'iOS 15';
-          else if (iosVersion >= 14) version = 'iOS 14';
-          else if (iosVersion >= 13) version = 'iOS 13';
-          else if (iosVersion >= 12) version = 'iOS 12';
-          else if (iosVersion >= 11) version = 'iOS 11';
-          else if (iosVersion >= 10) version = 'iOS 10';
-          else if (iosVersion >= 9) version = 'iOS 9';
-          else if (iosVersion >= 8) version = 'iOS 8';
-          else if (iosVersion >= 7) version = 'iOS 7';
-          else version = `iOS ${match[1].replace(/_/g, '.')}`;
-        }
-      } else if (userAgent.includes('linux') || platform.includes('linux')) {
-        detectedOS = 'Linux';
-        if (userAgent.includes('ubuntu')) version = 'Ubuntu';
-        else if (userAgent.includes('fedora')) version = 'Fedora';
-        else if (userAgent.includes('debian')) version = 'Debian';
-        else if (userAgent.includes('arch')) version = 'Arch';
-        else if (userAgent.includes('centos')) version = 'CentOS';
-        else if (userAgent.includes('redhat') || userAgent.includes('rhel')) version = 'Red Hat';
-        else if (userAgent.includes('suse')) version = 'SUSE';
-        else if (userAgent.includes('gentoo')) version = 'Gentoo';
-        else if (userAgent.includes('elementary')) version = 'Elementary OS';
-        else if (userAgent.includes('mint')) version = 'Linux Mint';
-        else if (userAgent.includes('chrome')) version = 'Chrome OS';
-        else if (userAgent.includes('android')) version = 'Android (Linux-based)';
-      }
-      
-      // Device Type Detection - More accurate
-      if (userAgent.includes('mobile') || 
-          userAgent.includes('android') || 
-          (userAgent.includes('iphone') && !userAgent.includes('ipad')) || 
-          userAgent.includes('ipod')) {
-        deviceType = 'Mobile';
-      } else if (userAgent.includes('ipad') || 
-                 (userAgent.includes('tablet') && !userAgent.includes('mobile')) || 
-                 (userAgent.includes('android') && !userAgent.includes('mobile'))) {
-        deviceType = 'Tablet';
-      } else {
-        deviceType = 'Computer';
-      }
-
-      // Architecture detection (important for security features)
-      let architecture = '';
-      if (userAgent.includes('x64') || userAgent.includes('x86_64') || userAgent.includes('win64') || userAgent.includes('amd64')) {
-        architecture = 'x64';
-      } else if (userAgent.includes('arm64') || userAgent.includes('aarch64')) {
-        architecture = 'ARM64';
-      } else if (userAgent.includes('x86') || userAgent.includes('i386') || userAgent.includes('i686')) {
-        architecture = 'x86';
-      } else if (userAgent.includes('arm')) {
-        architecture = 'ARM';
-      }
-
-      // If we couldn't detect the OS, transition to manual selection
-      if (!detectedOS) {
-        console.log('No OS detected, transitioning to manual selection');
-        setTimeout(() => {
-          setIsAnalyzing(false);
-          setStep('manual');
-        }, 2000);
-        return;
-      }
-
-      const detected: DetectedDevice = {
-        type: deviceType,
-        os: detectedOS,
-        version: version || platform,
-        architecture,
-        detectionData: {
-          userAgent,
-          platform
-        }
-      };
-
-      console.log('Device detected:', detected);
-      setDetectedDevice(detected);
-
-      // Create a matching device entry based on detected OS
-      const baseDevice: DeviceMatch = {
-        id: detectedOS.toLowerCase(),
-        type: deviceType,
-        os: detectedOS,
-        model: `${detectedOS} Device`,
-        category: deviceType,
-        keywords: [detectedOS.toLowerCase()]
-      };
-
-      setSelectedDevice(baseDevice);
-
-      // Show loading animation for 2 seconds
-      setTimeout(() => {
-        setIsAnalyzing(false);
-      }, 2000);
-
-      // Show detection results for 5 seconds, then transition to protection guide
-      setTimeout(() => {
-        if (detectedOS) {
-          setStep('results');
-          window.scrollTo({ top: 0, behavior: 'instant' });
-        } else {
-          setStep('manual');
-        }
-      }, 7000); // 2s loading + 5s results = 7s total
-
-    } catch (error) {
-      console.error('Error during device detection:', error);
-      setTimeout(() => {
-        setIsAnalyzing(false);
-        setStep('manual');
-      }, 2000);
-    }
-  };
-
-  const getDeviceSuggestions = (query: string) => {
-    if (!query) return [];
-    const lowerQuery = query.toLowerCase();
-    
-    // Check if it's a direct OS match first
-    const osKeywords = ['windows', 'android', 'ios', 'ipados', 'macos', 'linux'];
-    if (osKeywords.includes(lowerQuery)) {
-      return deviceDatabase.filter(device => 
-        device.os.toLowerCase() === lowerQuery
-      );
-    }
-    
-    // Then try exact device matches
-    const exactMatches = deviceDatabase.filter(device => 
-      device.keywords.some(keyword => keyword === lowerQuery)
-    );
-    
-    if (exactMatches.length > 0) {
-      return exactMatches;
-    }
-    
-    // Finally, try partial matches
-    return deviceDatabase.filter(device => 
-      device.keywords.some(keyword => keyword.includes(lowerQuery)) ||
-      device.model.toLowerCase().includes(lowerQuery)
-    );
-  };
-
-  const suggestions = getDeviceSuggestions(searchQuery);
-  const groupedSuggestions = suggestions.reduce((acc, device) => {
-    if (!acc[device.category]) {
-      acc[device.category] = [];
-    }
-    acc[device.category].push(device);
-    return acc;
-  }, {} as Record<string, DeviceMatch[]>);
-
-  // OS Tooltip component
-  const OSTooltip = () => (
-    <AnimatePresence>
-      {showOSTooltip && (
-        <motion.div
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -10 }}
-          className="absolute left-0 right-0 top-[calc(100%+1.5rem)] bg-gradient-to-br from-white/20 to-white/10 backdrop-blur-lg rounded-xl p-6 shadow-xl z-10"
-        >
-          <div className="relative">
-            <button
-              onClick={() => setShowOSTooltip(false)}
-              className="absolute -top-2 -right-2 text-white/60 hover:text-white"
-            >
-              ×
-            </button>
-            <div className="space-y-4">
-              <div>
-                <p className="text-white/90 text-lg font-light mb-2">
-                  Quick Tip: Operating System is Key
-                </p>
-                <p className="text-white/70 text-base font-light leading-relaxed">
-                  We focus on providing operating system level protection, which is the foundation of your device's security. Simply tell us your OS (Windows, Android, iOS, etc.).
-                </p>
-              </div>
-              <div className="pt-2 border-t border-white/10">
-                <p className="text-white/60 text-sm font-light">
-                  While we can't provide device-specific security features, we'll give you comprehensive OS-level protection steps. For device-specific security features, please refer to your manufacturer's guidelines.
-                </p>
-              </div>
-            </div>
-          </div>
-        </motion.div>
-      )}
-    </AnimatePresence>
-  );
-
-  // Preserve the existing hero section code
-  const heroSection = (
-    <section className="relative min-h-[100svh] flex items-start md:items-center justify-center overflow-hidden">
-      <div className="max-w-screen-xl mx-auto px-6 w-full flex flex-col md:flex-row items-start md:items-center justify-between pt-32 md:pt-0">
-        {/* Main Title Group */}
-        <div className="relative flex-1 flex items-start md:items-center justify-start w-full">
-          <div className="relative">
-            <motion.div
-              className="absolute -inset-x-20 -inset-y-20 bg-white/10 blur-3xl rounded-full hidden md:block"
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ 
-                opacity: [0.05, 0.1, 0.05],
-                scale: [0.8, 1, 0.8]
-              }}
-              transition={{ 
-                duration: 6,
-                repeat: Infinity,
-                ease: "easeInOut"
-              }}
-            />
-
-            <div className="relative">
-              <motion.div 
-                className="flex flex-col items-start"
-                initial={{ opacity: 0, x: -50 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 1, delay: 0.2 }}
-              >
-                <h1 
-                  className="text-[clamp(4rem,15vw,8rem)] font-bold tracking-tighter text-white leading-[0.85]"
-                  style={{ fontFamily: 'var(--font-geist-sans)' }}
-                >
-                  <span className="block">protect</span>
-                  <span className="block">yourself.</span>
-                </h1>
-              </motion.div>
-            </div>
-          </div>
-        </div>
-
-        {/* Right Side Content */}
-        <div className="flex-1 max-w-full md:max-w-lg w-full mt-16 md:mt-0">
-          <div className="space-y-10 md:space-y-12">
-            {/* Description */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8 }}
-              className="relative"
-            >
-              <div className="absolute -left-3 top-0 w-[1px] h-full bg-gradient-to-b from-white/0 via-white to-white/0" />
-              <motion.div 
-                className="pl-8 space-y-5 md:space-y-6"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 1, delay: 0.4 }}
-              >
-                <div className="text-sm text-white/90 tracking-widest uppercase">your digital safety</div>
-                <p className="text-2xl md:text-2xl lg:text-3xl text-white font-light leading-[1.15]">
-                  let us help you stay safe.<br/>
-                  <span className="text-white/90">we'll guide you every step.</span>
-                </p>
-              </motion.div>
-            </motion.div>
-
-            {/* Stats */}
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.8, delay: 0.6 }}
-              className="grid grid-cols-2 gap-12 md:gap-8 px-0"
-            >
-              <div>
-                <div className="text-4xl md:text-4xl font-bold text-white mb-3">94%</div>
-                <p className="text-sm text-white/90">threats preventable</p>
-              </div>
-              <div>
-                <div className="text-4xl md:text-4xl font-bold text-white mb-3">3min</div>
-                <p className="text-sm text-white/90">to secure device</p>
-              </div>
-            </motion.div>
-          </div>
-        </div>
-      </div>
-    </section>
-  );
-
-  // New innovative device detection section
-  const deviceDetectionSection = (
-    <section className="relative w-full min-h-screen">
-      {step !== 'initial' && <BackButton onClick={() => setStep('initial')} />}
-      <div className="py-24 md:py-32">
-        <div className="container mx-auto px-6">
-          <motion.div 
-            className="max-w-4xl mx-auto relative"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.8 }}
-          >
-            <AnimatePresence mode="wait">
-              {step === 'initial' && (
-                <motion.div 
-                  className="space-y-16"
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -20 }}
-                >
-                  <div className="text-center space-y-6">
-                    <h2 className="text-5xl md:text-6xl text-white font-light">how would you like to start?</h2>
-                    <p className="text-xl text-white/80 font-light max-w-2xl mx-auto">
-                      choose your preferred way to identify your device and get personalized protection steps.
-                    </p>
-                  </div>
-
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                    <motion.button
-                      onClick={() => {
-                        setStep('detection');
-                        detectDevice();
-                      }}
-                      className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-white/10 to-white/5 p-8 text-left transition-all duration-300"
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
-                    >
-                      <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                      <div className="relative space-y-4">
-                        <div className="text-3xl text-white font-light">automatic.</div>
-                        <p className="text-lg text-white/70 font-light">
-                          let us detect your device specifications automatically for the most accurate protection steps.
-                        </p>
-                        <div className="absolute -right-4 md:-right-4 top-0 bottom-0 hidden md:flex items-center">
-                          <motion.div 
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            className="rotate-180 [writing-mode:vertical-lr] text-[11px] text-white/40 tracking-[0.25em] uppercase"
-                          >
-                            no data stored
-                          </motion.div>
-                        </div>
-                        <div className="md:hidden mt-6">
-                          <motion.div 
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            className="text-[11px] text-white/40 tracking-[0.25em] uppercase"
-                          >
-                            no data stored
-                          </motion.div>
-                        </div>
-                      </div>
-                    </motion.button>
-
-                    <motion.button
-                      onClick={() => {
-                        window.scrollTo({ top: 0, behavior: 'instant' });
-                        setStep('manual');
-                        setShowOSTooltip(true);
-                        setTimeout(() => setShowOSTooltip(false), 8000);
-                      }}
-                      className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-white/10 to-white/5 p-8 text-left transition-all duration-300"
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
-                    >
-                      <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                      <div className="relative space-y-4">
-                        <div className="text-3xl text-white font-light">manual.</div>
-                        <p className="text-lg text-white/70 font-light">
-                          tell us about your device and we'll guide you through the protection process step by step.
-                        </p>
-                      </div>
-                    </motion.button>
-                  </div>
-                </motion.div>
-              )}
-
-              {step === 'detection' && (
-                <motion.div 
-                  className="space-y-12 pt-16 md:pt-20"
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -20 }}
-                >
-                  <div className="text-center space-y-6">
-                    <h2 className="text-5xl md:text-6xl text-white font-light">analyzing your device.</h2>
-                    <p className="text-xl text-white/80 font-light max-w-2xl mx-auto">
-                      we're scanning your system to provide the most relevant protection steps.
-                    </p>
-                  </div>
-
-                  {isAnalyzing ? (
-                    <div className="flex flex-col items-center justify-center space-y-12">
-                      <div className="relative w-24 h-24">
-                        <div className="absolute inset-0 rounded-full border-2 border-white/20" />
-                        <div className="absolute inset-0 rounded-full border-2 border-white border-t-transparent animate-spin" />
-                      </div>
-                      <div className="space-y-8 text-center max-w-2xl mx-auto">
-                        <div className="space-y-4">
-                          <p className="text-xl text-white/60 font-light">analyzing your system...</p>
-                          <p className="text-sm text-white/40">this will only take a moment</p>
-                        </div>
-                        
-                        <div className="space-y-4">
-                          <div className="text-sm text-white/60 uppercase tracking-wider">Essential Data Being Collected</div>
-                          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-left">
-                            <div className="bg-white/5 rounded-lg p-4">
-                              <div className="text-white/40 text-xs uppercase mb-1">Operating System</div>
-                              <div className="text-white/80 text-sm">Type & Version</div>
-                            </div>
-                            <div className="bg-white/5 rounded-lg p-4">
-                              <div className="text-white/40 text-xs uppercase mb-1">Device Type</div>
-                              <div className="text-white/80 text-sm">Computer/Mobile/Tablet</div>
-                            </div>
-                            <div className="bg-white/5 rounded-lg p-4">
-                              <div className="text-white/40 text-xs uppercase mb-1">Architecture</div>
-                              <div className="text-white/80 text-sm">System Architecture</div>
-                            </div>
-                          </div>
-                          <p className="text-xs text-white/40 italic">
-                            * We only collect essential data needed for security recommendations. All processing is done locally.
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                  ) : detectedDevice && (
-                    <motion.div 
-                      className="space-y-8"
-                      initial={{ opacity: 0, scale: 0.95 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                    >
-                      <div className="bg-gradient-to-br from-white/10 to-white/5 rounded-2xl p-8 space-y-8">
-                        <div className="space-y-2">
-                          <h3 className="text-3xl text-white font-light">system detected.</h3>
-                          <p className="text-lg text-white/60">
-                            redirecting to protection steps in a moment...
-                          </p>
-                        </div>
-
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                          <div className="space-y-2">
-                            <div className="text-lg text-white/60 font-light">device type</div>
-                            <div className="text-2xl text-white">{detectedDevice.type}</div>
-                          </div>
-                          <div className="space-y-2">
-                            <div className="text-lg text-white/60 font-light">operating system</div>
-                            <div className="text-2xl text-white">
-                              {detectedDevice.os}
-                              {detectedDevice.version && (
-                                <span className="text-white/60 ml-2 text-lg">
-                                  {detectedDevice.version}
-                                </span>
-                              )}
-                            </div>
-                          </div>
-                          {detectedDevice.architecture && (
-                            <div className="space-y-2">
-                              <div className="text-lg text-white/60 font-light">architecture</div>
-                              <div className="text-2xl text-white">{detectedDevice.architecture}</div>
-                            </div>
-                          )}
-                        </div>
-
-                        <div className="w-full bg-white/10 rounded-full h-1 overflow-hidden">
-                          <motion.div 
-                            className="h-full bg-white"
-                            initial={{ width: "0%" }}
-                            animate={{ width: "100%" }}
-                            transition={{ duration: 5, ease: "linear" }}
-                          />
-                        </div>
-                      </div>
-                    </motion.div>
-                  )}
-                </motion.div>
-              )}
-
-              {step === 'manual' && (
-                <motion.div 
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  className="min-h-screen"
-                >
-                  <div className="pt-24 pb-20">
-                    <div className="max-w-screen-xl mx-auto px-6">
-                      <div className="space-y-16">
-                        {/* Hero Section */}
-                        <div className="text-center space-y-6">
-                          <h1 
-                            className="text-[clamp(3.5rem,8vw,5rem)] font-bold tracking-tighter text-white leading-[0.85]"
-                            style={{ fontFamily: 'var(--font-geist-sans)' }}
-                          >
-                            select your<br/>
-                            <span className="text-white/90">operating system.</span>
-                          </h1>
-                        </div>
-
-                        <div className="space-y-12">
-                          {/* Desktop Systems */}
-                          <div className="space-y-6">
-                            <h2 className="text-2xl font-bold text-white text-center">Desktop & Laptop</h2>
-                            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 max-w-3xl mx-auto">
-                              {operatingSystems.desktop.map((os) => (
-                                <button
-                                  key={os.id}
-                                  onClick={() => handleOSSelect(os.id)}
-                                  className="group flex items-center justify-center gap-4 w-full p-6 rounded-xl bg-white/5 hover:bg-white/10 transition-all duration-300"
-                                >
-                                  <div className="w-8 h-8 flex items-center justify-center">
-                                    <os.icon className="w-8 h-8 text-white" />
-                                  </div>
-                                  <span className="text-xl text-white font-medium">{os.name}</span>
-                                </button>
-                              ))}
-                            </div>
-                          </div>
-
-                          {/* Mobile Systems */}
-                          <div className="space-y-6">
-                            <h2 className="text-2xl font-bold text-white text-center">Mobile Devices</h2>
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 max-w-2xl mx-auto">
-                              {operatingSystems.mobile.map((os) => (
-                                <button
-                                  key={os.id}
-                                  onClick={() => handleOSSelect(os.id)}
-                                  className="group flex items-center justify-center gap-4 w-full p-6 rounded-xl bg-white/5 hover:bg-white/10 transition-all duration-300"
-                                >
-                                  <div className="w-8 h-8 flex items-center justify-center">
-                                    <os.icon className="w-8 h-8 text-white" />
-                                  </div>
-                                  <span className="text-xl text-white font-medium">{os.name}</span>
-                                </button>
-                              ))}
-                            </div>
-                          </div>
-
-                          {/* Help Section */}
-                          <div className="space-y-4 text-center">
-                            <h3 className="text-xl text-white/90 font-medium">Not sure about your operating system?</h3>
-                            <a
-                              href={`https://www.google.com/search?q=how+to+check+what+operating+system+I+have`}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="inline-flex items-center gap-2 text-white/60 hover:text-white transition-colors"
-                            >
-                              <span>Search on Google</span>
-                              <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                <path d="M7 17L17 7M17 7H7M17 7V17" />
-                              </svg>
-                            </a>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </motion.div>
-              )}
-
-              {step === 'results' && (
-                <motion.div 
-                  className="w-full"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                >
-                  {/* Render protection guide based on OS */}
-                  {(selectedDevice?.os.toLowerCase() === 'windows' || 
-                    detectedDevice?.os.toLowerCase() === 'windows') && (
-                    <WindowsProtection onBack={() => {
-                      setStep('initial');
-                      window.scrollTo({ top: 0, behavior: 'instant' });
-                    }} />
-                  )}
-                  {(selectedDevice?.os.toLowerCase() === 'macos' || 
-                    detectedDevice?.os.toLowerCase() === 'macos') && (
-                    <MacOSProtection onBack={() => {
-                      setStep('initial');
-                      window.scrollTo({ top: 0, behavior: 'instant' });
-                    }} />
-                  )}
-                  {(selectedDevice?.os.toLowerCase() === 'linux' || 
-                    detectedDevice?.os.toLowerCase() === 'linux') && (
-                    <LinuxProtection onBack={() => {
-                      setStep('initial');
-                      window.scrollTo({ top: 0, behavior: 'instant' });
-                    }} />
-                  )}
-                  {(selectedDevice?.os.toLowerCase() === 'android' || 
-                    detectedDevice?.os.toLowerCase() === 'android') && (
-                    <AndroidProtection onBack={() => {
-                      setStep('initial');
-                      window.scrollTo({ top: 0, behavior: 'instant' });
-                    }} />
-                  )}
-                  {(selectedDevice?.os.toLowerCase() === 'ios' || 
-                    detectedDevice?.os.toLowerCase() === 'ios') && (
-                    <IOSProtection onBack={() => {
-                      setStep('initial');
-                      window.scrollTo({ top: 0, behavior: 'instant' });
-                    }} />
-                  )}
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </motion.div>
-        </div>
-      </div>
-    </section>
-  );
-
-  const handleOSSelect = (osId: string) => {
-    // Scroll to top before showing the guide
-    window.scrollTo({ top: 0, behavior: 'instant' });
-    
-    setDetectedDevice({
-      type: osId === 'android' || osId === 'ios' ? 'Mobile' : 'Computer',
-      os: osId.charAt(0).toUpperCase() + osId.slice(1)
-    });
-    setStep('results');
-  };
-
+export default function ProtectPage() {
   return (
-    <main className="relative min-h-screen" style={{ backgroundColor: '#801336' }}>
-      {/* Only show ScrollIndicator on initial step */}
-      {step === 'initial' && <ScrollIndicator />}
-      
-      {/* Only show hero section on initial step */}
-      {step === 'initial' && heroSection}
+    <div className="bg-[#06161a] pt-24">
+      <section className="mx-auto max-w-7xl px-6 pb-12 pt-14 md:pb-16 md:pt-20">
+        <span className="inline-flex rounded-full border border-white/20 bg-white/5 px-4 py-2 text-xs uppercase tracking-[0.2em] text-white/70">
+          Protection Playbooks
+        </span>
+        <h1 className="mt-6 max-w-4xl text-5xl font-semibold leading-[0.95] text-white sm:text-6xl">
+          Platform hardening, without the noise
+        </h1>
+        <p className="mt-5 max-w-3xl text-lg text-white/75">
+          Use this as your baseline. Keep it simple, repeatable, and evidence-based. Apply these controls first before buying extra tools.
+        </p>
+      </section>
 
-      <div className="w-full">
-        {step !== 'results' && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.3 }}
-          >
-            {deviceDetectionSection}
-          </motion.div>
-        )}
-        
-        {step === 'results' && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.3 }}
-            className="w-full"
-          >
-            {(selectedDevice?.os.toLowerCase() === 'windows' || 
-              detectedDevice?.os.toLowerCase() === 'windows') && (
-              <WindowsProtection onBack={() => {
-                setStep('initial');
-                window.scrollTo({ top: 0, behavior: 'instant' });
-              }} />
-            )}
-            {(selectedDevice?.os.toLowerCase() === 'macos' || 
-              detectedDevice?.os.toLowerCase() === 'macos') && (
-              <MacOSProtection onBack={() => {
-                setStep('initial');
-                window.scrollTo({ top: 0, behavior: 'instant' });
-              }} />
-            )}
-            {(selectedDevice?.os.toLowerCase() === 'linux' || 
-              detectedDevice?.os.toLowerCase() === 'linux') && (
-              <LinuxProtection onBack={() => {
-                setStep('initial');
-                window.scrollTo({ top: 0, behavior: 'instant' });
-              }} />
-            )}
-            {(selectedDevice?.os.toLowerCase() === 'android' || 
-              detectedDevice?.os.toLowerCase() === 'android') && (
-              <AndroidProtection onBack={() => {
-                setStep('initial');
-                window.scrollTo({ top: 0, behavior: 'instant' });
-              }} />
-            )}
-            {(selectedDevice?.os.toLowerCase() === 'ios' || 
-              detectedDevice?.os.toLowerCase() === 'ios') && (
-              <IOSProtection onBack={() => {
-                setStep('initial');
-                window.scrollTo({ top: 0, behavior: 'instant' });
-              }} />
-            )}
-          </motion.div>
-        )}
-      </div>
+      <section className="mx-auto max-w-7xl px-6 pb-12">
+        <div className="site-panel p-6">
+          <h2 className="text-2xl font-medium text-white">Universal baseline</h2>
+          <div className="mt-4 grid gap-3 md:grid-cols-2">
+            {baseline.map((item) => (
+              <p key={item} className="rounded-lg border border-white/10 bg-black/20 px-3 py-2 text-sm text-white/75">
+                {item}
+              </p>
+            ))}
+          </div>
+        </div>
+      </section>
 
-      {/* Footer */}
-      {step !== 'results' && (
-        <Footer className="bg-gradient-to-b from-[#801336] via-[#801336] to-[#801336]" />
-      )}
-    </main>
+      <section className="border-y border-white/10 bg-black/25 py-10">
+        <div className="mx-auto max-w-7xl px-6">
+          <p className="text-xs uppercase tracking-[0.2em] text-white/55">Jump to platform</p>
+          <div className="mt-4 flex flex-wrap gap-2">
+            {guides.map((guide) => (
+              <Link
+                key={guide.id}
+                href={`#${guide.id}`}
+                className="rounded-md border border-white/15 px-3 py-2 text-sm text-white/75 transition hover:border-white/30 hover:text-white"
+              >
+                {guide.platform}
+              </Link>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="mx-auto max-w-7xl space-y-6 px-6 py-12">
+        {guides.map((guide) => (
+          <article key={guide.id} id={guide.id} className="site-panel p-6 md:p-8">
+            <h2 className="text-3xl font-medium text-white">{guide.platform}</h2>
+            <p className="mt-3 max-w-3xl text-sm text-white/70">{guide.summary}</p>
+
+            <div className="mt-6 grid gap-4 md:grid-cols-3">
+              <div>
+                <p className="font-ui-mono text-xs uppercase tracking-[0.16em] text-white/55">Essential</p>
+                <ul className="mt-2 space-y-2">
+                  {guide.essentials.map((item) => (
+                    <li key={item} className="rounded-lg border border-white/10 bg-black/20 px-3 py-2 text-sm text-white/75">
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              <div>
+                <p className="font-ui-mono text-xs uppercase tracking-[0.16em] text-white/55">Hardening</p>
+                <ul className="mt-2 space-y-2">
+                  {guide.hardening.map((item) => (
+                    <li key={item} className="rounded-lg border border-white/10 bg-black/20 px-3 py-2 text-sm text-white/75">
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              <div>
+                <p className="font-ui-mono text-xs uppercase tracking-[0.16em] text-white/55">Recovery</p>
+                <ul className="mt-2 space-y-2">
+                  {guide.recovery.map((item) => (
+                    <li key={item} className="rounded-lg border border-white/10 bg-black/20 px-3 py-2 text-sm text-white/75">
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+
+            <div className="mt-6 flex flex-wrap gap-2">
+              {guide.links.map((link) => (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="rounded-md border border-white/15 px-3 py-2 text-xs text-white/75 transition hover:border-white/30 hover:text-white"
+                >
+                  {link.label}
+                </Link>
+              ))}
+            </div>
+          </article>
+        ))}
+      </section>
+
+      <section className="mx-auto max-w-7xl px-6 pb-14">
+        <div className="site-panel p-6">
+          <h2 className="text-xl font-medium text-white">Need incident help instead of prevention?</h2>
+          <p className="mt-3 text-sm text-white/70">
+            If compromise is already active, stop and follow the response flow first: preserve evidence, contain accounts, then report.
+          </p>
+          <div className="mt-4 flex flex-wrap gap-3">
+            <Link href="/get-help" className="rounded-md bg-white px-4 py-2 text-sm font-medium text-[#062026] hover:bg-white/90">
+              Open response checklist
+            </Link>
+            <Link href="/report" className="rounded-md border border-white/20 px-4 py-2 text-sm text-white/80 hover:bg-white/10">
+              Report an incident
+            </Link>
+          </div>
+        </div>
+      </section>
+    </div>
   );
-} 
+}

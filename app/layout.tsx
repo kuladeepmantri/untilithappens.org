@@ -1,35 +1,49 @@
 import './globals.css';
-import { Inter } from 'next/font/google';
+import { IBM_Plex_Mono, Space_Grotesk } from 'next/font/google';
 import { Navigation } from '@/components/ui/navigation';
+import { SiteFooter } from '@/components/site/site-footer';
 
-const inter = Inter({ subsets: ['latin'] });
+const heading = Space_Grotesk({
+  subsets: ['latin'],
+  variable: '--font-heading',
+  display: 'swap',
+});
+
+const mono = IBM_Plex_Mono({
+  subsets: ['latin'],
+  variable: '--font-mono',
+  weight: ['400', '500'],
+  display: 'swap',
+});
 
 export const metadata = {
-  title: "Until It Happens | Digital safety shouldn't be complicated. We're here to help.",
-  description: "Digital safety shouldn't be complicated. We're here to help.",
+  metadataBase: new URL('https://untilithappens.org'),
+  title: {
+    default: 'Until It Happens | Practical Cyber Safety',
+    template: '%s | Until It Happens',
+  },
+  description: 'Actionable security guidance, incident reporting resources, and prevention playbooks for real-world cyber risks.',
   keywords: [
-    'digital safety',
-    'online security',
+    'cyber safety',
+    'cyber security',
+    'incident response',
     'digital footprint',
-    'cybersecurity',
-    'data protection',
+    'fraud prevention',
+    'identity theft',
     'online privacy',
-    'security guide',
-    'cyber threats',
-    'digital protection',
-    'cyber awareness'
+    'security awareness',
   ],
   openGraph: {
-    title: "Until It Happens | Digital safety shouldn't be complicated. We're here to help.",
-    description: "Digital safety shouldn't be complicated. We're here to help.",
+    title: 'Until It Happens | Practical Cyber Safety',
+    description: 'Understand current cyber risks, tighten your setup, and get help fast when incidents happen.',
     type: 'website',
     locale: 'en_US',
     url: 'https://untilithappens.org',
   },
   twitter: {
     card: 'summary_large_image',
-    title: "Until It Happens | Digital safety shouldn't be complicated. We're here to help.",
-    description: "Digital safety shouldn't be complicated. We're here to help.",
+    title: 'Until It Happens | Practical Cyber Safety',
+    description: 'Current threat notes, platform hardening guides, and incident reporting routes.',
   },
 };
 
@@ -40,10 +54,11 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className="scroll-smooth">
-      <body className={`${inter.className} bg-black text-white antialiased`}>
+      <body className={`${heading.variable} ${mono.variable} bg-black text-white antialiased`}>
         <Navigation />
         <main className="min-h-screen">{children}</main>
+        <SiteFooter />
       </body>
     </html>
   );
-} 
+}

@@ -71,6 +71,7 @@
 
   body {
     @apply bg-background text-foreground;
+    font-family: var(--font-heading), ui-sans-serif, system-ui, -apple-system, sans-serif;
     font-feature-settings: "rlig" 1, "calt" 1;
   }
 
@@ -110,6 +111,12 @@
     @apply border-border;
   }
 } 
+
+h1,
+h2,
+h3 {
+  letter-spacing: -0.02em;
+}
 
 @layer utilities {
   .text-balance {
@@ -232,4 +239,19 @@
 
 .bg-theme-gradient-subtle {
   @apply bg-gradient-to-br from-[hsl(var(--theme-primary-dark))] to-[hsl(var(--theme-primary))]/80;
-} 
+}
+
+.site-grid-bg {
+  background-image:
+    linear-gradient(to right, rgba(255, 255, 255, 0.06) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.06) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+
+.site-panel {
+  @apply rounded-2xl border border-white/10 bg-white/[0.04] backdrop-blur-sm;
+}
+
+.font-ui-mono {
+  font-family: var(--font-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
+}
