@@ -229,7 +229,7 @@ export default function ProtectPage() {
           <div className="flex flex-wrap items-center justify-between gap-3">
             <p className="font-ui-mono text-xs uppercase tracking-[0.2em] text-white/55">Universal baseline</p>
             {detectedGuide && (
-              <p className="rounded-full border border-[#86d8ca]/60 bg-[#86d8ca]/12 px-3 py-1 text-xs text-white/85">
+              <p className="rounded-full border border-[#8db1c8]/60 bg-[#182432] px-3 py-1 text-xs text-white/85">
                 Recommended now: {detectedGuide.platform}
               </p>
             )}

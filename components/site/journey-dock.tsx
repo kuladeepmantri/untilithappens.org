@@ -53,6 +53,7 @@ export function JourneyDock() {
   const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
   const activeIndexRef = useRef(currentIndex);
   const initialIndexRef = useRef(currentIndex);
+  const previewTRef = useRef(0);
   const animationRef = useRef({ currentT: 0, targetT: 0, raf: 0 });
 
   const points = useMemo(() => {
@@ -179,9 +180,32 @@ export function JourneyDock() {
     scene.add(marker);
     markerRef.current = marker;
 
+    const flowCount = 42;
+    const flowProgress = new Float32Array(flowCount);
+    const flowPositions = new Float32Array(flowCount * 3);
+    for (let i = 0; i < flowCount; i += 1) {
+      flowProgress[i] = Math.random();
+      const point = curve.getPointAt(flowProgress[i]);
+      flowPositions[i * 3] = point.x;
+      flowPositions[i * 3 + 1] = point.y;
+      flowPositions[i * 3 + 2] = point.z;
+    }
+    const flowGeometry = new THREE.BufferGeometry();
+    flowGeometry.setAttribute('position', new THREE.BufferAttribute(flowPositions, 3));
+    const flowMaterial = new THREE.PointsMaterial({
+      color: 0xc6d9ec,
+      size: 0.045,
+      transparent: true,
+      opacity: 0.86,
+    });
+    const flowPoints = new THREE.Points(flowGeometry, flowMaterial);
+    scene.add(flowPoints);
+
     const initialIndex = initialIndexRef.current === -1 ? 0 : initialIndexRef.current;
     activeIndexRef.current = initialIndex;
     const start = initialIndex / Math.max(guideJourney.length - 1, 1);
+    const previewIndex = Math.min(initialIndex + 1, guideJourney.length - 1);
+    previewTRef.current = previewIndex / Math.max(guideJourney.length - 1, 1);
     animationRef.current.currentT = start;
     animationRef.current.targetT = start;
 
@@ -203,15 +227,33 @@ export function JourneyDock() {
 
       const state = animationState;
       state.currentT += (state.targetT - state.currentT) * 0.08;
-      const markerT = Math.min(0.99, Math.max(0, state.currentT));
+      const fromT = Math.min(state.currentT, previewTRef.current);
+      const toT = Math.max(state.currentT, previewTRef.current);
+      const sweepT = fromT + (Math.sin(tick * 2.25) * 0.5 + 0.5) * Math.max(toT - fromT, 0.01);
+      const markerT = Math.min(0.99, Math.max(0, sweepT));
 
       curve.getPointAt(markerT, marker.position);
       marker.position.y += Math.sin(tick * 2.5) * 0.01;
 
-      const routePointCount = Math.max(2, Math.floor(markerT * 240) + 1);
+      const routePointCount = Math.max(8, Math.floor(markerT * 240) + 1);
       const routePoints = curve.getPoints(routePointCount);
       glowLine.geometry.dispose();
       glowLine.geometry = new THREE.BufferGeometry().setFromPoints(routePoints);
+
+      const flowStart = Math.min(state.currentT, previewTRef.current);
+      const flowEnd = Math.max(state.currentT, previewTRef.current);
+      const flowSpan = Math.max(flowEnd - flowStart, 0.08);
+      const positions = flowGeometry.getAttribute('position') as THREE.BufferAttribute;
+      for (let i = 0; i < flowCount; i += 1) {
+        flowProgress[i] += 0.004 + (i % 5) * 0.00035;
+        if (flowProgress[i] > 1) {
+          flowProgress[i] -= 1;
+        }
+        const t = Math.min(0.99, flowStart + flowProgress[i] * flowSpan);
+        const point = curve.getPointAt(t);
+        positions.setXYZ(i, point.x, point.y, point.z);
+      }
+      positions.needsUpdate = true;
 
       camera.position.x = Math.sin(tick * 0.22) * 0.16;
       camera.position.y = 1.2 + Math.cos(tick * 0.18) * 0.08;
@@ -252,6 +294,8 @@ export function JourneyDock() {
       glowMaterial.dispose();
       markerGeometry.dispose();
       markerMaterial.dispose();
+      flowGeometry.dispose();
+      flowMaterial.dispose();
       nodesRef.current.forEach((node) => {
         node.geometry.dispose();
         node.material.dispose();
@@ -278,6 +322,8 @@ export function JourneyDock() {
     }
     activeIndexRef.current = currentIndex;
     animationRef.current.targetT = currentIndex / Math.max(guideJourney.length - 1, 1);
+    const previewIndex = Math.min(currentIndex + 1, guideJourney.length - 1);
+    previewTRef.current = previewIndex / Math.max(guideJourney.length - 1, 1);
   }, [currentIndex]);
 
   if (currentIndex === -1) {
@@ -345,8 +391,19 @@ export function JourneyDock() {
             <p className="text-xs text-white/74">{guideJourney[currentIndex].title}</p>
           </div>
 
-          <div className="mt-2 h-20 overflow-hidden rounded-lg border border-white/15 bg-[#070c12] sm:h-24">
+          <div className="relative mt-2 h-20 overflow-hidden rounded-lg border border-white/15 bg-[#070c12] sm:h-24">
             <canvas ref={canvasRef} className="h-full w-full" />
+            <div className="pointer-events-none absolute inset-0">
+              <div className="absolute left-0 right-0 top-1/2 h-px bg-white/10" />
+              <div className="absolute left-[18%] top-1/2 h-2 w-2 -translate-y-1/2 rounded-full bg-white/20" />
+              <div className="absolute left-[50%] top-1/2 h-2 w-2 -translate-y-1/2 rounded-full bg-white/20" />
+              <div className="absolute left-[82%] top-1/2 h-2 w-2 -translate-y-1/2 rounded-full bg-white/20" />
+            </div>
+          </div>
+
+          <div className="mt-2 flex items-center justify-between gap-2 text-[11px] text-white/70">
+            <span>you are here: {guideJourney[currentIndex].short}</span>
+            <span>{next ? `next: ${next.short}` : 'final step'}</span>
           </div>
 
           <div className="mt-3 overflow-x-auto">

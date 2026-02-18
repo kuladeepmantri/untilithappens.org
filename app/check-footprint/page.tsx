@@ -133,7 +133,7 @@ export default function CheckFootprintPage() {
                 onClick={() => setPhaseIndex(index)}
                 className={`w-full rounded-xl border px-4 py-3 text-left transition ${
                   index === phaseIndex
-                    ? 'border-[#86d8ca]/70 bg-[#86d8ca]/12 text-white'
+                    ? 'border-[#8db1c8]/70 bg-[#182432] text-white'
                     : 'border-white/10 bg-white/[0.03] text-white/74 hover:border-white/25 hover:text-white'
                 }`}
               >

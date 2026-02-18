@@ -43,7 +43,7 @@ export default function RootLayout({
     <html lang="en" className="scroll-smooth">
       <body className="text-white antialiased">
         <Navigation />
-        <main className="min-h-screen pb-60 md:pb-48">{children}</main>
+        <main className="min-h-screen pb-44 md:pb-40">{children}</main>
         <JourneyDock />
         <SiteFooter />
       </body>
