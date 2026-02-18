@@ -409,6 +409,7 @@ export function JourneyDock() {
 
   const completedCount = guideJourney.reduce((total, step) => total + (doneMap[step.href] ? 1 : 0), 0);
   const completionPercent = Math.round((completedCount / guideJourney.length) * 100);
+  const isCurrentStepDone = Boolean(doneMap[currentStep.href]);
 
   const setGreetingSeen = () => {
     setShowGreeting(false);
@@ -418,6 +419,10 @@ export function JourneyDock() {
   };
 
   const navigateTo = (href: string, shouldMarkCurrentDone = false) => {
+    if (isPending) {
+      return;
+    }
+
     if (shouldMarkCurrentDone) {
       setDoneMap((previousMap) => ({ ...previousMap, [currentStep.href]: true }));
     }
@@ -483,11 +488,11 @@ export function JourneyDock() {
       </AnimatePresence>
 
       <div className="pointer-events-none fixed inset-x-0 bottom-3 z-[110] px-2 sm:px-4">
-        <motion.section
-          layout
-          transition={{ type: 'spring', stiffness: 290, damping: 30, mass: 0.9 }}
+        <section
           className={`pointer-events-auto mx-auto w-full rounded-2xl border border-white/20 bg-[#0a1016]/95 shadow-[0_16px_34px_rgba(0,0,0,0.42)] backdrop-blur-sm ${
-            isMinimized ? 'max-w-md p-2.5 sm:p-3' : 'max-w-5xl max-h-[72svh] overflow-y-auto p-3 sm:p-4'
+            isMinimized
+              ? 'max-w-5xl p-2.5 sm:p-3'
+              : 'max-w-5xl max-h-[72svh] overflow-y-auto p-3 sm:p-4'
           }`}
         >
           <div className="flex items-center justify-between gap-2">
@@ -522,7 +527,8 @@ export function JourneyDock() {
                 <button
                   type="button"
                   onClick={() => navigateTo(next.href, true)}
-                  className="rounded-md bg-[#d9a567] px-3 py-1.5 text-xs font-medium text-[#12100c]"
+                  disabled={isPending}
+                  className="rounded-md bg-[#d9a567] px-3 py-1.5 text-xs font-medium text-[#12100c] disabled:opacity-60"
                 >
                   Continue
                 </button>
@@ -530,14 +536,14 @@ export function JourneyDock() {
             </div>
           </div>
 
-          <AnimatePresence initial={false} mode="wait">
+          <AnimatePresence initial={false}>
             {!isMinimized && (
               <motion.div
                 key={currentStep.href}
                 initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -8 }}
-                transition={{ duration: 0.2 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.16, ease: 'easeOut' }}
                 className="mt-3"
               >
                 <p className="text-sm leading-relaxed text-white/84">{assist.objective}</p>
@@ -547,6 +553,9 @@ export function JourneyDock() {
                   <span className="rounded-full border border-white/16 px-3 py-1">Impact {quality.impact}/100</span>
                   <span className="rounded-full border border-white/16 px-3 py-1">Signal confidence {quality.confidence}/100</span>
                   <span className="rounded-full border border-white/16 px-3 py-1">Readiness {quality.readiness}/100</span>
+                  <span className={`rounded-full border px-3 py-1 ${isCurrentStepDone ? 'border-[#8f775a]/80 text-white/90' : 'border-white/16 text-white/70'}`}>
+                    Current step {isCurrentStepDone ? 'done' : 'open'}
+                  </span>
                 </div>
 
                 <ol className="mt-3 divide-y divide-white/10 border-y border-white/10">
@@ -566,17 +575,18 @@ export function JourneyDock() {
                   <div className="flex min-w-max gap-2 pb-1">
                     {guideJourney.map((step, index) => {
                       const isCurrent = index === currentIndex;
-                      const isDone = doneMap[step.href] || index < currentIndex;
+                      const isDone = doneMap[step.href];
                       return (
                         <button
                           type="button"
                           key={step.href}
                           onClick={() => navigateTo(step.href, index > currentIndex)}
+                          disabled={isPending}
                           className={`rounded-full border px-3 py-1.5 text-xs transition ${
                             isCurrent
                               ? 'border-[#8db1c8] bg-[#182432] text-white'
                               : isDone
-                                ? 'border-[#8f775a] text-white/80 hover:border-white/40'
+                                ? 'border-[#8f775a]/60 text-white/72 hover:border-[#8f775a]'
                                 : 'border-white/20 text-white/70 hover:border-white/35 hover:text-white'
                           }`}
                         >
@@ -593,6 +603,7 @@ export function JourneyDock() {
                       <button
                         type="button"
                         onClick={() => navigateTo(previous.href)}
+                        disabled={isPending}
                         className="rounded-md border border-white/20 px-3 py-2 text-xs text-white/84 hover:bg-white/10"
                       >
                         Back: {previous.short}
@@ -604,15 +615,19 @@ export function JourneyDock() {
                     <button
                       type="button"
                       onClick={toggleCurrentDone}
-                      className="rounded-md border border-white/20 px-3 py-2 text-xs text-white/84 hover:bg-white/10"
+                      disabled={isPending}
+                      className={`rounded-md border px-3 py-2 text-xs hover:bg-white/10 disabled:opacity-60 ${
+                        isCurrentStepDone ? 'border-[#8f775a]/70 text-white' : 'border-white/20 text-white/84'
+                      }`}
                     >
-                      {doneMap[currentStep.href] ? 'Mark not done' : 'Mark done'}
+                      {isCurrentStepDone ? 'Mark not done' : 'Mark done'}
                     </button>
 
                     <button
                       type="button"
                       onClick={resetProgress}
-                      className="rounded-md border border-white/20 px-3 py-2 text-xs text-white/84 hover:bg-white/10"
+                      disabled={isPending}
+                      className="rounded-md border border-white/20 px-3 py-2 text-xs text-white/84 hover:bg-white/10 disabled:opacity-60"
                     >
                       Reset
                     </button>
@@ -634,7 +649,7 @@ export function JourneyDock() {
               </motion.div>
             )}
           </AnimatePresence>
-        </motion.section>
+        </section>
       </div>
     </>
   );
