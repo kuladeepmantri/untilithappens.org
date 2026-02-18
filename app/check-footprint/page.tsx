@@ -73,8 +73,8 @@ export default function CheckFootprintPage() {
 
   return (
     <div className="aurora-bg relative overflow-hidden pt-24">
-      <div className="pointer-events-none absolute left-10 top-44 h-72 w-72 rounded-full bg-[#3ecad8]/16 blur-3xl float-orb" />
-      <div className="pointer-events-none absolute right-10 top-60 h-72 w-72 rounded-full bg-[#7f73ff]/18 blur-3xl float-orb" />
+      <div className="pointer-events-none absolute left-10 top-44 h-72 w-72 rounded-full bg-[#76c6bb]/16 blur-3xl float-orb" />
+      <div className="pointer-events-none absolute right-10 top-60 h-72 w-72 rounded-full bg-[#d7ab73]/14 blur-3xl float-orb" />
 
       <section className="relative mx-auto max-w-7xl px-6 pb-14 pt-14 md:pt-20">
         <span className="guide-chip">Digital footprint guide</span>
@@ -102,7 +102,7 @@ export default function CheckFootprintPage() {
                 }}
                 className={`rounded-md px-3 py-2 text-xs uppercase tracking-[0.14em] transition ${
                   scenarioIndex === index
-                    ? 'bg-white text-[#07232a]'
+                    ? 'bg-[#d7ab73] text-[#11191e]'
                     : 'border border-white/20 bg-white/5 text-white/70 hover:bg-white/10'
                 }`}
               >
@@ -149,7 +149,7 @@ export default function CheckFootprintPage() {
           </div>
           <Link
             href="/protect"
-            className="mt-5 inline-flex rounded-md bg-white px-4 py-2 text-sm font-medium text-[#08242d] transition hover:bg-white/90"
+            className="mt-5 inline-flex rounded-md bg-[#d7ab73] px-4 py-2 text-sm font-medium text-[#11191e] transition hover:bg-[#e1b988]"
           >
             next: lock accounts and devices
           </Link>

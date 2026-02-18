@@ -85,7 +85,10 @@ export default function GetHelpPage() {
             ))}
           </div>
           <div className="mt-6 flex flex-wrap gap-3">
-            <Link href="/report" className="rounded-md bg-white px-4 py-2 text-sm font-medium text-[#08242d] hover:bg-white/90">
+            <Link
+              href="/report"
+              className="rounded-md bg-[#d7ab73] px-4 py-2 text-sm font-medium text-[#11191e] hover:bg-[#e1b988]"
+            >
               next: reporting matrix
             </Link>
             <Link href="/community" className="rounded-md border border-white/20 px-4 py-2 text-sm text-white/80 hover:bg-white/10">

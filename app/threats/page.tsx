@@ -15,7 +15,7 @@ const threatCards = [
       'Call back using a known number from your contacts.',
       'Pause every urgent transfer request for independent verification.',
     ],
-    gradient: 'from-[#3ecad8]/28 to-[#1e5a7f]/30',
+    gradient: 'from-[#76c6bb]/26 to-[#355d6d]/34',
   },
   {
     name: 'Credential theft and MFA fatigue',
@@ -26,7 +26,7 @@ const threatCards = [
       'Prefer passkeys/security keys over SMS where possible.',
       'Deny all unexpected MFA prompts and change credentials immediately.',
     ],
-    gradient: 'from-[#6f78ff]/26 to-[#383f89]/34',
+    gradient: 'from-[#9bb8c3]/23 to-[#445b6c]/36',
   },
   {
     name: 'Ransomware and data extortion',
@@ -37,7 +37,7 @@ const threatCards = [
       'Patch internet-facing services quickly.',
       'Limit admin privileges and segment critical systems.',
     ],
-    gradient: 'from-[#f95f8f]/24 to-[#742247]/34',
+    gradient: 'from-[#d7ab73]/22 to-[#5a432d]/37',
   },
   {
     name: 'Malicious extensions and browser hijack',
@@ -48,7 +48,7 @@ const threatCards = [
       'Install from official stores and trusted publishers only.',
       'Use separate browser profiles for sensitive workflows.',
     ],
-    gradient: 'from-[#f6af57]/24 to-[#82431a]/36',
+    gradient: 'from-[#8ea8a0]/24 to-[#58402f]/36',
   },
 ];
 
@@ -63,8 +63,8 @@ const evidenceChecklist = [
 export default function ThreatsPage() {
   return (
     <div className="aurora-bg relative overflow-hidden pt-24">
-      <div className="pointer-events-none absolute left-4 top-36 h-64 w-64 rounded-full bg-[#3ecad8]/18 blur-3xl float-orb" />
-      <div className="pointer-events-none absolute right-4 top-56 h-64 w-64 rounded-full bg-[#f95f8f]/16 blur-3xl float-orb" />
+      <div className="pointer-events-none absolute left-4 top-36 h-64 w-64 rounded-full bg-[#76c6bb]/16 blur-3xl float-orb" />
+      <div className="pointer-events-none absolute right-4 top-56 h-64 w-64 rounded-full bg-[#d7ab73]/15 blur-3xl float-orb" />
 
       <section className="relative mx-auto max-w-7xl px-6 pb-12 pt-14 md:pt-20">
         <span className="guide-chip">Threat briefing</span>
@@ -137,7 +137,7 @@ export default function ThreatsPage() {
             </div>
             <Link
               href="/check-footprint"
-              className="mt-5 inline-flex rounded-md bg-white px-4 py-2 text-sm font-medium text-[#08242d] transition hover:bg-white/90"
+              className="mt-5 inline-flex rounded-md bg-[#d7ab73] px-4 py-2 text-sm font-medium text-[#11191e] transition hover:bg-[#e1b988]"
             >
               continue to exposure audit
             </Link>

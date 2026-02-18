@@ -68,7 +68,7 @@ export default function RealStoriesPage() {
         </div>
 
         <div className="mt-6 flex flex-wrap gap-3">
-          <Link href="/get-help" className="rounded-md bg-white px-4 py-2 text-sm font-medium text-[#08242d] hover:bg-white/90">
+          <Link href="/get-help" className="rounded-md bg-[#d7ab73] px-4 py-2 text-sm font-medium text-[#11191e] hover:bg-[#e1b988]">
             next: incident response checklist
           </Link>
           <Link href="/report" className="rounded-md border border-white/20 px-4 py-2 text-sm text-white/80 hover:bg-white/10">

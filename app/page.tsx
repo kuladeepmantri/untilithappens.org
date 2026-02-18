@@ -16,36 +16,36 @@ const quickActions = [
     description: 'Run a structured footprint audit and remove high-risk public data first.',
     href: '/check-footprint',
     cta: 'Start audit',
-    color: 'from-[#47d5e2]/30 to-[#276ca8]/30',
+    color: 'from-[#76c6bb]/28 to-[#355d6d]/36',
   },
   {
     title: 'Harden your devices',
     description: 'Apply platform-specific controls that lower takeover and ransomware risk.',
     href: '/protect',
     cta: 'Open guides',
-    color: 'from-[#6a7af7]/28 to-[#3f4797]/30',
+    color: 'from-[#9ebac4]/22 to-[#45596a]/34',
   },
   {
     title: 'Understand current threats',
     description: 'Use scenario-based warning signs before responding to messages or calls.',
     href: '/threats',
     cta: 'View threats',
-    color: 'from-[#f56f9e]/25 to-[#7f2f5f]/32',
+    color: 'from-[#d7ab73]/22 to-[#5f452b]/35',
   },
   {
     title: 'Know where to report fast',
     description: 'Move from panic to action with official reporting channels and evidence prep.',
     href: '/report',
     cta: 'Report now',
-    color: 'from-[#f6af57]/25 to-[#9f5b22]/30',
+    color: 'from-[#87a29d]/24 to-[#5a4430]/33',
   },
 ];
 
 export default function Home() {
   return (
     <div className="aurora-bg relative overflow-hidden pt-24">
-      <div className="pointer-events-none absolute -left-20 top-32 h-72 w-72 rounded-full bg-[#3ecad8]/20 blur-3xl float-orb" />
-      <div className="pointer-events-none absolute right-0 top-44 h-72 w-72 rounded-full bg-[#7b72ff]/20 blur-3xl float-orb" />
+      <div className="pointer-events-none absolute -left-20 top-32 h-72 w-72 rounded-full bg-[#76c6bb]/17 blur-3xl float-orb" />
+      <div className="pointer-events-none absolute right-0 top-44 h-72 w-72 rounded-full bg-[#d7ab73]/15 blur-3xl float-orb" />
 
       <section className="relative mx-auto max-w-7xl px-6 pb-20 pt-14 md:pt-20">
         <div className="grid items-end gap-10 lg:grid-cols-[1.4fr,1fr]">
@@ -72,7 +72,7 @@ export default function Home() {
             <motion.div variants={reveal} className="flex flex-wrap gap-3">
               <Link
                 href="/threats"
-                className="rounded-lg bg-white px-5 py-3 text-sm font-medium text-[#08242d] transition hover:bg-white/90"
+                className="rounded-lg bg-[#d7ab73] px-5 py-3 text-sm font-medium text-[#11191e] transition hover:bg-[#e1b988]"
               >
                 start guided path
               </Link>

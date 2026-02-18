@@ -122,7 +122,7 @@ export const verifiedNotes: VerifiedNote[] = [
     metric: '$16.6B reported losses',
     detail:
       'The FBI Internet Crime Complaint Center received 859,532 complaints in 2024, with reported losses exceeding $16.6 billion.',
-    asOf: '2024 data (published April 2025)',
+    asOf: 'Latest IC3 annual dataset: 2024 data (published April 2025)',
     sourceLabel: 'FBI IC3 Internet Crime Report 2024',
     sourceUrl: 'https://www.ic3.gov/AnnualReport/Reports/2024_IC3Report.pdf',
   },
@@ -130,17 +130,17 @@ export const verifiedNotes: VerifiedNote[] = [
     metric: '$12.5B lost to fraud',
     detail:
       'The FTC reported consumers lost over $12.5 billion to fraud in 2024, a 25% increase over 2023.',
-    asOf: 'March 2025 release',
-    sourceLabel: 'FTC Data Book Press Release',
-    sourceUrl: 'https://www.ftc.gov/news-events/news/press-releases/2025/03/new-ftc-data-show-consumers-reported-losing-more-125-billion-fraud-2024',
+    asOf: 'Latest FTC annual fraud summary: March 10, 2025',
+    sourceLabel: 'FTC annual fraud losses release',
+    sourceUrl: 'https://www.ftc.gov/news-events/news/press-releases/2025/03/big-jump-reported-losses-fraud-125-billion-2024',
   },
   {
     metric: '44% of breaches involved ransomware',
     detail:
       "Verizon's 2025 Data Breach Investigations Report found ransomware in 44% of analyzed breaches.",
-    asOf: '2025 report',
-    sourceLabel: 'Verizon 2025 DBIR Highlights',
-    sourceUrl: 'https://www.verizon.com/about/news/2025-data-breach-investigations-report',
+    asOf: 'Latest DBIR publication: 2025 report (April 2025)',
+    sourceLabel: 'Verizon Data Breach Investigations Report',
+    sourceUrl: 'https://www.verizon.com/business/resources/reports/dbir/',
   },
 ];
 
@@ -158,7 +158,7 @@ export const emergencyResources: EmergencyResource[] = [
   {
     name: 'CISA Report Phishing',
     purpose: 'Report phishing or suspicious cyber activity to CISA.',
-    href: 'https://www.cisa.gov/report',
+    href: 'https://www.cisa.gov/reporting-cyber-incident',
   },
 ];
 
@@ -169,19 +169,19 @@ export const sourceIndex: LinkItem[] = [
   },
   {
     label: 'FTC Fraud Losses (2024 Data)',
-    href: 'https://www.ftc.gov/news-events/news/press-releases/2025/03/new-ftc-data-show-consumers-reported-losing-more-125-billion-fraud-2024',
+    href: 'https://www.ftc.gov/news-events/news/press-releases/2025/03/big-jump-reported-losses-fraud-125-billion-2024',
   },
   {
-    label: 'Verizon 2025 DBIR',
-    href: 'https://www.verizon.com/about/news/2025-data-breach-investigations-report',
+    label: 'Verizon DBIR (latest report hub)',
+    href: 'https://www.verizon.com/business/resources/reports/dbir/',
   },
   {
     label: 'CISA Secure Our World',
     href: 'https://www.cisa.gov/secure-our-world',
   },
   {
-    label: 'NIST SP 800-63B (Digital Identity Guidelines)',
-    href: 'https://csrc.nist.gov/pubs/sp/800/63/b/upd2/final',
+    label: 'NIST SP 800-63-4 (Digital Identity Guidelines)',
+    href: 'https://csrc.nist.gov/pubs/sp/800/63/4/final',
   },
 ];
 

@@ -17,7 +17,7 @@ const modules = [
       { label: 'Threat briefings', href: '/threats' },
       { label: 'Real stories', href: '/real-stories' },
     ],
-    gradient: 'from-[#3ecad8]/30 to-[#255980]/35',
+    gradient: 'from-[#76c6bb]/27 to-[#355d6d]/35',
   },
   {
     title: 'Module 2: Identity defense',
@@ -29,9 +29,9 @@ const modules = [
     ],
     links: [
       { label: 'Protection playbook', href: '/protect' },
-      { label: 'NIST guidance', href: 'https://csrc.nist.gov/pubs/sp/800/63/b/upd2/final' },
+      { label: 'NIST guidance', href: 'https://csrc.nist.gov/pubs/sp/800/63/4/final' },
     ],
-    gradient: 'from-[#6e78ff]/25 to-[#373d8e]/38',
+    gradient: 'from-[#9ebac4]/22 to-[#445b6c]/36',
   },
   {
     title: 'Module 3: Exposure reduction',
@@ -45,7 +45,7 @@ const modules = [
       { label: 'Footprint audit', href: '/check-footprint' },
       { label: 'CISA Secure Our World', href: 'https://www.cisa.gov/secure-our-world' },
     ],
-    gradient: 'from-[#f95f8f]/25 to-[#772149]/35',
+    gradient: 'from-[#d7ab73]/21 to-[#5a432d]/37',
   },
   {
     title: 'Module 4: Response and reporting',
@@ -59,7 +59,7 @@ const modules = [
       { label: 'Get help', href: '/get-help' },
       { label: 'Report channels', href: '/report' },
     ],
-    gradient: 'from-[#f4af53]/25 to-[#8a4a1e]/36',
+    gradient: 'from-[#8ea8a0]/24 to-[#58402f]/36',
   },
 ];
 
@@ -137,7 +137,7 @@ export default function LearnPage() {
           </div>
           <Link
             href="/real-stories"
-            className="mt-6 inline-flex rounded-md bg-white px-4 py-2 text-sm font-medium text-[#08242d] transition hover:bg-white/90"
+            className="mt-6 inline-flex rounded-md bg-[#d7ab73] px-4 py-2 text-sm font-medium text-[#11191e] transition hover:bg-[#e1b988]"
           >
             next: learn from real stories
           </Link>

@@ -50,14 +50,14 @@ export function Navigation() {
         className={cn(
           'fixed inset-x-0 top-0 z-[100] border-b transition-all duration-300',
           isScrolled
-            ? 'border-white/10 bg-[#07171b]/88 backdrop-blur-xl'
-            : 'border-transparent bg-gradient-to-b from-[#07171b]/70 to-transparent'
+            ? 'border-white/10 bg-[#08141a]/88 backdrop-blur-xl'
+            : 'border-transparent bg-gradient-to-b from-[#08141a]/72 to-transparent'
         )}
       >
         <div className="mx-auto flex h-20 max-w-7xl items-center justify-between px-6">
           <Link href="/" className="text-base font-semibold tracking-tight text-white">
             <span className="inline-flex items-center gap-2">
-              <span className="h-2 w-2 rounded-full bg-[#3ecad8]" />
+              <span className="h-2 w-2 rounded-full bg-[#76c6bb]" />
               until it happens.
             </span>
           </Link>
@@ -75,7 +75,7 @@ export function Navigation() {
                   <span>{item.label}</span>
                 <span
                   className={cn(
-                    'absolute -bottom-1 left-0 h-[1px] w-full origin-left scale-x-0 bg-gradient-to-r from-[#3ecad8] to-[#f95f8f] transition-transform duration-300',
+                    'absolute -bottom-1 left-0 h-[1px] w-full origin-left scale-x-0 bg-gradient-to-r from-[#76c6bb] to-[#d7ab73] transition-transform duration-300',
                     isActive(item.href) && 'scale-x-100'
                   )}
                 />
@@ -101,7 +101,7 @@ export function Navigation() {
             ))}
             <Link
               href="/get-help"
-              className="inline-flex items-center rounded-lg border border-white/20 bg-gradient-to-r from-[#f95f8f]/30 to-[#7a2f61]/35 px-4 py-2 text-sm font-medium text-white/95 transition hover:border-white/40 hover:from-[#f95f8f]/40 hover:to-[#7a2f61]/45"
+              className="inline-flex items-center rounded-lg border border-[#d7ab73]/45 bg-gradient-to-r from-[#5b8f93]/40 to-[#5a3f26]/35 px-4 py-2 text-sm font-medium text-white/95 transition hover:border-[#d7ab73]/65 hover:from-[#5b8f93]/50 hover:to-[#6f4c2f]/44"
             >
               get help.
             </Link>
@@ -148,7 +148,7 @@ export function Navigation() {
               animate={{ x: 0 }}
               exit={{ x: '100%' }}
               transition={{ type: 'spring', stiffness: 280, damping: 28 }}
-              className="absolute right-0 top-0 h-full w-full max-w-sm border-l border-white/10 bg-[#08191d]/95 px-6 pt-24"
+              className="absolute right-0 top-0 h-full w-full max-w-sm border-l border-white/10 bg-[#09161c]/95 px-6 pt-24"
             >
               <div className="space-y-3">
                 {siteNavItems.map((item) => (

@@ -45,7 +45,7 @@ function evaluate(password: string): StrengthResult {
     return {
       score: points,
       label: 'Weak - easy to brute force or guess',
-      color: 'from-[#ff6b6b] to-[#ff8e72]',
+      color: 'from-[#cc7063] to-[#d39074]',
       suggestions,
     };
   }
@@ -54,7 +54,7 @@ function evaluate(password: string): StrengthResult {
     return {
       score: points,
       label: 'Moderate - improve before using for sensitive accounts',
-      color: 'from-[#ffbe55] to-[#ffc85f]',
+      color: 'from-[#cda05f] to-[#d8b27b]',
       suggestions,
     };
   }
@@ -62,7 +62,7 @@ function evaluate(password: string): StrengthResult {
   return {
     score: points,
     label: 'Strong - good baseline, still use a password manager',
-    color: 'from-[#44d6a7] to-[#3ea3f0]',
+    color: 'from-[#76c6bb] to-[#7ea3b4]',
     suggestions: suggestions.length > 0 ? suggestions : ['Keep this unique and store it in a password manager.'],
   };
 }
@@ -74,9 +74,9 @@ export function PasswordStrengthLab() {
   const result = useMemo(() => evaluate(value), [value]);
 
   return (
-    <div className="relative overflow-hidden rounded-2xl border border-white/15 bg-gradient-to-br from-[#0a2a37]/80 via-[#0b2028]/90 to-[#301425]/80 p-6">
-      <div className="pointer-events-none absolute -right-16 -top-16 h-48 w-48 rounded-full bg-[#4dd4e0]/20 blur-3xl" />
-      <div className="pointer-events-none absolute -bottom-16 -left-16 h-48 w-48 rounded-full bg-[#f95f8f]/20 blur-3xl" />
+    <div className="relative overflow-hidden rounded-2xl border border-white/15 bg-gradient-to-br from-[#0a1f2b]/82 via-[#0c1d26]/90 to-[#2e241b]/80 p-6">
+      <div className="pointer-events-none absolute -right-16 -top-16 h-48 w-48 rounded-full bg-[#76c6bb]/20 blur-3xl" />
+      <div className="pointer-events-none absolute -bottom-16 -left-16 h-48 w-48 rounded-full bg-[#d7ab73]/18 blur-3xl" />
 
       <div className="relative space-y-4">
         <div>

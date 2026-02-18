@@ -4,64 +4,35 @@
 
 @layer base {
   :root {
-    /* Theme Colors - CHANGE THESE VALUES TO UPDATE THE ENTIRE SITE'S COLORS */
-    
-    /* Current Theme: Deep Teal */
-    --theme-primary: 187 60% 20%;      /* #144C52 (Deep Teal) */
-    --theme-primary-dark: 187 60% 15%;  /* #0F393E (Darker Teal) */
-    --theme-primary-light: 187 60% 25%; /* #195F66 (Lighter Teal) */
-    
-    /* Available Color Options - Copy these values above to change colors:
-    
-    1. Vibrant Purple (#8A2BE2)
-    --theme-primary: 271 71% 53%
-    --theme-primary-dark: 271 71% 43%
-    --theme-primary-light: 271 71% 63%
-    
-    2. Bright Cyan (#00FFFF)
-    --theme-primary: 180 100% 50%
-    --theme-primary-dark: 180 100% 40%
-    --theme-primary-light: 180 100% 60%
-    
-    3. Electric Blue (#0066FF)
-    --theme-primary: 217 100% 50%
-    --theme-primary-dark: 217 100% 40%
-    --theme-primary-light: 217 100% 60%
+    --font-heading: "Sora", "Avenir Next", "Segoe UI", "Helvetica Neue", sans-serif;
+    --font-mono: "IBM Plex Mono", "JetBrains Mono", "SFMono-Regular", "Menlo", monospace;
 
-    4. Pure Red (#FF0000)
-    --theme-primary: 0 100% 50%
-    --theme-primary-dark: 0 100% 40%
-    --theme-primary-light: 0 100% 60%
-    
-    5. Neon Green (#00FF00)
-    --theme-primary: 120 100% 50%
-    --theme-primary-dark: 120 100% 40%
-    --theme-primary-light: 120 100% 60%
-    */
-    
-    /* Base colors - DON'T CHANGE THESE */
-    --background: 0 0% 0%;
-    --foreground: 0 0% 100%;
-    --muted: 0 0% 40%;
-    --muted-foreground: 0 0% 60%;
-    --border: 0 0% 20%;
-    --input: 0 0% 10%;
+    --theme-primary: 194 45% 24%;
+    --theme-primary-dark: 202 52% 11%;
+    --theme-primary-light: 181 34% 49%;
+
+    --background: 206 30% 8%;
+    --foreground: 188 18% 95%;
+    --muted: 208 20% 27%;
+    --muted-foreground: 205 12% 63%;
+    --border: 203 23% 23%;
+    --input: 204 29% 12%;
     --ring: var(--theme-primary);
 
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card: 206 26% 12%;
+    --card-foreground: 188 18% 95%;
  
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    --popover: 206 26% 10%;
+    --popover-foreground: 188 18% 95%;
  
     --primary: var(--theme-primary);
     --primary-foreground: 210 40% 98%;
  
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 204 23% 17%;
+    --secondary-foreground: 188 18% 95%;
  
     --accent: var(--theme-primary-light);
-    --accent-foreground: 222.2 47.4% 11.2%;
+    --accent-foreground: 206 32% 9%;
  
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
@@ -191,20 +162,20 @@ h3 {
 
 /* Custom button styles */
 .btn-primary {
-  @apply inline-flex items-center justify-center px-6 py-3 text-base font-medium text-black bg-white rounded-lg hover:bg-gray-200 transition-colors duration-200;
+  @apply inline-flex items-center justify-center px-6 py-3 text-base font-medium text-[#10191f] bg-[#d7ab73] rounded-lg transition-colors duration-200 hover:bg-[#e1b988];
 }
 
 .btn-secondary {
-  @apply inline-flex items-center justify-center px-6 py-3 text-base font-medium text-white bg-transparent border border-white/20 rounded-lg hover:bg-white/10 transition-colors duration-200;
+  @apply inline-flex items-center justify-center px-6 py-3 text-base font-medium text-white bg-transparent border border-white/20 rounded-lg transition-colors duration-200 hover:bg-white/10;
 }
 
 /* Custom card styles */
 .card {
-  @apply relative overflow-hidden rounded-2xl bg-white/5 p-6 backdrop-blur-lg border border-white/10;
+  @apply relative overflow-hidden rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur-lg;
 }
 
 .card-hover {
-  @apply hover:bg-white/10 transition-colors duration-200;
+  @apply transition-colors duration-200 hover:bg-white/10;
 }
 
 /* Custom input styles */
@@ -243,13 +214,13 @@ h3 {
 
 .site-grid-bg {
   background-image:
-    linear-gradient(to right, rgba(255, 255, 255, 0.06) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(255, 255, 255, 0.06) 1px, transparent 1px);
+    linear-gradient(to right, rgba(182, 211, 218, 0.07) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(182, 211, 218, 0.07) 1px, transparent 1px);
   background-size: 40px 40px;
 }
 
 .site-panel {
-  @apply rounded-2xl border border-white/10 bg-white/[0.04] backdrop-blur-sm;
+  @apply rounded-2xl border border-white/10 bg-white/5 backdrop-blur-sm;
 }
 
 .font-ui-mono {
@@ -258,28 +229,39 @@ h3 {
 
 .aurora-bg {
   background-image:
-    radial-gradient(circle at 12% 18%, rgba(62, 202, 216, 0.26), transparent 32%),
-    radial-gradient(circle at 88% 12%, rgba(109, 132, 255, 0.25), transparent 36%),
-    radial-gradient(circle at 50% 88%, rgba(249, 95, 143, 0.22), transparent 35%),
-    linear-gradient(180deg, #051217 0%, #071a20 45%, #140c1b 100%);
+    radial-gradient(circle at 12% 16%, rgba(90, 161, 149, 0.25), transparent 34%),
+    radial-gradient(circle at 88% 10%, rgba(100, 140, 158, 0.24), transparent 35%),
+    radial-gradient(circle at 52% 92%, rgba(187, 141, 88, 0.19), transparent 36%),
+    linear-gradient(180deg, #060d12 0%, #09151c 48%, #0d141b 100%);
 }
 
 .guide-chip {
-  @apply inline-flex items-center rounded-full border border-white/20 bg-white/5 px-4 py-2 text-xs uppercase tracking-[0.2em] text-white/70;
+  @apply inline-flex items-center rounded-full border border-[#76c6bb]/45 bg-[#76c6bb]/10 px-4 py-2 text-xs uppercase tracking-[0.2em] text-white/80;
 }
 
 .story-card {
-  @apply rounded-2xl border border-white/15 bg-black/25 backdrop-blur-sm;
-  box-shadow: 0 18px 60px rgba(4, 15, 19, 0.35);
+  @apply rounded-2xl border border-white/10 bg-black/30 backdrop-blur-sm;
+  box-shadow: 0 16px 54px rgba(4, 12, 16, 0.45);
 }
 
 .panel-gradient {
   background: linear-gradient(
     135deg,
-    rgba(40, 109, 130, 0.38) 0%,
-    rgba(13, 40, 51, 0.48) 52%,
-    rgba(65, 24, 44, 0.42) 100%
+    rgba(54, 112, 119, 0.36) 0%,
+    rgba(13, 35, 45, 0.52) 56%,
+    rgba(66, 47, 29, 0.36) 100%
   );
+}
+
+.story-map-surface {
+  background-image:
+    radial-gradient(circle at 12% 24%, rgba(118, 198, 187, 0.17), transparent 36%),
+    radial-gradient(circle at 88% 18%, rgba(215, 171, 115, 0.14), transparent 34%),
+    linear-gradient(180deg, rgba(6, 15, 20, 0.94) 0%, rgba(8, 19, 26, 0.95) 100%);
+}
+
+.journey-modal {
+  box-shadow: 0 28px 120px rgba(2, 9, 12, 0.68);
 }
 
 .float-orb {

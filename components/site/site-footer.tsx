@@ -6,9 +6,9 @@ export function SiteFooter() {
 
   return (
     <footer className="relative overflow-hidden border-t border-white/10 bg-[#050f14]">
-      <div className="pointer-events-none absolute -left-16 top-0 h-56 w-56 rounded-full bg-[#3ecad8]/20 blur-3xl" />
-      <div className="pointer-events-none absolute -right-16 top-8 h-56 w-56 rounded-full bg-[#f95f8f]/16 blur-3xl" />
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(38,132,145,0.18),transparent_52%)]" />
+      <div className="pointer-events-none absolute -left-16 top-0 h-56 w-56 rounded-full bg-[#76c6bb]/18 blur-3xl" />
+      <div className="pointer-events-none absolute -right-16 top-8 h-56 w-56 rounded-full bg-[#d7ab73]/15 blur-3xl" />
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(78,139,148,0.18),transparent_52%)]" />
       <div className="relative mx-auto max-w-7xl px-6 py-16">
         <div className="grid gap-12 md:grid-cols-[2fr,3fr]">
           <div className="space-y-5">
@@ -19,7 +19,7 @@ export function SiteFooter() {
             <div className="flex flex-wrap gap-2">
               <Link
                 href="/threats"
-                className="inline-flex items-center rounded-lg bg-white px-4 py-2 text-sm font-medium text-[#08242d] transition hover:bg-white/90"
+                className="inline-flex items-center rounded-lg bg-[#d7ab73] px-4 py-2 text-sm font-medium text-[#10191f] transition hover:bg-[#e1b988]"
               >
                 start guide
               </Link>

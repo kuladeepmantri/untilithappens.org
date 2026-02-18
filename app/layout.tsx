@@ -1,20 +1,6 @@
 import './globals.css';
-import { IBM_Plex_Mono, Space_Grotesk } from 'next/font/google';
 import { Navigation } from '@/components/ui/navigation';
 import { SiteFooter } from '@/components/site/site-footer';
-
-const heading = Space_Grotesk({
-  subsets: ['latin'],
-  variable: '--font-heading',
-  display: 'swap',
-});
-
-const mono = IBM_Plex_Mono({
-  subsets: ['latin'],
-  variable: '--font-mono',
-  weight: ['400', '500'],
-  display: 'swap',
-});
 
 export const metadata = {
   metadataBase: new URL('https://untilithappens.org'),
@@ -54,9 +40,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className="scroll-smooth">
-      <body className={`${heading.variable} ${mono.variable} bg-black text-white antialiased`}>
+      <body className="bg-black text-white antialiased">
         <Navigation />
-        <main className="min-h-screen">{children}</main>
+        <main className="min-h-screen pb-28">{children}</main>
         <SiteFooter />
       </body>
     </html>

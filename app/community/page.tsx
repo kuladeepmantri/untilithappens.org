@@ -76,7 +76,7 @@ export default function CommunityPage() {
               href="https://github.com/untilithappens"
               target="_blank"
               rel="noopener noreferrer"
-              className="rounded-md bg-white px-4 py-2 text-sm font-medium text-[#08242d] hover:bg-white/90"
+              className="rounded-md bg-[#d7ab73] px-4 py-2 text-sm font-medium text-[#11191e] hover:bg-[#e1b988]"
             >
               open GitHub
             </Link>

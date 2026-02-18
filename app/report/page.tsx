@@ -20,7 +20,7 @@ const reportMatrix = [
   {
     incident: 'Phishing campaigns and cyber threat reporting',
     channel: 'CISA Report',
-    href: 'https://www.cisa.gov/report',
+    href: 'https://www.cisa.gov/reporting-cyber-incident',
     notes: 'Useful for suspicious campaigns impacting broader communities or infrastructure.',
   },
   {
@@ -94,7 +94,7 @@ export default function ReportPage() {
           </ul>
           <Link
             href="/community"
-            className="mt-6 inline-flex rounded-md bg-white px-4 py-2 text-sm font-medium text-[#08242d] transition hover:bg-white/90"
+            className="mt-6 inline-flex rounded-md bg-[#d7ab73] px-4 py-2 text-sm font-medium text-[#11191e] transition hover:bg-[#e1b988]"
           >
             next: join community and keep improving
           </Link>

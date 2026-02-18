@@ -46,7 +46,7 @@ const guides: Guide[] = [
     links: [
       {
         label: 'Windows Security settings (Microsoft)',
-        href: 'https://support.microsoft.com/en-us/windows/windows-security-app-settings-1ea73c14-777c-1659-bdcc-fb3e2272a9d1',
+        href: 'https://support.microsoft.com/en-us/windows/windows-security-app-settings-1ec98620-1d39-8420-6f13-60448c7b31fd',
       },
     ],
   },
@@ -70,8 +70,8 @@ const guides: Guide[] = [
       'Set recovery contacts and safeguard Apple recovery options.',
     ],
     links: [
-      { label: 'Apple ID two-factor authentication', href: 'https://support.apple.com/en-us/102660' },
-      { label: 'Advanced Data Protection', href: 'https://support.apple.com/en-mide/108756' },
+      { label: 'Apple Account two-factor authentication', href: 'https://support.apple.com/en-us/ht204915' },
+      { label: 'Advanced Data Protection', href: 'https://support.apple.com/en-us/102651' },
     ],
   },
   {
@@ -118,8 +118,8 @@ const guides: Guide[] = [
       'Maintain encrypted backup options for fast restore.',
     ],
     links: [
-      { label: 'Apple ID two-factor authentication', href: 'https://support.apple.com/en-us/102660' },
-      { label: 'iPhone Lockdown Mode', href: 'https://support.apple.com/en-mide/guide/iphone/iph845f6f40c/ios' },
+      { label: 'Apple Account two-factor authentication', href: 'https://support.apple.com/en-us/ht204915' },
+      { label: 'iPhone Lockdown Mode', href: 'https://support.apple.com/en-us/105120' },
     ],
   },
   {
@@ -157,8 +157,8 @@ export default function ProtectPage() {
 
   return (
     <div className="aurora-bg relative overflow-hidden pt-24">
-      <div className="pointer-events-none absolute left-4 top-36 h-72 w-72 rounded-full bg-[#47d5e2]/17 blur-3xl float-orb" />
-      <div className="pointer-events-none absolute right-4 top-52 h-72 w-72 rounded-full bg-[#f95f8f]/14 blur-3xl float-orb" />
+      <div className="pointer-events-none absolute left-4 top-36 h-72 w-72 rounded-full bg-[#76c6bb]/17 blur-3xl float-orb" />
+      <div className="pointer-events-none absolute right-4 top-52 h-72 w-72 rounded-full bg-[#d7ab73]/14 blur-3xl float-orb" />
 
       <section className="relative mx-auto max-w-7xl px-6 pb-12 pt-14 md:pt-20">
         <span className="guide-chip">Protection playbook</span>
@@ -194,7 +194,7 @@ export default function ProtectPage() {
                 onClick={() => setActive(guide.id)}
                 className={`rounded-md px-4 py-2 text-sm transition ${
                   active === guide.id
-                    ? 'bg-white text-[#08242d]'
+                    ? 'bg-[#d7ab73] text-[#11191e]'
                     : 'border border-white/20 bg-white/5 text-white/75 hover:bg-white/10'
                 }`}
               >
@@ -273,7 +273,7 @@ export default function ProtectPage() {
       <section className="mx-auto max-w-7xl px-6 pb-14">
         <PasswordStrengthLab />
         <div className="mt-5 flex flex-wrap gap-3">
-          <Link href="/learn" className="rounded-md bg-white px-4 py-2 text-sm font-medium text-[#08242d] hover:bg-white/90">
+          <Link href="/learn" className="rounded-md bg-[#d7ab73] px-4 py-2 text-sm font-medium text-[#11191e] hover:bg-[#e1b988]">
             next: build long-term habits
           </Link>
           <Link href="/get-help" className="rounded-md border border-white/20 px-4 py-2 text-sm text-white/80 hover:bg-white/10">

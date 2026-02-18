@@ -17,6 +17,7 @@ Cyber safety website focused on prevention, response, and recovery.
 - TypeScript
 - Tailwind CSS
 - Framer Motion
+- Three.js
 
 ## Run locally
 
