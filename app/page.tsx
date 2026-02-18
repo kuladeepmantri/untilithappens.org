@@ -2,42 +2,40 @@
 
 import Link from 'next/link';
 import { motion } from 'framer-motion';
+import { ArrowRight } from 'lucide-react';
 import { GuideFlow } from '@/components/site/guide-flow';
 import { emergencyResources, sourceIndex, verifiedNotes } from '@/lib/site-data';
 
 const reveal = {
-  hidden: { opacity: 0, y: 24 },
+  hidden: { opacity: 0, y: 20 },
   show: { opacity: 1, y: 0 },
 };
 
-const quickActions = [
+const pathPreview = [
+  { step: '01', title: 'Understand active scams', page: '/threats', eta: '8 min' },
+  { step: '02', title: 'Audit exposed personal data', page: '/check-footprint', eta: '12 min' },
+  { step: '03', title: 'Harden the device you use most', page: '/protect', eta: '15 min' },
+  { step: '04', title: 'Practice repeatable security habits', page: '/learn', eta: '10 min' },
+];
+
+const startCards = [
   {
-    title: 'Map your exposed data',
-    description: 'Run a structured footprint audit and remove high-risk public data first.',
-    href: '/check-footprint',
-    cta: 'Start audit',
-    color: 'from-[#76c6bb]/28 to-[#355d6d]/36',
-  },
-  {
-    title: 'Harden your devices',
-    description: 'Apply platform-specific controls that lower takeover and ransomware risk.',
-    href: '/protect',
-    cta: 'Open guides',
-    color: 'from-[#9ebac4]/22 to-[#45596a]/34',
-  },
-  {
-    title: 'Understand current threats',
-    description: 'Use scenario-based warning signs before responding to messages or calls.',
+    title: 'I got a suspicious message',
+    detail: 'Start with threat triage, verify sender identity, and avoid channel switching.',
     href: '/threats',
-    cta: 'View threats',
-    color: 'from-[#d7ab73]/22 to-[#5f452b]/35',
+    cta: 'Open threat triage',
   },
   {
-    title: 'Know where to report fast',
-    description: 'Move from panic to action with official reporting channels and evidence prep.',
-    href: '/report',
-    cta: 'Report now',
-    color: 'from-[#87a29d]/24 to-[#5a4430]/33',
+    title: 'My account may be compromised',
+    detail: 'Run first-hour containment, preserve evidence, and start reporting correctly.',
+    href: '/get-help',
+    cta: 'Open incident playbook',
+  },
+  {
+    title: 'I want prevention now',
+    detail: 'Audit your footprint and harden your primary operating system this session.',
+    href: '/check-footprint',
+    cta: 'Start prevention track',
   },
 ];
 
@@ -47,37 +45,34 @@ export default function Home() {
       <div className="pointer-events-none absolute -left-20 top-32 h-72 w-72 rounded-full bg-[#76c6bb]/17 blur-3xl float-orb" />
       <div className="pointer-events-none absolute right-0 top-44 h-72 w-72 rounded-full bg-[#d7ab73]/15 blur-3xl float-orb" />
 
-      <section className="relative mx-auto max-w-7xl px-6 pb-20 pt-14 md:pt-20">
-        <div className="grid items-end gap-10 lg:grid-cols-[1.4fr,1fr]">
-          <motion.div
-            initial="hidden"
-            animate="show"
-            transition={{ staggerChildren: 0.12 }}
-            className="space-y-8"
-          >
+      <section className="relative mx-auto max-w-7xl px-6 pb-14 pt-14 md:pt-20">
+        <div className="grid gap-8 lg:grid-cols-[1.2fr,1fr]">
+          <motion.div initial="hidden" animate="show" transition={{ staggerChildren: 0.1 }} className="space-y-6">
             <motion.span variants={reveal} className="guide-chip">
-              Human-first cyber guidance
+              guided cybersecurity for non-experts
             </motion.span>
 
-            <motion.h1 variants={reveal} className="max-w-4xl text-5xl font-semibold leading-[0.9] text-white sm:text-6xl lg:text-7xl">
-              Learn before crisis.
-              <span className="block text-white/78">Act faster during one.</span>
+            <motion.h1 variants={reveal} className="max-w-4xl text-5xl font-semibold leading-[0.92] text-white sm:text-6xl lg:text-7xl">
+              Learn what matters.
+              <span className="block text-white/78">Respond with confidence.</span>
             </motion.h1>
 
             <motion.p variants={reveal} className="max-w-2xl text-lg leading-relaxed text-white/78 md:text-xl">
-              We guide people step-by-step with real-world incident patterns, practical controls, and official reporting
-              paths. The journey is connected end-to-end so you always know the next action.
+              This site walks you step-by-step through active threats, personal exposure checks, device hardening,
+              and incident response using dated official sources.
             </motion.p>
+
             <motion.p variants={reveal} className="max-w-2xl text-sm text-white/62">
-              Data on this page is pinned to the latest official releases available as of February 18, 2026.
+              All metrics and references are pinned to the latest official releases available on February 18, 2026.
             </motion.p>
 
             <motion.div variants={reveal} className="flex flex-wrap gap-3">
               <Link
                 href="/threats"
-                className="rounded-lg bg-[#d7ab73] px-5 py-3 text-sm font-medium text-[#11191e] transition hover:bg-[#e1b988]"
+                className="inline-flex items-center gap-2 rounded-lg bg-[#d7ab73] px-5 py-3 text-sm font-medium text-[#11191e] transition hover:bg-[#e1b988]"
               >
-                start guided path
+                start guided journey
+                <ArrowRight className="h-4 w-4" />
               </Link>
               <Link
                 href="/get-help"
@@ -88,72 +83,64 @@ export default function Home() {
             </motion.div>
           </motion.div>
 
-          <motion.div
-            initial={{ opacity: 0, x: 30 }}
+          <motion.aside
+            initial={{ opacity: 0, x: 18 }}
             animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.7, ease: 'easeOut' }}
+            transition={{ duration: 0.45, ease: 'easeOut' }}
             className="story-card panel-gradient p-6 md:p-8"
           >
-            <p className="font-ui-mono text-xs uppercase tracking-[0.2em] text-white/55">Real-world notes</p>
-            <div className="mt-4 space-y-4">
-              {verifiedNotes.map((note, index) => (
-                <motion.div
-                  key={note.metric}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.3 + index * 0.1 }}
-                  className="rounded-xl border border-white/15 bg-black/25 p-4"
+            <p className="font-ui-mono text-xs uppercase tracking-[0.2em] text-white/55">Journey preview</p>
+            <div className="mt-4 space-y-3">
+              {pathPreview.map((item) => (
+                <Link
+                  key={item.step}
+                  href={item.page}
+                  className="block rounded-xl border border-white/12 bg-black/25 p-4 transition hover:border-white/25 hover:bg-black/35"
                 >
-                  <p className="text-2xl font-semibold text-white">{note.metric}</p>
-                  <p className="mt-2 text-sm text-white/72">{note.detail}</p>
-                  <div className="mt-3 text-xs text-white/55">
-                    <span>{note.asOf}</span>
-                    <span className="mx-2">|</span>
-                    <Link
-                      href={note.sourceUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="underline underline-offset-2 hover:text-white/90"
-                    >
-                      {note.sourceLabel}
-                    </Link>
+                  <div className="flex items-center justify-between gap-2">
+                    <p className="font-ui-mono text-xs text-white/62">Step {item.step}</p>
+                    <p className="text-xs text-white/62">{item.eta}</p>
                   </div>
-                </motion.div>
+                  <p className="mt-1 text-sm font-medium text-white">{item.title}</p>
+                </Link>
               ))}
             </div>
-          </motion.div>
+          </motion.aside>
         </div>
       </section>
 
-      <section className="relative border-y border-white/10 bg-black/25 py-16">
+      <section className="relative border-y border-white/10 bg-[#0b141a]/55 py-14">
         <div className="mx-auto max-w-7xl px-6">
-          <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
+          <div className="mb-6 flex flex-wrap items-end justify-between gap-3">
             <div>
-              <p className="font-ui-mono text-xs uppercase tracking-[0.2em] text-white/55">Guided actions</p>
-              <h2 className="mt-2 text-3xl font-semibold text-white md:text-4xl">What to do first</h2>
+              <p className="font-ui-mono text-xs uppercase tracking-[0.2em] text-white/55">Current signal board</p>
+              <h2 className="mt-2 text-3xl font-semibold text-white md:text-4xl">What changed recently</h2>
             </div>
-            <Link href="/learn" className="text-sm text-white/70 underline underline-offset-4 hover:text-white">
-              follow full training flow
+            <Link href="/threats" className="text-sm text-white/75 underline underline-offset-4 hover:text-white">
+              open full threat briefing
             </Link>
           </div>
 
-          <div className="grid gap-4 md:grid-cols-2">
-            {quickActions.map((item, index) => (
+          <div className="grid gap-4 md:grid-cols-3">
+            {verifiedNotes.map((note, index) => (
               <motion.article
-                key={item.title}
-                initial={{ opacity: 0, y: 18 }}
+                key={note.metric}
+                initial={{ opacity: 0, y: 14 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, amount: 0.3 }}
-                transition={{ delay: index * 0.08 }}
-                className={`story-card bg-gradient-to-br ${item.color} p-6`}
+                viewport={{ once: true, amount: 0.35 }}
+                transition={{ delay: index * 0.07 }}
+                className="story-card p-5"
               >
-                <h3 className="text-2xl font-semibold text-white">{item.title}</h3>
-                <p className="mt-3 text-sm leading-relaxed text-white/78">{item.description}</p>
+                <p className="text-2xl font-semibold text-white">{note.metric}</p>
+                <p className="mt-2 text-sm text-white/74">{note.detail}</p>
+                <p className="mt-3 text-xs text-white/58">{note.asOf}</p>
                 <Link
-                  href={item.href}
-                  className="mt-6 inline-flex rounded-md border border-white/20 px-4 py-2 text-sm text-white/92 transition hover:bg-white/10"
+                  href={note.sourceUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="mt-2 inline-flex text-xs text-white/75 underline underline-offset-4 hover:text-white"
                 >
-                  {item.cta}
+                  {note.sourceLabel}
                 </Link>
               </motion.article>
             ))}
@@ -161,24 +148,41 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="relative py-16 md:py-20">
-        <div className="mx-auto grid max-w-7xl gap-8 px-6 lg:grid-cols-[1.5fr,1fr]">
-          <div className="story-card panel-gradient p-6 md:p-8">
-            <p className="font-ui-mono text-xs uppercase tracking-[0.2em] text-white/55">If something happened today</p>
-            <h2 className="mt-2 text-3xl font-semibold text-white">Emergency channels</h2>
-            <p className="mt-3 max-w-2xl text-sm text-white/74">
-              Preserve evidence first: screenshot messages, copy transaction IDs, collect email headers, and keep a timeline.
-              Then escalate through the right agency.
-            </p>
+      <section className="mx-auto max-w-7xl px-6 py-14">
+        <p className="font-ui-mono text-xs uppercase tracking-[0.2em] text-white/55">Choose your start point</p>
+        <div className="mt-4 grid gap-4 lg:grid-cols-3">
+          {startCards.map((card) => (
+            <article key={card.title} className="story-card panel-gradient p-6">
+              <h3 className="text-2xl font-semibold text-white">{card.title}</h3>
+              <p className="mt-3 text-sm text-white/75">{card.detail}</p>
+              <Link
+                href={card.href}
+                className="mt-6 inline-flex items-center gap-2 rounded-md border border-white/20 px-4 py-2 text-sm text-white/90 transition hover:bg-white/10"
+              >
+                {card.cta}
+                <ArrowRight className="h-4 w-4" />
+              </Link>
+            </article>
+          ))}
+        </div>
+      </section>
 
-            <div className="mt-6 grid gap-3">
+      <section className="border-y border-white/10 bg-[#0b141a]/55 py-14">
+        <div className="mx-auto grid max-w-7xl gap-8 px-6 lg:grid-cols-[1.3fr,1fr]">
+          <div className="story-card p-6 md:p-8">
+            <p className="font-ui-mono text-xs uppercase tracking-[0.2em] text-white/55">If something happened today</p>
+            <h2 className="mt-2 text-3xl font-semibold text-white">Official channels</h2>
+            <p className="mt-3 text-sm text-white/72">
+              Preserve evidence first, then report through the correct channel to avoid delays.
+            </p>
+            <div className="mt-5 grid gap-3">
               {emergencyResources.map((resource) => (
                 <Link
-                  key={resource.name}
+                  key={resource.href}
                   href={resource.href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="rounded-xl border border-white/15 bg-black/25 p-4 transition hover:border-white/30 hover:bg-black/35"
+                  className="rounded-xl border border-white/12 bg-black/25 p-4 transition hover:border-white/25 hover:bg-black/35"
                 >
                   <p className="text-sm font-medium text-white">{resource.name}</p>
                   <p className="mt-1 text-sm text-white/66">{resource.purpose}</p>
@@ -188,15 +192,15 @@ export default function Home() {
           </div>
 
           <div className="story-card p-6 md:p-8">
-            <p className="font-ui-mono text-xs uppercase tracking-[0.2em] text-white/55">Primary sources</p>
-            <div className="mt-4 space-y-3">
+            <p className="font-ui-mono text-xs uppercase tracking-[0.2em] text-white/55">Primary references</p>
+            <div className="mt-4 space-y-2">
               {sourceIndex.map((source) => (
                 <Link
                   key={source.href}
                   href={source.href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="block rounded-lg border border-white/10 px-4 py-3 text-sm text-white/75 transition hover:border-white/25 hover:text-white"
+                  className="block rounded-lg border border-white/10 px-3 py-2 text-sm text-white/75 transition hover:border-white/25 hover:text-white"
                 >
                   {source.label}
                 </Link>

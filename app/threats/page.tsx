@@ -1,174 +1,251 @@
 'use client';
 
 import Link from 'next/link';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
+import { useState } from 'react';
 import { GuideFlow } from '@/components/site/guide-flow';
-import { sourceIndex } from '@/lib/site-data';
 
-const threatCards = [
+type ThreatScenario = {
+  id: string;
+  name: string;
+  signal: string;
+  pattern: string;
+  latest: string;
+  impact: string;
+  actionWindow: string;
+  defense: string[];
+  drill: string[];
+  sourceLabel: string;
+  sourceUrl: string;
+};
+
+const scenarios: ThreatScenario[] = [
   {
-    name: 'AI smishing and vishing impersonation',
-    signal: 'Unexpected encrypted app handoff, urgent policy/finance request, subtle voice mismatch',
+    id: 'impersonation',
+    name: 'AI text + voice impersonation',
+    signal: 'Urgent request + pressure to switch apps + financial action',
     pattern:
-      'FBI PSAs in May 2025 and December 2025 warned of ongoing text + AI voice impersonation campaigns targeting high-trust contacts.',
+      'Recent FBI alerts describe coordinated text and voice impersonation campaigns targeting trusted relationships.',
     latest: 'FBI PSA I-121925-PSA (December 19, 2025)',
+    impact: 'High account and payment takeover risk',
+    actionWindow: 'First 2 minutes',
     defense: [
-      'Never switch channels from a cold text/call without independent callback verification.',
-      'Create an internal challenge phrase for money, credential, or data requests.',
-      'Block all links in first-contact text messages from unknown senders.',
+      'Stop the live conversation and call back using a saved trusted number.',
+      'Require a private verification phrase for money, passwords, or recovery requests.',
+      'Do not use links delivered in first-contact messages.',
     ],
-    gradient: 'from-[#76c6bb]/26 to-[#355d6d]/34',
-    sourceLabel: 'FBI: Senior U.S. officials impersonated',
-    sourceUrl: 'https://www.fbi.gov/investigate/cyber/alerts/2025/senior-us-officials-continue-to-be-impersonated-in-malicious-messaging-campaign',
+    drill: [
+      'Pause and read the request out loud.',
+      'Verify identity through your independent channel.',
+      'Only continue after positive confirmation.',
+    ],
+    sourceLabel: 'FBI: senior U.S. officials impersonated',
+    sourceUrl:
+      'https://www.fbi.gov/investigate/cyber/alerts/2025/senior-us-officials-continue-to-be-impersonated-in-malicious-messaging-campaign',
   },
   {
-    name: 'Toll/payment text smishing waves',
-    signal: '“Pay now” toll notices, short deadlines, payment portal with misspelled domain',
+    id: 'toll-smishing',
+    name: 'Toll and payment text smishing',
+    signal: '“Final notice” payment text with short deadline and unknown URL',
     pattern:
-      'Field-office reporting in March 2025 showed large complaint bursts linked to fake toll payment texts and cloned payment portals.',
+      'Field-office reports showed mass waves of fake toll payment texts that harvest card and account credentials.',
     latest: 'FBI Atlanta warning (March 14, 2025)',
+    impact: 'Fast theft of payment details and identity data',
+    actionWindow: 'Under 60 seconds',
     defense: [
-      'Never pay tolls through links in texts; open your toll account manually.',
-      'Register direct billing alerts in the official provider app only.',
-      'Report the smishing text and preserve screenshots before deleting.',
+      'Never pay tolls through text links.',
+      'Open your official toll account manually in browser/app.',
+      'Capture screenshot, block sender, then report.',
     ],
-    gradient: 'from-[#9bb8c3]/23 to-[#445b6c]/36',
-    sourceLabel: 'FBI Atlanta: text toll scam campaign',
-    sourceUrl: 'https://www.fbi.gov/contact-us/field-offices/atlanta/news/fbi-atlanta-warns-of-smishing-text-message-scam',
+    drill: [
+      'Inspect sender and domain mismatch.',
+      'Open official portal manually.',
+      'Report as phishing before deleting.',
+    ],
+    sourceLabel: 'FBI Atlanta: smishing text scam',
+    sourceUrl:
+      'https://www.fbi.gov/contact-us/field-offices/atlanta/news/fbi-atlanta-warns-of-smishing-text-message-scam',
   },
   {
-    name: 'IC3 impersonation and fake recovery agents',
-    signal: 'Claim that funds were recovered, request to pay “processing” fee, outreach from unofficial account',
+    id: 'ic3-impersonation',
+    name: 'Fake recovery agents (IC3 impersonation)',
+    signal: 'Claim that lost funds were recovered, asks for fee or account proof',
     pattern:
-      'FBI documented 100+ reports where scammers impersonated IC3 staff and revictimized people already harmed by prior fraud.',
+      'FBI documented 100+ reports of criminals impersonating IC3 contacts to revictimize prior fraud victims.',
     latest: 'FBI PSA I-041825-PSA (April 18, 2025)',
+    impact: 'Secondary victimization after initial fraud',
+    actionWindow: 'Before any reply',
     defense: [
-      'IC3 will not directly DM, text, or ask payment to recover money.',
-      'Reject all “recovery service” requests that require upfront fees.',
-      'Use only https://www.ic3.gov and verified FBI contact channels.',
+      'IC3 does not request payment or direct-message victims for fund release.',
+      'Use only official .gov channels you typed yourself.',
+      'Never submit full identity packets to unsolicited “recovery” outreach.',
     ],
-    gradient: 'from-[#d7ab73]/22 to-[#5a432d]/37',
+    drill: [
+      'Stop and verify domain authenticity.',
+      'Cross-check contact through official IC3/FBI pages.',
+      'Report impersonation attempt immediately.',
+    ],
     sourceLabel: 'FBI: scammers impersonating IC3',
     sourceUrl: 'https://www.fbi.gov/investigate/cyber/alerts/2025/fbi-warns-of-scammers-impersonating-the-ic3',
   },
   {
-    name: 'Spoofed IC3 websites and data harvesting',
-    signal: 'Domain almost matches ic3.gov, asks for full identity and banking details',
+    id: 'ic3-spoof',
+    name: 'Spoofed IC3 websites',
+    signal: 'Site looks official but URL is not exact ic3.gov',
     pattern:
-      'FBI warned in September 2025 that actors were spoofing the IC3 website to steal identity and financial information.',
+      'FBI warned actors were spoofing IC3 properties to harvest identity and financial information.',
     latest: 'FBI PSA I-091925-PSA (September 19, 2025)',
+    impact: 'Identity theft + account compromise',
+    actionWindow: 'Immediately on domain mismatch',
     defense: [
-      'Manually type government domains and validate exact spelling before submission.',
-      'Do not provide SSN or account credentials on unverified domains.',
-      'Use browser password manager alerts for lookalike domain warnings.',
+      'Type known government URLs manually; do not trust redirects.',
+      'Validate the full domain before form submission.',
+      'Avoid uploading SSN, account credentials, or ID documents to unverified pages.',
     ],
-    gradient: 'from-[#8ea8a0]/24 to-[#58402f]/36',
-    sourceLabel: 'FBI: threat actors spoofing IC3 website',
-    sourceUrl: 'https://www.fbi.gov/investigate/cyber/alerts/2025/threat-actors-spoofing-the-fbi-ic3-website-for-possible-malicious-activity',
+    drill: [
+      'Check exact domain and TLS lock details.',
+      'Compare against bookmarked official source.',
+      'Abort and report lookalike page.',
+    ],
+    sourceLabel: 'FBI: threat actors spoofing IC3',
+    sourceUrl:
+      'https://www.fbi.gov/investigate/cyber/alerts/2025/threat-actors-spoofing-the-fbi-ic3-website-for-possible-malicious-activity',
   },
 ];
 
-const evidenceChecklist = [
-  'Timestamp of first suspicious activity',
-  'Screenshots of messages, invoices, and phishing pages',
-  'Transaction references and wallet/payment identifiers',
-  'Email headers and sender domain details',
-  'Device, browser, and network context',
+const triageStack = [
+  { label: 'Verify identity independently', value: 'Always' },
+  { label: 'Use official channels only', value: '.gov / known domains' },
+  { label: 'Preserve evidence before cleanup', value: 'Screenshots + headers + IDs' },
 ];
 
 export default function ThreatsPage() {
+  const [activeIndex, setActiveIndex] = useState(0);
+  const scenario = scenarios[activeIndex];
+
   return (
     <div className="aurora-bg relative overflow-hidden pt-24">
       <div className="pointer-events-none absolute left-4 top-36 h-64 w-64 rounded-full bg-[#76c6bb]/16 blur-3xl float-orb" />
       <div className="pointer-events-none absolute right-4 top-56 h-64 w-64 rounded-full bg-[#d7ab73]/15 blur-3xl float-orb" />
 
-      <section className="relative mx-auto max-w-7xl px-6 pb-12 pt-14 md:pt-20">
-        <span className="guide-chip">Threat briefing</span>
+      <section className="relative mx-auto max-w-7xl px-6 pb-10 pt-14 md:pt-20">
+        <span className="guide-chip">Threat command center</span>
         <h1 className="mt-6 max-w-4xl text-5xl font-semibold leading-[0.9] text-white sm:text-6xl">
-          See the pattern before you are in it
+          Triage before you trust
         </h1>
         <p className="mt-5 max-w-3xl text-lg text-white/76">
-          These are active U.S. patterns with dated official advisories. Each card gives an immediate triage sequence you can apply in under five minutes.
+          Pick a live threat scenario and follow the exact response flow. This page is built to reduce panic and shorten decision time.
         </p>
       </section>
 
-      <section className="mx-auto max-w-7xl px-6 pb-14">
-        <div className="grid gap-4 md:grid-cols-2">
-          {threatCards.map((threat, index) => (
-            <motion.article
-              key={threat.name}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, amount: 0.3 }}
-              transition={{ delay: index * 0.08 }}
-              className={`story-card bg-gradient-to-br ${threat.gradient} p-6`}
-            >
-              <h2 className="text-2xl font-semibold text-white">{threat.name}</h2>
-              <p className="mt-3 text-sm text-white/75">
-                <span className="font-medium text-white/92">Warning signals:</span> {threat.signal}
-              </p>
-              <p className="mt-2 text-sm text-white/75">
-                <span className="font-medium text-white/92">Pattern:</span> {threat.pattern}
-              </p>
-              <p className="mt-2 rounded-lg border border-white/10 bg-black/25 px-3 py-2 text-xs text-white/70">
-                {threat.latest}
-              </p>
-              <ul className="mt-4 space-y-2 text-sm text-white/78">
-                {threat.defense.map((item) => (
-                  <li key={item} className="rounded-lg border border-white/15 bg-black/25 px-3 py-2">
-                    {item}
-                  </li>
-                ))}
-              </ul>
-              <Link
-                href={threat.sourceUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="mt-4 inline-flex text-xs text-white/72 underline underline-offset-4 hover:text-white"
-              >
-                source: {threat.sourceLabel}
-              </Link>
-            </motion.article>
+      <section className="mx-auto max-w-7xl px-6 pb-12">
+        <div className="grid gap-4 md:grid-cols-3">
+          {triageStack.map((item) => (
+            <article key={item.label} className="story-card p-4">
+              <p className="font-ui-mono text-xs uppercase tracking-[0.18em] text-white/55">{item.label}</p>
+              <p className="mt-2 text-lg font-semibold text-white">{item.value}</p>
+            </article>
           ))}
         </div>
       </section>
 
-      <section className="border-y border-white/10 bg-black/30 py-14">
-        <div className="mx-auto grid max-w-7xl gap-8 px-6 lg:grid-cols-[1.25fr,1fr]">
-          <div className="story-card panel-gradient p-6">
-            <p className="font-ui-mono text-xs uppercase tracking-[0.2em] text-white/55">Incident kit</p>
-            <h2 className="mt-2 text-2xl font-semibold text-white">Evidence checklist</h2>
-            <ul className="mt-4 space-y-2 text-sm text-white/77">
-              {evidenceChecklist.map((item) => (
-                <li key={item} className="rounded-lg border border-white/10 bg-black/25 px-3 py-2">
-                  {item}
-                </li>
-              ))}
-            </ul>
+      <section className="border-y border-white/10 bg-[#0b141a]/55 py-12">
+        <div className="mx-auto grid max-w-7xl gap-6 px-6 lg:grid-cols-[0.95fr,1.2fr]">
+          <div className="space-y-2">
+            <p className="font-ui-mono text-xs uppercase tracking-[0.2em] text-white/55">Choose threat pattern</p>
+            {scenarios.map((item, index) => (
+              <button
+                key={item.id}
+                type="button"
+                onClick={() => setActiveIndex(index)}
+                className={`w-full rounded-xl border px-4 py-3 text-left transition ${
+                  index === activeIndex
+                    ? 'border-[#86d8ca]/70 bg-[#86d8ca]/12 text-white'
+                    : 'border-white/10 bg-white/[0.03] text-white/74 hover:border-white/25 hover:text-white'
+                }`}
+              >
+                <p className="font-ui-mono text-[10px] uppercase tracking-[0.18em] text-white/55">Scenario {index + 1}</p>
+                <p className="mt-1 text-sm font-medium">{item.name}</p>
+              </button>
+            ))}
           </div>
 
-          <div className="story-card p-6">
-            <p className="font-ui-mono text-xs uppercase tracking-[0.2em] text-white/55">Source trail</p>
-            <div className="mt-4 space-y-2">
-              {sourceIndex.map((source) => (
-                <Link
-                  key={source.href}
-                  href={source.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="block rounded-lg border border-white/10 px-3 py-2 text-sm text-white/75 transition hover:border-white/25 hover:text-white"
-                >
-                  {source.label}
-                </Link>
-              ))}
-            </div>
-            <Link
-              href="/check-footprint"
-              className="mt-5 inline-flex rounded-md bg-[#d7ab73] px-4 py-2 text-sm font-medium text-[#11191e] transition hover:bg-[#e1b988]"
+          <AnimatePresence mode="wait">
+            <motion.article
+              key={scenario.id}
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -16 }}
+              transition={{ duration: 0.24 }}
+              className="story-card panel-gradient p-6 md:p-8"
             >
-              continue to exposure audit
-            </Link>
-          </div>
+              <h2 className="text-3xl font-semibold text-white">{scenario.name}</h2>
+              <p className="mt-3 text-sm text-white/74">
+                <span className="font-medium text-white/90">What to watch:</span> {scenario.signal}
+              </p>
+              <p className="mt-2 text-sm text-white/74">
+                <span className="font-medium text-white/90">Pattern:</span> {scenario.pattern}
+              </p>
+
+              <div className="mt-4 grid gap-3 sm:grid-cols-3">
+                <div className="rounded-lg border border-white/12 bg-black/25 px-3 py-2">
+                  <p className="text-xs text-white/58">Latest advisory</p>
+                  <p className="mt-1 text-sm text-white/88">{scenario.latest}</p>
+                </div>
+                <div className="rounded-lg border border-white/12 bg-black/25 px-3 py-2">
+                  <p className="text-xs text-white/58">Impact</p>
+                  <p className="mt-1 text-sm text-white/88">{scenario.impact}</p>
+                </div>
+                <div className="rounded-lg border border-white/12 bg-black/25 px-3 py-2">
+                  <p className="text-xs text-white/58">Action window</p>
+                  <p className="mt-1 text-sm text-white/88">{scenario.actionWindow}</p>
+                </div>
+              </div>
+
+              <div className="mt-5 grid gap-4 md:grid-cols-2">
+                <div>
+                  <p className="font-ui-mono text-xs uppercase tracking-[0.16em] text-white/55">Immediate actions</p>
+                  <ul className="mt-2 space-y-2">
+                    {scenario.defense.map((item) => (
+                      <li key={item} className="rounded-lg border border-white/12 bg-black/25 px-3 py-2 text-sm text-white/78">
+                        {item}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+                <div>
+                  <p className="font-ui-mono text-xs uppercase tracking-[0.16em] text-white/55">30-second drill</p>
+                  <ol className="mt-2 space-y-2">
+                    {scenario.drill.map((item, index) => (
+                      <li key={item} className="rounded-lg border border-white/12 bg-black/25 px-3 py-2 text-sm text-white/78">
+                        {index + 1}. {item}
+                      </li>
+                    ))}
+                  </ol>
+                </div>
+              </div>
+
+              <Link
+                href={scenario.sourceUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mt-5 inline-flex text-sm text-white/80 underline underline-offset-4 hover:text-white"
+              >
+                Source: {scenario.sourceLabel}
+              </Link>
+            </motion.article>
+          </AnimatePresence>
+        </div>
+      </section>
+
+      <section className="mx-auto max-w-7xl px-6 py-12">
+        <div className="flex flex-wrap gap-3">
+          <Link href="/check-footprint" className="rounded-md bg-[#d7ab73] px-4 py-2 text-sm font-medium text-[#11191e] hover:bg-[#e1b988]">
+            next: run exposure audit
+          </Link>
+          <Link href="/get-help" className="rounded-md border border-white/20 px-4 py-2 text-sm text-white/82 hover:bg-white/10">
+            incident already active? open first-hour response
+          </Link>
         </div>
       </section>
 

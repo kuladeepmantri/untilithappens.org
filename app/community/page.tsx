@@ -6,49 +6,53 @@ import { GuideFlow } from '@/components/site/guide-flow';
 
 const contributeWays = [
   {
-    title: 'Improve page clarity',
-    detail: 'Propose edits that make actions clearer for non-technical users under stress.',
+    title: 'Submit clarity fixes',
+    detail: 'Rewrite confusing guidance into plain language with direct action steps.',
+    target: '1 actionable rewrite per contribution',
   },
   {
-    title: 'Submit verified references',
-    detail: 'Add links to agency guidance, vendor docs, and standards-based controls.',
+    title: 'Add verified references',
+    detail: 'Propose primary-source links from agencies, standards bodies, and official vendor docs.',
+    target: 'Source + publication date required',
   },
   {
-    title: 'Share anonymized incident lessons',
-    detail: 'Contribute case patterns that teach prevention and faster containment.',
+    title: 'Share anonymized incident patterns',
+    detail: 'Contribute repeatable lessons without exposing victim identities or sensitive evidence.',
+    target: 'Failure point + preventive control format',
   },
   {
-    title: 'Run local awareness sessions',
-    detail: 'Use these guides with schools, families, and small teams in your community.',
+    title: 'Run local training sessions',
+    detail: 'Use these playbooks with families, schools, and small teams then feed back improvement notes.',
+    target: 'Collect 3+ confusion points per session',
   },
 ];
 
 const principles = [
-  'No unsourced claims: cite primary sources.',
-  'No victim exposure: protect privacy and dignity.',
-  'Action over noise: every section should produce next steps.',
-  'Design for clarity: visual hierarchy should reduce panic.',
+  'No unsourced claims; cite primary references.',
+  'No victim exposure; protect privacy and dignity.',
+  'Action over noise; every section must produce a next step.',
+  'Design for stress; content must work during panic.',
 ];
 
 export default function CommunityPage() {
   return (
     <div className="aurora-bg relative overflow-hidden pt-24">
-      <section className="mx-auto max-w-7xl px-6 pb-12 pt-14 md:pt-20">
-        <span className="guide-chip">Community</span>
+      <section className="mx-auto max-w-7xl px-6 pb-10 pt-14 md:pt-20">
+        <span className="guide-chip">Community workflow</span>
         <h1 className="mt-6 max-w-4xl text-5xl font-semibold leading-[0.9] text-white sm:text-6xl">
-          Build safer behavior at scale
+          Improve the guidance with real-world feedback
         </h1>
         <p className="mt-5 max-w-3xl text-lg text-white/78">
-          This project improves when practitioners and affected people contribute verified, actionable guidance.
+          The goal is practical clarity for people under stress. Contributions should improve speed, confidence, and correctness.
         </p>
       </section>
 
-      <section className="mx-auto max-w-7xl px-6 pb-14">
+      <section className="mx-auto max-w-7xl px-6 pb-12">
         <div className="grid gap-4 md:grid-cols-2">
           {contributeWays.map((item, index) => (
             <motion.article
               key={item.title}
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 18 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, amount: 0.35 }}
               transition={{ delay: index * 0.07 }}
@@ -56,14 +60,17 @@ export default function CommunityPage() {
             >
               <h2 className="text-2xl font-semibold text-white">{item.title}</h2>
               <p className="mt-3 text-sm text-white/74">{item.detail}</p>
+              <p className="mt-3 rounded-lg border border-white/12 bg-black/25 px-3 py-2 text-xs text-white/70">
+                Quality target: {item.target}
+              </p>
             </motion.article>
           ))}
         </div>
       </section>
 
-      <section className="border-y border-white/10 bg-black/30 py-14">
+      <section className="border-y border-white/10 bg-[#0b141a]/55 py-12">
         <div className="mx-auto max-w-7xl px-6">
-          <h2 className="text-3xl font-semibold text-white">Contribution principles</h2>
+          <h2 className="text-3xl font-semibold text-white">Contribution guardrails</h2>
           <ul className="mt-4 grid gap-3 md:grid-cols-2">
             {principles.map((principle) => (
               <li key={principle} className="story-card px-4 py-3 text-sm text-white/76">
@@ -80,8 +87,8 @@ export default function CommunityPage() {
             >
               open GitHub
             </Link>
-            <Link href="/" className="rounded-md border border-white/20 px-4 py-2 text-sm text-white/80 hover:bg-white/10">
-              back to guide start
+            <Link href="/" className="rounded-md border border-white/20 px-4 py-2 text-sm text-white/82 hover:bg-white/10">
+              return to guide start
             </Link>
           </div>
         </div>

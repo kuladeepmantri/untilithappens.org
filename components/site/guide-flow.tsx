@@ -34,6 +34,7 @@ export function GuideFlow() {
   const [isMobile, setIsMobile] = useState(false);
   const [renderError, setRenderError] = useState(false);
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const nodeButtonRefs = useRef<Array<HTMLButtonElement | null>>([]);
 
   const progress = (currentIndex / Math.max(guideJourney.length - 1, 1)) * 100;
   const previous = currentIndex > 0 ? guideJourney[currentIndex - 1] : null;
@@ -142,20 +143,6 @@ export function GuideFlow() {
     const completedLine = new THREE.Line(completedGeometry, completedMaterial);
     scene.add(completedLine);
 
-    const knotGeometry = new THREE.TorusKnotGeometry(2.45, 0.14, 220, 20);
-    const knotMaterial = new THREE.MeshStandardMaterial({
-      color: 0x284552,
-      emissive: 0x1b2f38,
-      emissiveIntensity: 0.22,
-      transparent: true,
-      opacity: 0.46,
-      roughness: 0.52,
-      metalness: 0.26,
-    });
-    const knot = new THREE.Mesh(knotGeometry, knotMaterial);
-    knot.position.set(0, -3.2, -5.5);
-    scene.add(knot);
-
     const dustGeometry = new THREE.BufferGeometry();
     const dustCount = isMobile ? 140 : 220;
     const dustPositions = new Float32Array(dustCount * 3);
@@ -241,37 +228,21 @@ export function GuideFlow() {
       });
     }
 
-    const raycaster = new THREE.Raycaster();
-    const pointer = new THREE.Vector2();
-
-    const toLocalPointer = (event: PointerEvent) => {
-      const rect = canvas.getBoundingClientRect();
-      pointer.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
-      pointer.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
-    };
-
-    const findTarget = () => {
-      raycaster.setFromCamera(pointer, camera);
-      const hits = raycaster.intersectObjects(nodeMeshes);
-      return hits[0]?.object as JourneyNodeMesh | undefined;
-    };
+    const cameraDrift = { x: 0, y: 0 };
+    const cameraTarget = { x: 0, y: 0 };
+    const projected = new THREE.Vector3();
 
     const onPointerMove = (event: PointerEvent) => {
-      toLocalPointer(event);
-      canvas.style.cursor = findTarget() ? 'pointer' : 'default';
-    };
-
-    const onPointerDown = (event: PointerEvent) => {
-      toLocalPointer(event);
-      const target = findTarget();
-      if (target?.userData.href) {
-        setIsOpen(false);
-        router.push(target.userData.href);
-      }
+      const rect = container.getBoundingClientRect();
+      const x = (event.clientX - rect.left) / rect.width;
+      const y = (event.clientY - rect.top) / rect.height;
+      cameraTarget.x = (x - 0.5) * (isMobile ? 0.4 : 0.8);
+      cameraTarget.y = (0.5 - y) * (isMobile ? 0.25 : 0.5);
     };
 
     const onPointerLeave = () => {
-      canvas.style.cursor = 'default';
+      cameraTarget.x = 0;
+      cameraTarget.y = 0;
     };
 
     const resize = () => {
@@ -284,9 +255,8 @@ export function GuideFlow() {
 
     resize();
     window.addEventListener('resize', resize);
-    canvas.addEventListener('pointermove', onPointerMove);
-    canvas.addEventListener('pointerdown', onPointerDown);
-    canvas.addEventListener('pointerleave', onPointerLeave);
+    container.addEventListener('pointermove', onPointerMove);
+    container.addEventListener('pointerleave', onPointerLeave);
 
     let raf = 0;
     let tick = 0;
@@ -300,13 +270,14 @@ export function GuideFlow() {
         : fromT + (Math.sin(tick * 2.2) * 0.5 + 0.5) * (toT - fromT);
       curve.getPointAt(Math.min(0.99, markerT), marker.position);
 
+      cameraDrift.x += (cameraTarget.x - cameraDrift.x) * 0.06;
+      cameraDrift.y += (cameraTarget.y - cameraDrift.y) * 0.06;
+
       const orbitRadius = reducedMotion ? 0.2 : isMobile ? 0.9 : 1.35;
-      camera.position.x = Math.sin(tick * 0.44) * orbitRadius;
-      camera.position.y = 1.7 + Math.cos(tick * 0.31) * (reducedMotion ? 0.08 : 0.34);
+      camera.position.x = Math.sin(tick * 0.44) * orbitRadius + cameraDrift.x;
+      camera.position.y = 1.7 + Math.cos(tick * 0.31) * (reducedMotion ? 0.08 : 0.34) + cameraDrift.y;
       camera.lookAt(0, 0, 0);
 
-      knot.rotation.x += reducedMotion ? 0.0004 : 0.0021;
-      knot.rotation.y += reducedMotion ? 0.0005 : 0.0028;
       dust.rotation.y += reducedMotion ? 0.0001 : 0.00045;
 
       halos.forEach((halo, index) => {
@@ -329,6 +300,21 @@ export function GuideFlow() {
         orb.mesh.material.emissiveIntensity = 0.35 + Math.sin((tick + index) * 4.8) * 0.2;
       });
 
+      nodeMeshes.forEach((node, index) => {
+        const stepButton = nodeButtonRefs.current[index];
+        if (!stepButton) {
+          return;
+        }
+
+        projected.copy(node.position).project(camera);
+        const x = (projected.x * 0.5 + 0.5) * container.clientWidth;
+        const y = (-projected.y * 0.5 + 0.5) * container.clientHeight;
+
+        stepButton.style.transform = `translate(${x}px, ${y}px) translate(-50%, -50%)`;
+        const visible = projected.z > -1 && projected.z < 1;
+        stepButton.style.opacity = visible ? '1' : '0';
+      });
+
       renderer.render(scene, camera);
       raf = window.requestAnimationFrame(animate);
     };
@@ -338,10 +324,8 @@ export function GuideFlow() {
     return () => {
       window.cancelAnimationFrame(raf);
       window.removeEventListener('resize', resize);
-      canvas.removeEventListener('pointermove', onPointerMove);
-      canvas.removeEventListener('pointerdown', onPointerDown);
-      canvas.removeEventListener('pointerleave', onPointerLeave);
-      canvas.style.cursor = 'default';
+      container.removeEventListener('pointermove', onPointerMove);
+      container.removeEventListener('pointerleave', onPointerLeave);
 
       flowOrbGeometry.dispose();
       flowOrbs.forEach((orb) => orb.mesh.material.dispose());
@@ -351,8 +335,6 @@ export function GuideFlow() {
       tubeMaterial.dispose();
       completedGeometry.dispose();
       completedMaterial.dispose();
-      knotGeometry.dispose();
-      knotMaterial.dispose();
       dustGeometry.dispose();
       dustMaterial.dispose();
 
@@ -368,7 +350,7 @@ export function GuideFlow() {
 
       renderer.dispose();
     };
-  }, [currentIndex, isMobile, isOpen, points, progress, router]);
+  }, [currentIndex, isMobile, isOpen, points, progress]);
 
   if (currentIndex === -1) {
     return null;
@@ -453,6 +435,37 @@ export function GuideFlow() {
                 <div className="story-map-surface relative h-[42dvh] min-h-[280px] overflow-hidden rounded-2xl border border-white/10 bg-black/30 lg:h-auto">
                   {!renderError && (
                     <canvas ref={canvasRef} className="absolute inset-0 h-full w-full touch-none" />
+                  )}
+
+                  {!renderError && (
+                    <div className="absolute inset-0">
+                      {guideJourney.map((step, index) => {
+                        const isCurrent = index === currentIndex;
+                        const isDone = index < currentIndex;
+
+                        return (
+                          <button
+                            key={`${step.href}-node`}
+                            type="button"
+                            ref={(element) => {
+                              nodeButtonRefs.current[index] = element;
+                            }}
+                            onClick={() => {
+                              setIsOpen(false);
+                              router.push(step.href);
+                            }}
+                            className={cn(
+                              'absolute left-0 top-0 h-9 rounded-full border px-3 text-[11px] font-medium shadow-[0_8px_24px_rgba(0,0,0,0.35)] transition',
+                              isCurrent && 'border-[#9fe4d6] bg-[#9fe4d6]/20 text-white',
+                              isDone && 'border-[#d7ab73] bg-[#d7ab73]/20 text-white',
+                              !isCurrent && !isDone && 'border-white/25 bg-[#0b1820]/85 text-white/85 hover:bg-[#132530]'
+                            )}
+                          >
+                            {step.short}
+                          </button>
+                        );
+                      })}
+                    </div>
                   )}
 
                   {renderError && (

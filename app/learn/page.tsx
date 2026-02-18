@@ -3,92 +3,97 @@
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { GuideFlow } from '@/components/site/guide-flow';
+import { PasswordStrengthLab } from '@/components/site/password-strength-lab';
 
 const modules = [
   {
-    title: 'Module 1: Attack recognition',
+    title: 'Module 1: Recognize active scam patterns',
     duration: '30 min',
-    outcomes: [
-      'Spot urgency + impersonation patterns before taking action.',
-      'Use verification checkpoints in family and work contexts.',
-      'Escalate quickly when risk is uncertain.',
+    outcome: 'You can classify a suspicious request in under 60 seconds.',
+    checkpoints: [
+      'Identify urgency, secrecy, and channel-switch pressure.',
+      'Use callback verification before action.',
+      'Escalate uncertain cases without delay.',
     ],
     links: [
-      { label: 'Threat briefings', href: '/threats' },
-      { label: 'Real stories', href: '/real-stories' },
+      { label: 'Threat command center', href: '/threats' },
+      { label: 'Real incidents', href: '/real-stories' },
     ],
     gradient: 'from-[#76c6bb]/27 to-[#355d6d]/35',
   },
   {
-    title: 'Module 2: Identity defense',
-    duration: '45 min',
-    outcomes: [
-      'Use password managers with unique credentials.',
-      'Shift critical accounts to phishing-resistant MFA.',
-      'Harden account recovery routes before incidents.',
+    title: 'Module 2: Defend identity and accounts',
+    duration: '40 min',
+    outcome: 'You can reduce credential takeover risk across all critical accounts.',
+    checkpoints: [
+      'Use unique credentials managed in one password manager.',
+      'Enable MFA with strongest available factor.',
+      'Harden recovery channels before incidents.',
     ],
     links: [
-      { label: 'Protection playbook', href: '/protect' },
-      { label: 'NIST guidance', href: 'https://csrc.nist.gov/pubs/sp/800/63/4/final' },
+      { label: 'Protection workflow', href: '/protect' },
+      { label: 'NIST identity guidance', href: 'https://csrc.nist.gov/pubs/sp/800/63/4/final' },
     ],
     gradient: 'from-[#9ebac4]/22 to-[#445b6c]/36',
   },
   {
-    title: 'Module 3: Exposure reduction',
-    duration: '60 min',
-    outcomes: [
-      'Audit public identifiers and data broker exposure.',
-      'Prioritize removals that reduce social engineering risk.',
-      'Set recurring monitoring routines.',
+    title: 'Module 3: Reduce exposed personal data',
+    duration: '35 min',
+    outcome: 'You can run a recurring footprint cleanup cycle.',
+    checkpoints: [
+      'Audit identifiers and exposed records.',
+      'Prioritize high-risk removals first.',
+      'Set a 30-day recheck routine.',
     ],
     links: [
-      { label: 'Footprint audit', href: '/check-footprint' },
+      { label: 'Footprint workflow', href: '/check-footprint' },
       { label: 'CISA Secure Our World', href: 'https://www.cisa.gov/secure-our-world' },
     ],
     gradient: 'from-[#d7ab73]/21 to-[#5a432d]/37',
   },
   {
-    title: 'Module 4: Response and reporting',
+    title: 'Module 4: Respond and report correctly',
     duration: '30 min',
-    outcomes: [
-      'Preserve evidence and stabilize accounts in first hour.',
-      'Route incidents to agencies with correct metadata.',
-      'Turn incidents into better future controls.',
+    outcome: 'You can run first-hour containment without panic.',
+    checkpoints: [
+      'Preserve evidence before cleanup.',
+      'Stabilize accounts and payment channels quickly.',
+      'Report to the right agency with quality evidence.',
     ],
     links: [
       { label: 'Get help', href: '/get-help' },
-      { label: 'Report channels', href: '/report' },
+      { label: 'Reporting routes', href: '/report' },
     ],
     gradient: 'from-[#8ea8a0]/24 to-[#58402f]/36',
   },
 ];
 
 const cadence = [
-  'Weekly: review account alerts, unknown sign-ins, and financial notifications.',
-  'Monthly: audit app permissions, browser extensions, and backup restore capability.',
-  'Quarterly: run a tabletop drill with family/team incident roles.',
-  'Post-incident: document what failed, then update playbooks.',
+  { period: 'Weekly (15 min)', action: 'Review unknown sign-ins and financial alerts.' },
+  { period: 'Monthly (30 min)', action: 'Audit app permissions, extensions, and breach notices.' },
+  { period: 'Quarterly (45 min)', action: 'Run an incident drill with family or team roles.' },
+  { period: 'Post-incident (60 min)', action: 'Document failure points and update your playbook.' },
 ];
 
 export default function LearnPage() {
   return (
     <div className="aurora-bg relative overflow-hidden pt-24">
-      <section className="mx-auto max-w-7xl px-6 pb-12 pt-14 md:pt-20">
-        <span className="guide-chip">Learning path</span>
+      <section className="mx-auto max-w-7xl px-6 pb-10 pt-14 md:pt-20">
+        <span className="guide-chip">Learning system</span>
         <h1 className="mt-6 max-w-4xl text-5xl font-semibold leading-[0.9] text-white sm:text-6xl">
-          Turn knowledge into habit
+          Build skills that hold under pressure
         </h1>
         <p className="mt-5 max-w-3xl text-lg text-white/78">
-          This curriculum is structured to guide non-technical and technical users through the same decision flow they will use in real incidents.
+          This training path is staged for people without security background. Each module has a clear outcome and completion signal.
         </p>
       </section>
 
-      <section className="mx-auto max-w-7xl px-6 pb-14">
+      <section className="mx-auto max-w-7xl px-6 pb-12">
         <div className="space-y-4">
           {modules.map((module, index) => (
             <motion.article
               key={module.title}
-              initial={{ opacity: 0, y: 18 }}
+              initial={{ opacity: 0, y: 16 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, amount: 0.35 }}
               transition={{ delay: index * 0.08 }}
@@ -99,10 +104,11 @@ export default function LearnPage() {
                 <span className="rounded-full border border-white/20 px-3 py-1 text-xs text-white/70">{module.duration}</span>
               </div>
 
+              <p className="mt-3 text-sm text-white/74">{module.outcome}</p>
               <ul className="mt-4 grid gap-2 text-sm text-white/78 md:grid-cols-3">
-                {module.outcomes.map((outcome) => (
-                  <li key={outcome} className="rounded-lg border border-white/12 bg-black/25 px-3 py-2">
-                    {outcome}
+                {module.checkpoints.map((item) => (
+                  <li key={item} className="rounded-lg border border-white/12 bg-black/25 px-3 py-2">
+                    {item}
                   </li>
                 ))}
               </ul>
@@ -125,21 +131,26 @@ export default function LearnPage() {
         </div>
       </section>
 
-      <section className="border-y border-white/10 bg-black/30 py-14">
+      <section className="mx-auto max-w-7xl px-6 pb-12">
+        <PasswordStrengthLab />
+      </section>
+
+      <section className="border-y border-white/10 bg-[#0b141a]/55 py-12">
         <div className="mx-auto max-w-7xl px-6">
-          <h2 className="text-3xl font-semibold text-white">Cadence that sticks</h2>
+          <h2 className="text-3xl font-semibold text-white">Cadence that keeps working</h2>
           <div className="mt-4 grid gap-3 md:grid-cols-2">
             {cadence.map((item) => (
-              <p key={item} className="story-card px-4 py-3 text-sm text-white/76">
-                {item}
-              </p>
+              <article key={item.period} className="story-card p-4">
+                <p className="font-ui-mono text-xs uppercase tracking-[0.18em] text-white/55">{item.period}</p>
+                <p className="mt-2 text-sm text-white/76">{item.action}</p>
+              </article>
             ))}
           </div>
           <Link
             href="/real-stories"
             className="mt-6 inline-flex rounded-md bg-[#d7ab73] px-4 py-2 text-sm font-medium text-[#11191e] transition hover:bg-[#e1b988]"
           >
-            next: learn from real stories
+            next: study real incident narratives
           </Link>
         </div>
       </section>
