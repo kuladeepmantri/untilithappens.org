@@ -50,13 +50,16 @@ export function Navigation() {
         className={cn(
           'fixed inset-x-0 top-0 z-[100] border-b transition-all duration-300',
           isScrolled
-            ? 'border-white/10 bg-[#07171b]/85 backdrop-blur-xl'
-            : 'border-transparent bg-transparent'
+            ? 'border-white/10 bg-[#07171b]/88 backdrop-blur-xl'
+            : 'border-transparent bg-gradient-to-b from-[#07171b]/70 to-transparent'
         )}
       >
         <div className="mx-auto flex h-20 max-w-7xl items-center justify-between px-6">
           <Link href="/" className="text-base font-semibold tracking-tight text-white">
-            until it happens.
+            <span className="inline-flex items-center gap-2">
+              <span className="h-2 w-2 rounded-full bg-[#3ecad8]" />
+              until it happens.
+            </span>
           </Link>
 
           <div className="hidden items-center gap-7 lg:flex">
@@ -69,10 +72,10 @@ export function Navigation() {
                   isActive(item.href) ? 'text-white' : 'text-white/70 hover:text-white'
                 )}
               >
-                <span>{item.label}</span>
+                  <span>{item.label}</span>
                 <span
                   className={cn(
-                    'absolute -bottom-1 left-0 h-[1px] w-full origin-left scale-x-0 bg-white/50 transition-transform duration-300',
+                    'absolute -bottom-1 left-0 h-[1px] w-full origin-left scale-x-0 bg-gradient-to-r from-[#3ecad8] to-[#f95f8f] transition-transform duration-300',
                     isActive(item.href) && 'scale-x-100'
                   )}
                 />
@@ -98,7 +101,7 @@ export function Navigation() {
             ))}
             <Link
               href="/get-help"
-              className="inline-flex items-center rounded-lg border border-white/20 bg-white/5 px-4 py-2 text-sm font-medium text-white/95 transition hover:border-white/40 hover:bg-white/10"
+              className="inline-flex items-center rounded-lg border border-white/20 bg-gradient-to-r from-[#f95f8f]/30 to-[#7a2f61]/35 px-4 py-2 text-sm font-medium text-white/95 transition hover:border-white/40 hover:from-[#f95f8f]/40 hover:to-[#7a2f61]/45"
             >
               get help.
             </Link>

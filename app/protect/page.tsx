@@ -1,4 +1,10 @@
+'use client';
+
 import Link from 'next/link';
+import { motion, AnimatePresence } from 'framer-motion';
+import { useMemo, useState } from 'react';
+import { GuideFlow } from '@/components/site/guide-flow';
+import { PasswordStrengthLab } from '@/components/site/password-strength-lab';
 
 type Guide = {
   id: string;
@@ -11,36 +17,35 @@ type Guide = {
 };
 
 const baseline = [
-  'Turn on automatic updates for OS, browsers, and password managers.',
-  'Use a password manager and unique credentials for every account.',
-  'Enable MFA, preferring passkeys/security keys over SMS when possible.',
-  'Keep at least one offline or immutable backup of critical files.',
-  'Remove apps/extensions you do not actively use.',
+  'Enable auto-updates for operating system, browsers, and password manager.',
+  'Use unique credentials and MFA for every critical account.',
+  'Keep one offline or immutable backup and test restore monthly.',
+  'Remove stale apps/extensions and revoke unknown sessions.',
 ];
 
 const guides: Guide[] = [
   {
     id: 'windows',
     platform: 'Windows',
-    summary: 'Use built-in Microsoft controls first: Defender, Firewall, BitLocker, and account hardening.',
+    summary: 'Defender, Firewall, BitLocker, and account hardening are your main native controls.',
     essentials: [
-      'Confirm Microsoft Defender real-time protection is enabled.',
-      'Keep Windows Update on automatic install.',
-      'Turn on Microsoft Defender Firewall for every profile.',
-      'Enable BitLocker or device encryption where supported.',
+      'Confirm Defender real-time protection is enabled.',
+      'Turn on automatic Windows security updates.',
+      'Enable Defender Firewall for all profiles.',
+      'Use BitLocker/device encryption where available.',
     ],
     hardening: [
-      'Disable unused remote desktop exposure and old SMB shares.',
-      'Use a standard user account for daily use; reserve admin for changes.',
-      'Review startup apps and browser extensions monthly.',
+      'Use a standard account for daily work, admin only for changes.',
+      'Reduce remote exposure and disable unused services.',
+      'Review startup tasks and extensions monthly.',
     ],
     recovery: [
-      'Create a recovery key backup for encrypted drives.',
-      'Keep an offline backup disconnected after backup completes.',
+      'Store BitLocker recovery keys safely.',
+      'Keep disconnected backup copies after backup jobs complete.',
     ],
     links: [
       {
-        label: 'Windows Security app settings (Microsoft)',
+        label: 'Windows Security settings (Microsoft)',
         href: 'https://support.microsoft.com/en-us/windows/windows-security-app-settings-1ea73c14-777c-1659-bdcc-fb3e2272a9d1',
       },
     ],
@@ -48,146 +53,129 @@ const guides: Guide[] = [
   {
     id: 'macos',
     platform: 'macOS',
-    summary: 'Center on updates, FileVault, app permission review, and strong Apple ID protection.',
+    summary: 'Prioritize updates, FileVault, Apple ID security, and strict app permissions.',
     essentials: [
-      'Enable automatic macOS updates and rapid security responses.',
-      'Turn on FileVault for full-disk encryption.',
-      'Review Privacy & Security permissions for camera, mic, files, and location.',
-      'Use a strong account password and disable automatic login.',
+      'Enable automatic updates and rapid security responses.',
+      'Turn on FileVault full-disk encryption.',
+      'Review app access to camera, mic, files, and location.',
+      'Disable automatic login and require strong local password.',
     ],
     hardening: [
-      'Use separate user accounts for admin and daily activity.',
-      'Audit login items and launch agents for unknown entries.',
-      'Enable iCloud Advanced Data Protection if your risk model requires it.',
+      'Separate admin and daily-use accounts.',
+      'Audit login items and unknown launch agents.',
+      'Enable Advanced Data Protection if risk justifies it.',
     ],
     recovery: [
-      'Keep Time Machine backups with encryption enabled.',
-      'Store recovery keys and Apple recovery contacts securely.',
+      'Run encrypted Time Machine backups.',
+      'Set recovery contacts and safeguard Apple recovery options.',
     ],
     links: [
-      {
-        label: 'Two-factor authentication for Apple ID',
-        href: 'https://support.apple.com/en-us/102660',
-      },
-      {
-        label: 'Turn on Advanced Data Protection for iCloud',
-        href: 'https://support.apple.com/en-mide/108756',
-      },
+      { label: 'Apple ID two-factor authentication', href: 'https://support.apple.com/en-us/102660' },
+      { label: 'Advanced Data Protection', href: 'https://support.apple.com/en-mide/108756' },
     ],
   },
   {
     id: 'android',
     platform: 'Android',
-    summary: 'Prioritize update cadence, Play Protect, lock-screen strength, and permission hygiene.',
+    summary: 'Patch velocity, Play Protect, and permission controls drive the biggest risk reduction.',
     essentials: [
-      'Check Android version updates and install security patches quickly.',
-      'Enable Google Play Protect automatic scanning.',
-      'Use biometric + strong PIN/passphrase lock.',
-      'Restrict app permissions to "while in use" wherever possible.',
+      'Install OS/security updates quickly.',
+      'Enable Play Protect automatic scans.',
+      'Use biometric lock plus strong PIN/passphrase.',
+      'Restrict app permissions to minimal access.',
     ],
     hardening: [
-      'Disable sideloading unless explicitly required and verified.',
-      'Remove stale apps with broad permissions or no active maintenance.',
+      'Avoid sideloading unless verified and required.',
       'Review accessibility permissions for unknown apps.',
+      'Remove dormant apps with broad permission scope.',
     ],
     recovery: [
-      'Enable remote locate/lock/wipe before travel.',
-      'Back up photos/messages to a trusted encrypted destination.',
+      'Enable remote locate/lock/wipe.',
+      'Back up critical data to trusted encrypted destinations.',
     ],
     links: [
-      {
-        label: 'Check and update your Android version',
-        href: 'https://support.google.com/android/answer/7680439?hl=en',
-      },
-      {
-        label: 'Google Play Protect overview',
-        href: 'https://support.google.com/googleplay/answer/2812853?hl=en',
-      },
+      { label: 'Update Android version', href: 'https://support.google.com/android/answer/7680439?hl=en' },
+      { label: 'Google Play Protect', href: 'https://support.google.com/googleplay/answer/2812853?hl=en' },
     ],
   },
   {
     id: 'ios',
     platform: 'iOS / iPadOS',
-    summary: 'Treat Apple ID controls and device lock configuration as your primary defense layer.',
+    summary: 'Strong passcode policy and Apple ID controls are the core of iPhone/iPad resilience.',
     essentials: [
-      'Enable automatic iOS/iPadOS updates.',
-      'Use a strong device passcode and Face ID / Touch ID.',
-      'Turn on two-factor authentication for Apple ID.',
-      'Review Privacy & Security permissions and lock-screen exposure.',
+      'Keep iOS/iPadOS on automatic update.',
+      'Use strong passcode plus Face ID/Touch ID.',
+      'Turn on Apple ID two-factor authentication.',
+      'Review lock-screen exposure and privacy settings.',
     ],
     hardening: [
-      'Disable lock-screen access for controls you do not need.',
-      'Use iCloud Private Relay and tracking protections where available.',
-      'Consider Lockdown Mode if you are at elevated targeting risk.',
+      'Disable lock-screen controls you do not need.',
+      'Use Private Relay and tracker protections where available.',
+      'Enable Lockdown Mode for elevated threat profiles.',
     ],
     recovery: [
-      'Confirm Find My is active with recovery contacts configured.',
-      'Keep encrypted local/cloud backups for rapid restoration.',
+      'Verify Find My and trusted recovery contacts.',
+      'Maintain encrypted backup options for fast restore.',
     ],
     links: [
-      {
-        label: 'Two-factor authentication for Apple ID',
-        href: 'https://support.apple.com/en-us/102660',
-      },
-      {
-        label: 'Harden your iPhone with Lockdown Mode',
-        href: 'https://support.apple.com/en-mide/guide/iphone/iph845f6f40c/ios',
-      },
+      { label: 'Apple ID two-factor authentication', href: 'https://support.apple.com/en-us/102660' },
+      { label: 'iPhone Lockdown Mode', href: 'https://support.apple.com/en-mide/guide/iphone/iph845f6f40c/ios' },
     ],
   },
   {
     id: 'linux',
     platform: 'Linux',
-    summary: 'Security posture depends on configuration discipline: updates, service minimization, and logging.',
+    summary: 'Configuration discipline matters most: updates, service minimization, and log monitoring.',
     essentials: [
-      'Apply security updates on a fixed schedule (or automatic unattended upgrades).',
-      'Use a host firewall with deny-by-default for inbound services.',
-      'Disable password SSH login when key-based auth is available.',
-      'Limit sudo/admin membership and review it regularly.',
+      'Apply updates on a fixed cadence or unattended flow.',
+      'Use a host firewall with deny-by-default inbound policy.',
+      'Disable password SSH login where key auth is possible.',
+      'Limit sudo/admin membership and review often.',
     ],
     hardening: [
-      'Enable mandatory access control (AppArmor/SELinux) where supported.',
+      'Enable SELinux/AppArmor where supported.',
       'Remove unnecessary network services and open ports.',
-      'Monitor auth and system logs for repeated failed login patterns.',
+      'Track auth and system logs for abnormal patterns.',
     ],
     recovery: [
-      'Test restore from encrypted backups, not only backup creation.',
-      'Keep golden-image or config-as-code baselines for fast rebuilds.',
+      'Test full backup restore, not only backup creation.',
+      'Keep baseline configs for quick rebuild.',
     ],
     links: [
-      {
-        label: 'Ubuntu security overview',
-        href: 'https://ubuntu.com/security',
-      },
-      {
-        label: 'Debian security management',
-        href: 'https://wiki.debian.org/SecurityManagement',
-      },
+      { label: 'Ubuntu security overview', href: 'https://ubuntu.com/security' },
+      { label: 'Debian security management', href: 'https://wiki.debian.org/SecurityManagement' },
     ],
   },
 ];
 
 export default function ProtectPage() {
+  const [active, setActive] = useState(guides[0].id);
+  const currentGuide = useMemo(
+    () => guides.find((guide) => guide.id === active) ?? guides[0],
+    [active]
+  );
+
   return (
-    <div className="bg-[#06161a] pt-24">
-      <section className="mx-auto max-w-7xl px-6 pb-12 pt-14 md:pb-16 md:pt-20">
-        <span className="inline-flex rounded-full border border-white/20 bg-white/5 px-4 py-2 text-xs uppercase tracking-[0.2em] text-white/70">
-          Protection Playbooks
-        </span>
-        <h1 className="mt-6 max-w-4xl text-5xl font-semibold leading-[0.95] text-white sm:text-6xl">
-          Platform hardening, without the noise
+    <div className="aurora-bg relative overflow-hidden pt-24">
+      <div className="pointer-events-none absolute left-4 top-36 h-72 w-72 rounded-full bg-[#47d5e2]/17 blur-3xl float-orb" />
+      <div className="pointer-events-none absolute right-4 top-52 h-72 w-72 rounded-full bg-[#f95f8f]/14 blur-3xl float-orb" />
+
+      <section className="relative mx-auto max-w-7xl px-6 pb-12 pt-14 md:pt-20">
+        <span className="guide-chip">Protection playbook</span>
+        <h1 className="mt-6 max-w-4xl text-5xl font-semibold leading-[0.9] text-white sm:text-6xl">
+          Harden the systems you already use
         </h1>
-        <p className="mt-5 max-w-3xl text-lg text-white/75">
-          Use this as your baseline. Keep it simple, repeatable, and evidence-based. Apply these controls first before buying extra tools.
+        <p className="mt-5 max-w-3xl text-lg text-white/77">
+          Choose your platform, apply essentials first, then layer hardening and recovery controls. This page is designed to teach by action.
         </p>
       </section>
 
-      <section className="mx-auto max-w-7xl px-6 pb-12">
-        <div className="site-panel p-6">
-          <h2 className="text-2xl font-medium text-white">Universal baseline</h2>
+      <section className="mx-auto max-w-7xl px-6 pb-10">
+        <div className="story-card panel-gradient p-6">
+          <p className="font-ui-mono text-xs uppercase tracking-[0.2em] text-white/55">Universal baseline</p>
           <div className="mt-4 grid gap-3 md:grid-cols-2">
             {baseline.map((item) => (
-              <p key={item} className="rounded-lg border border-white/10 bg-black/20 px-3 py-2 text-sm text-white/75">
+              <p key={item} className="rounded-lg border border-white/12 bg-black/25 px-3 py-2 text-sm text-white/77">
                 {item}
               </p>
             ))}
@@ -195,35 +183,47 @@ export default function ProtectPage() {
         </div>
       </section>
 
-      <section className="border-y border-white/10 bg-black/25 py-10">
+      <section className="border-y border-white/10 bg-black/30 py-10">
         <div className="mx-auto max-w-7xl px-6">
-          <p className="text-xs uppercase tracking-[0.2em] text-white/55">Jump to platform</p>
+          <p className="font-ui-mono text-xs uppercase tracking-[0.2em] text-white/55">Select platform</p>
           <div className="mt-4 flex flex-wrap gap-2">
             {guides.map((guide) => (
-              <Link
+              <button
                 key={guide.id}
-                href={`#${guide.id}`}
-                className="rounded-md border border-white/15 px-3 py-2 text-sm text-white/75 transition hover:border-white/30 hover:text-white"
+                type="button"
+                onClick={() => setActive(guide.id)}
+                className={`rounded-md px-4 py-2 text-sm transition ${
+                  active === guide.id
+                    ? 'bg-white text-[#08242d]'
+                    : 'border border-white/20 bg-white/5 text-white/75 hover:bg-white/10'
+                }`}
               >
                 {guide.platform}
-              </Link>
+              </button>
             ))}
           </div>
         </div>
       </section>
 
-      <section className="mx-auto max-w-7xl space-y-6 px-6 py-12">
-        {guides.map((guide) => (
-          <article key={guide.id} id={guide.id} className="site-panel p-6 md:p-8">
-            <h2 className="text-3xl font-medium text-white">{guide.platform}</h2>
-            <p className="mt-3 max-w-3xl text-sm text-white/70">{guide.summary}</p>
+      <section className="mx-auto max-w-7xl px-6 py-12">
+        <AnimatePresence mode="wait">
+          <motion.article
+            key={currentGuide.id}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.35 }}
+            className="story-card p-6 md:p-8"
+          >
+            <h2 className="text-3xl font-semibold text-white">{currentGuide.platform}</h2>
+            <p className="mt-3 max-w-3xl text-sm text-white/74">{currentGuide.summary}</p>
 
             <div className="mt-6 grid gap-4 md:grid-cols-3">
               <div>
-                <p className="font-ui-mono text-xs uppercase tracking-[0.16em] text-white/55">Essential</p>
+                <p className="font-ui-mono text-xs uppercase tracking-[0.16em] text-white/55">Essentials</p>
                 <ul className="mt-2 space-y-2">
-                  {guide.essentials.map((item) => (
-                    <li key={item} className="rounded-lg border border-white/10 bg-black/20 px-3 py-2 text-sm text-white/75">
+                  {currentGuide.essentials.map((item) => (
+                    <li key={item} className="rounded-lg border border-white/10 bg-black/25 px-3 py-2 text-sm text-white/77">
                       {item}
                     </li>
                   ))}
@@ -233,8 +233,8 @@ export default function ProtectPage() {
               <div>
                 <p className="font-ui-mono text-xs uppercase tracking-[0.16em] text-white/55">Hardening</p>
                 <ul className="mt-2 space-y-2">
-                  {guide.hardening.map((item) => (
-                    <li key={item} className="rounded-lg border border-white/10 bg-black/20 px-3 py-2 text-sm text-white/75">
+                  {currentGuide.hardening.map((item) => (
+                    <li key={item} className="rounded-lg border border-white/10 bg-black/25 px-3 py-2 text-sm text-white/77">
                       {item}
                     </li>
                   ))}
@@ -244,8 +244,8 @@ export default function ProtectPage() {
               <div>
                 <p className="font-ui-mono text-xs uppercase tracking-[0.16em] text-white/55">Recovery</p>
                 <ul className="mt-2 space-y-2">
-                  {guide.recovery.map((item) => (
-                    <li key={item} className="rounded-lg border border-white/10 bg-black/20 px-3 py-2 text-sm text-white/75">
+                  {currentGuide.recovery.map((item) => (
+                    <li key={item} className="rounded-lg border border-white/10 bg-black/25 px-3 py-2 text-sm text-white/77">
                       {item}
                     </li>
                   ))}
@@ -254,38 +254,35 @@ export default function ProtectPage() {
             </div>
 
             <div className="mt-6 flex flex-wrap gap-2">
-              {guide.links.map((link) => (
+              {currentGuide.links.map((link) => (
                 <Link
                   key={link.href}
                   href={link.href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="rounded-md border border-white/15 px-3 py-2 text-xs text-white/75 transition hover:border-white/30 hover:text-white"
+                  className="rounded-md border border-white/20 px-3 py-2 text-xs text-white/75 transition hover:border-white/35 hover:text-white"
                 >
                   {link.label}
                 </Link>
               ))}
             </div>
-          </article>
-        ))}
+          </motion.article>
+        </AnimatePresence>
       </section>
 
       <section className="mx-auto max-w-7xl px-6 pb-14">
-        <div className="site-panel p-6">
-          <h2 className="text-xl font-medium text-white">Need incident help instead of prevention?</h2>
-          <p className="mt-3 text-sm text-white/70">
-            If compromise is already active, stop and follow the response flow first: preserve evidence, contain accounts, then report.
-          </p>
-          <div className="mt-4 flex flex-wrap gap-3">
-            <Link href="/get-help" className="rounded-md bg-white px-4 py-2 text-sm font-medium text-[#062026] hover:bg-white/90">
-              Open response checklist
-            </Link>
-            <Link href="/report" className="rounded-md border border-white/20 px-4 py-2 text-sm text-white/80 hover:bg-white/10">
-              Report an incident
-            </Link>
-          </div>
+        <PasswordStrengthLab />
+        <div className="mt-5 flex flex-wrap gap-3">
+          <Link href="/learn" className="rounded-md bg-white px-4 py-2 text-sm font-medium text-[#08242d] hover:bg-white/90">
+            next: build long-term habits
+          </Link>
+          <Link href="/get-help" className="rounded-md border border-white/20 px-4 py-2 text-sm text-white/80 hover:bg-white/10">
+            already compromised? get help
+          </Link>
         </div>
       </section>
+
+      <GuideFlow />
     </div>
   );
 }

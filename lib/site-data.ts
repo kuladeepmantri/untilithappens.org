@@ -29,6 +29,13 @@ export interface EmergencyResource {
   href: string;
 }
 
+export interface GuideStep {
+  href: string;
+  short: string;
+  title: string;
+  intent: string;
+}
+
 export const siteNavItems: SiteNavItem[] = [
   {
     href: '/',
@@ -64,6 +71,21 @@ export const siteNavItems: SiteNavItem[] = [
     href: '/real-stories',
     label: 'stories.',
     description: 'Real incident lessons',
+  },
+  {
+    href: '/get-help',
+    label: 'help.',
+    description: 'First-hour incident response',
+  },
+  {
+    href: '/report',
+    label: 'report.',
+    description: 'Official reporting routes',
+  },
+  {
+    href: '/community',
+    label: 'community.',
+    description: 'Contribute and share practical lessons',
   },
 ];
 
@@ -160,5 +182,62 @@ export const sourceIndex: LinkItem[] = [
   {
     label: 'NIST SP 800-63B (Digital Identity Guidelines)',
     href: 'https://csrc.nist.gov/pubs/sp/800/63/b/upd2/final',
+  },
+];
+
+export const guideJourney: GuideStep[] = [
+  {
+    href: '/',
+    short: 'Start',
+    title: 'Reality and risk',
+    intent: 'Understand why this matters and what to prioritize first.',
+  },
+  {
+    href: '/threats',
+    short: 'Threats',
+    title: 'Attack patterns',
+    intent: 'Identify current scam and intrusion tactics before they reach you.',
+  },
+  {
+    href: '/check-footprint',
+    short: 'Footprint',
+    title: 'Exposure audit',
+    intent: 'Find and reduce publicly exposed data used for targeting and fraud.',
+  },
+  {
+    href: '/protect',
+    short: 'Protect',
+    title: 'Hardening actions',
+    intent: 'Apply practical controls on your devices and accounts.',
+  },
+  {
+    href: '/learn',
+    short: 'Learn',
+    title: 'Habit system',
+    intent: 'Turn one-time fixes into repeatable security behaviors.',
+  },
+  {
+    href: '/real-stories',
+    short: 'Stories',
+    title: 'Incident lessons',
+    intent: 'Learn from real failure modes and prevention checkpoints.',
+  },
+  {
+    href: '/get-help',
+    short: 'Help',
+    title: 'Stabilize incidents',
+    intent: 'Use the first-hour response sequence when something goes wrong.',
+  },
+  {
+    href: '/report',
+    short: 'Report',
+    title: 'Official escalation',
+    intent: 'Route incidents through trusted reporting channels quickly.',
+  },
+  {
+    href: '/community',
+    short: 'Community',
+    title: 'Contribute and reinforce',
+    intent: 'Share lessons, improve guidance, and keep the cycle current.',
   },
 ];
