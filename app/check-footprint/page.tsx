@@ -8,19 +8,19 @@ import { GuideFlow } from '@/components/site/guide-flow';
 const auditSteps = [
   {
     title: 'Search your core identifiers',
-    detail: 'Check full name, recurring usernames, primary emails, and old phone numbers across multiple search engines.',
+    detail: 'Run 12 queries: full name, old usernames, primary/legacy emails, and phone fragments in Google, Bing, and DuckDuckGo. Export URLs to a tracking sheet.',
   },
   {
     title: 'Check known breach exposure',
-    detail: 'Use trusted breach tools, then rotate passwords and recovery factors for exposed accounts.',
+    detail: 'Check every active email in breach monitors, then rotate credentials and recovery factors for all exposed accounts within 24 hours.',
   },
   {
     title: 'Prioritize data broker removals',
-    detail: 'Start with listings that expose home address, direct phone number, and family relationships.',
+    detail: 'Remove listings exposing home address, personal phone, and family links first. Track takedown date and required recheck interval.',
   },
   {
     title: 'Lock social discoverability',
-    detail: 'Reduce searchable profile fields, follower visibility, and location metadata in old posts.',
+    detail: 'Disable discoverability by email/phone, hide followers where possible, and scrub geotagged posts from the last 12 months.',
   },
 ];
 

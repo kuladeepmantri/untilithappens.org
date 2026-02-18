@@ -42,7 +42,7 @@ export default function RootLayout({
     <html lang="en" className="scroll-smooth">
       <body className="bg-black text-white antialiased">
         <Navigation />
-        <main className="min-h-screen pb-28">{children}</main>
+        <main className="min-h-screen">{children}</main>
         <SiteFooter />
       </body>
     </html>

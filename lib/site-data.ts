@@ -122,25 +122,25 @@ export const verifiedNotes: VerifiedNote[] = [
     metric: '$16.6B reported losses',
     detail:
       'The FBI Internet Crime Complaint Center received 859,532 complaints in 2024, with reported losses exceeding $16.6 billion.',
-    asOf: 'Latest IC3 annual dataset: 2024 data (published April 2025)',
+    asOf: 'Latest IC3 annual report available on February 18, 2026: 2024 data (published April 2025)',
     sourceLabel: 'FBI IC3 Internet Crime Report 2024',
     sourceUrl: 'https://www.ic3.gov/AnnualReport/Reports/2024_IC3Report.pdf',
   },
   {
-    metric: '$12.5B lost to fraud',
+    metric: '$470M lost to text scams',
     detail:
-      'The FTC reported consumers lost over $12.5 billion to fraud in 2024, a 25% increase over 2023.',
-    asOf: 'Latest FTC annual fraud summary: March 10, 2025',
-    sourceLabel: 'FTC annual fraud losses release',
-    sourceUrl: 'https://www.ftc.gov/news-events/news/press-releases/2025/03/big-jump-reported-losses-fraud-125-billion-2024',
+      'FTC data shows 2024 text-message scams caused $470 million in reported losses, with fake package, job, fraud-alert, toll, and wrong-number texts leading.',
+    asOf: 'FTC release dated April 16, 2025; still current on February 18, 2026',
+    sourceLabel: 'FTC text scam losses release',
+    sourceUrl: 'https://www.ftc.gov/news-events/news/press-releases/2025/04/new-ftc-data-show-top-text-message-scams-2024-overall-losses-text-scams-hit-470-million',
   },
   {
-    metric: '44% of breaches involved ransomware',
+    metric: '100+ IC3 impersonation reports',
     detail:
-      "Verizon's 2025 Data Breach Investigations Report found ransomware in 44% of analyzed breaches.",
-    asOf: 'Latest DBIR publication: 2025 report (April 2025)',
-    sourceLabel: 'Verizon Data Breach Investigations Report',
-    sourceUrl: 'https://www.verizon.com/business/resources/reports/dbir/',
+      'FBI warned of scammers pretending to be IC3 staff and offering fake fund recovery, with more than 100 reports filed between December 2023 and February 2025.',
+    asOf: 'FBI PSA issued April 18, 2025; still active guidance on February 18, 2026',
+    sourceLabel: 'FBI PSA: scammers impersonating IC3',
+    sourceUrl: 'https://www.fbi.gov/investigate/cyber/alerts/2025/fbi-warns-of-scammers-impersonating-the-ic3',
   },
 ];
 
@@ -169,7 +169,15 @@ export const sourceIndex: LinkItem[] = [
   },
   {
     label: 'FTC Fraud Losses (2024 Data)',
-    href: 'https://www.ftc.gov/news-events/news/press-releases/2025/03/big-jump-reported-losses-fraud-125-billion-2024',
+    href: 'https://www.ftc.gov/news-events/news/press-releases/2025/03/new-ftc-data-show-big-jump-reported-losses-fraud-125-billion-2024',
+  },
+  {
+    label: 'FTC Top Text Scams of 2024',
+    href: 'https://www.ftc.gov/news-events/news/press-releases/2025/04/new-ftc-data-show-top-text-message-scams-2024-overall-losses-text-scams-hit-470-million',
+  },
+  {
+    label: 'FBI Alert: IC3 Impersonation Scam',
+    href: 'https://www.fbi.gov/investigate/cyber/alerts/2025/fbi-warns-of-scammers-impersonating-the-ic3',
   },
   {
     label: 'Verizon DBIR (latest report hub)',

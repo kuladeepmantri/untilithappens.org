@@ -46,7 +46,7 @@ const guides: Guide[] = [
     links: [
       {
         label: 'Windows Security settings (Microsoft)',
-        href: 'https://support.microsoft.com/en-us/windows/windows-security-app-settings-1ec98620-1d39-8420-6f13-60448c7b31fd',
+        href: 'https://support.microsoft.com/en-us/windows/windows-security-app-settings-7022b7ba-7aa1-560e-a582-fae7f7f71764',
       },
     ],
   },

@@ -56,10 +56,7 @@ export function Navigation() {
       >
         <div className="mx-auto flex h-20 max-w-7xl items-center justify-between px-6">
           <Link href="/" className="text-base font-semibold tracking-tight text-white">
-            <span className="inline-flex items-center gap-2">
-              <span className="h-2 w-2 rounded-full bg-[#76c6bb]" />
-              until it happens.
-            </span>
+            until it happens.
           </Link>
 
           <div className="hidden items-center gap-7 lg:flex">
@@ -141,16 +138,16 @@ export function Navigation() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[95] bg-black/45 backdrop-blur-lg lg:hidden"
+            className="fixed inset-0 z-[95] bg-black/55 backdrop-blur-lg lg:hidden"
           >
             <motion.div
               initial={{ x: '100%' }}
               animate={{ x: 0 }}
               exit={{ x: '100%' }}
               transition={{ type: 'spring', stiffness: 280, damping: 28 }}
-              className="absolute right-0 top-0 h-full w-full max-w-sm border-l border-white/10 bg-[#09161c]/95 px-6 pt-24"
+              className="absolute inset-0 h-[100dvh] w-full overflow-y-auto bg-[#09161cf5] px-5 pb-[calc(env(safe-area-inset-bottom)+1.5rem)] pt-24"
             >
-              <div className="space-y-3">
+              <div className="mx-auto max-w-xl space-y-3">
                 {siteNavItems.map((item) => (
                   <Link
                     key={item.href}

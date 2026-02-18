@@ -68,6 +68,9 @@ export default function Home() {
               We guide people step-by-step with real-world incident patterns, practical controls, and official reporting
               paths. The journey is connected end-to-end so you always know the next action.
             </motion.p>
+            <motion.p variants={reveal} className="max-w-2xl text-sm text-white/62">
+              Data on this page is pinned to the latest official releases available as of February 18, 2026.
+            </motion.p>
 
             <motion.div variants={reveal} className="flex flex-wrap gap-3">
               <Link
