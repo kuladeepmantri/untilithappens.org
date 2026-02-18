@@ -1,6 +1,7 @@
 import './globals.css';
 import { Navigation } from '@/components/ui/navigation';
 import { SiteFooter } from '@/components/site/site-footer';
+import { JourneyDock } from '@/components/site/journey-dock';
 
 export const metadata = {
   metadataBase: new URL('https://untilithappens.org'),
@@ -42,7 +43,8 @@ export default function RootLayout({
     <html lang="en" className="scroll-smooth">
       <body className="text-white antialiased">
         <Navigation />
-        <main className="min-h-screen">{children}</main>
+        <main className="min-h-screen pb-60 md:pb-48">{children}</main>
+        <JourneyDock />
         <SiteFooter />
       </body>
     </html>

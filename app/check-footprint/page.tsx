@@ -3,7 +3,6 @@
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useMemo, useState } from 'react';
-import { GuideFlow } from '@/components/site/guide-flow';
 
 const phases = [
   {
@@ -100,9 +99,7 @@ export default function CheckFootprintPage() {
   const shouldShowFindings = useMemo(() => query.trim().length > 2, [query]);
 
   return (
-    <div className="aurora-bg relative overflow-hidden pt-24">
-      <div className="pointer-events-none absolute left-10 top-44 h-72 w-72 rounded-full bg-[#76c6bb]/16 blur-3xl float-orb" />
-      <div className="pointer-events-none absolute right-10 top-60 h-72 w-72 rounded-full bg-[#d7ab73]/14 blur-3xl float-orb" />
+    <div className="page-shell page-footprint">
 
       <section className="relative mx-auto max-w-7xl px-6 pb-10 pt-14 md:pt-20">
         <span className="guide-chip">Footprint reduction lab</span>
@@ -125,7 +122,7 @@ export default function CheckFootprintPage() {
         </div>
       </section>
 
-      <section className="border-y border-white/10 bg-white/[0.03] py-12">
+      <section className="page-band py-12">
         <div className="mx-auto grid max-w-7xl gap-6 px-6 lg:grid-cols-[0.95fr,1.2fr]">
           <div className="space-y-2">
             <p className="font-ui-mono text-xs uppercase tracking-[0.2em] text-white/55">Phase sequence</p>
@@ -157,7 +154,7 @@ export default function CheckFootprintPage() {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -16 }}
               transition={{ duration: 0.24 }}
-              className="story-card panel-gradient p-6 md:p-8"
+              className="story-card p-6 md:p-8"
             >
               <div className="flex items-end justify-between gap-3">
                 <div>
@@ -181,7 +178,7 @@ export default function CheckFootprintPage() {
       </section>
 
       <section className="mx-auto grid max-w-7xl gap-8 px-6 py-12 lg:grid-cols-[1.15fr,1fr]">
-        <div className="story-card panel-gradient p-6 md:p-8">
+        <div className="story-card p-6 md:p-8">
           <p className="font-ui-mono text-xs uppercase tracking-[0.2em] text-white/55">Exposure simulator</p>
           <h2 className="mt-2 text-2xl font-semibold text-white">What one identifier can reveal</h2>
 
@@ -256,7 +253,6 @@ export default function CheckFootprintPage() {
         </div>
       </section>
 
-      <GuideFlow />
     </div>
   );
 }

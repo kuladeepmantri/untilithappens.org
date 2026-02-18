@@ -3,7 +3,6 @@
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useEffect, useMemo, useState } from 'react';
-import { GuideFlow } from '@/components/site/guide-flow';
 
 type Guide = {
   id: string;
@@ -206,9 +205,7 @@ export default function ProtectPage() {
   );
 
   return (
-    <div className="aurora-bg relative overflow-hidden pt-24">
-      <div className="pointer-events-none absolute left-4 top-36 h-72 w-72 rounded-full bg-[#76c6bb]/17 blur-3xl float-orb" />
-      <div className="pointer-events-none absolute right-4 top-52 h-72 w-72 rounded-full bg-[#d7ab73]/14 blur-3xl float-orb" />
+    <div className="page-shell page-protect">
 
       <section className="relative mx-auto max-w-7xl px-6 pb-10 pt-14 md:pt-20">
         <span className="guide-chip">Device hardening workflow</span>
@@ -228,7 +225,7 @@ export default function ProtectPage() {
       </section>
 
       <section className="mx-auto max-w-7xl px-6 pb-10">
-        <div className="story-card panel-gradient p-6">
+        <div className="story-card p-6">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <p className="font-ui-mono text-xs uppercase tracking-[0.2em] text-white/55">Universal baseline</p>
             {detectedGuide && (
@@ -247,7 +244,7 @@ export default function ProtectPage() {
         </div>
       </section>
 
-      <section className="border-y border-white/10 bg-white/[0.03] py-10">
+      <section className="page-band py-10">
         <div className="mx-auto max-w-7xl px-6">
           <p className="font-ui-mono text-xs uppercase tracking-[0.2em] text-white/55">Select platform</p>
           <div className="mt-4 flex flex-wrap gap-2">
@@ -367,7 +364,6 @@ export default function ProtectPage() {
         </div>
       </section>
 
-      <GuideFlow />
     </div>
   );
 }

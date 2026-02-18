@@ -15,7 +15,7 @@ function evaluate(password: string): StrengthResult {
     return {
       score: 0,
       label: 'Type a password to evaluate',
-      color: 'from-white/30 to-white/20',
+      color: '#6d7f93',
       suggestions: ['Use 14+ characters and avoid reused passwords.'],
     };
   }
@@ -45,7 +45,7 @@ function evaluate(password: string): StrengthResult {
     return {
       score: points,
       label: 'Weak - easy to brute force or guess',
-      color: 'from-[#cc7063] to-[#d39074]',
+      color: '#be6a60',
       suggestions,
     };
   }
@@ -54,7 +54,7 @@ function evaluate(password: string): StrengthResult {
     return {
       score: points,
       label: 'Moderate - improve before using for sensitive accounts',
-      color: 'from-[#cda05f] to-[#d8b27b]',
+      color: '#c89b5f',
       suggestions,
     };
   }
@@ -62,7 +62,7 @@ function evaluate(password: string): StrengthResult {
   return {
     score: points,
     label: 'Strong - good baseline, still use a password manager',
-    color: 'from-[#76c6bb] to-[#7ea3b4]',
+    color: '#6e9dc0',
     suggestions: suggestions.length > 0 ? suggestions : ['Keep this unique and store it in a password manager.'],
   };
 }
@@ -74,9 +74,7 @@ export function PasswordStrengthLab() {
   const result = useMemo(() => evaluate(value), [value]);
 
   return (
-    <div className="relative overflow-hidden rounded-2xl border border-white/22 bg-gradient-to-br from-[#1e5568]/44 via-[#26546a]/38 to-[#8a6a3f]/30 p-6">
-      <div className="pointer-events-none absolute -right-16 -top-16 h-48 w-48 rounded-full bg-[#76c6bb]/20 blur-3xl" />
-      <div className="pointer-events-none absolute -bottom-16 -left-16 h-48 w-48 rounded-full bg-[#d7ab73]/18 blur-3xl" />
+    <div className="relative overflow-hidden rounded-2xl border border-white/20 bg-[#0f1621] p-6">
 
       <div className="relative space-y-4">
         <div>
@@ -107,7 +105,8 @@ export function PasswordStrengthLab() {
         <div className="space-y-2">
           <div className="h-3 overflow-hidden rounded-full bg-white/10">
             <motion.div
-              className={`h-full bg-gradient-to-r ${result.color}`}
+              className="h-full"
+              style={{ backgroundColor: result.color }}
               initial={{ width: 0 }}
               animate={{ width: `${result.score}%` }}
               transition={{ duration: 0.35, ease: 'easeOut' }}

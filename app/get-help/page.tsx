@@ -2,7 +2,6 @@
 
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { GuideFlow } from '@/components/site/guide-flow';
 import { emergencyResources } from '@/lib/site-data';
 
 const first15 = [
@@ -31,7 +30,7 @@ const responseMetrics = [
 
 export default function GetHelpPage() {
   return (
-    <div className="aurora-bg relative overflow-hidden pt-24">
+    <div className="page-shell page-support">
       <section className="mx-auto max-w-7xl px-6 pb-10 pt-14 md:pt-20">
         <span className="guide-chip">Incident response</span>
         <h1 className="mt-6 max-w-4xl text-5xl font-semibold leading-[0.9] text-white sm:text-6xl">
@@ -53,13 +52,13 @@ export default function GetHelpPage() {
         </div>
       </section>
 
-      <section className="border-y border-white/10 bg-white/[0.03] py-12">
+      <section className="page-band py-12">
         <div className="mx-auto grid max-w-7xl gap-6 px-6 lg:grid-cols-3">
           <motion.article
             initial={{ opacity: 0, y: 16 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, amount: 0.35 }}
-            className="story-card panel-gradient p-6"
+            className="story-card p-6"
           >
             <h2 className="text-2xl font-semibold text-white">0-15 minutes</h2>
             <ol className="mt-4 space-y-2">
@@ -76,7 +75,7 @@ export default function GetHelpPage() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, amount: 0.35 }}
             transition={{ delay: 0.07 }}
-            className="story-card panel-gradient p-6"
+            className="story-card p-6"
           >
             <h2 className="text-2xl font-semibold text-white">15-60 minutes</h2>
             <ol className="mt-4 space-y-2">
@@ -93,7 +92,7 @@ export default function GetHelpPage() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, amount: 0.35 }}
             transition={{ delay: 0.12 }}
-            className="story-card panel-gradient p-6"
+            className="story-card p-6"
           >
             <h2 className="text-2xl font-semibold text-white">1-24 hours</h2>
             <ol className="mt-4 space-y-2">
@@ -133,7 +132,6 @@ export default function GetHelpPage() {
         </div>
       </section>
 
-      <GuideFlow />
     </div>
   );
 }

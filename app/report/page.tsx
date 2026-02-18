@@ -2,7 +2,6 @@
 
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { GuideFlow } from '@/components/site/guide-flow';
 
 const reportMatrix = [
   {
@@ -47,7 +46,7 @@ const qualityTargets = [
 
 export default function ReportPage() {
   return (
-    <div className="aurora-bg relative overflow-hidden pt-24">
+    <div className="page-shell page-support">
       <section className="mx-auto max-w-7xl px-6 pb-10 pt-14 md:pt-20">
         <span className="guide-chip">Reporting matrix</span>
         <h1 className="mt-6 max-w-4xl text-5xl font-semibold leading-[0.9] text-white sm:text-6xl">
@@ -69,7 +68,7 @@ export default function ReportPage() {
         </div>
       </section>
 
-      <section className="border-y border-white/10 bg-white/[0.03] py-12">
+      <section className="page-band py-12">
         <div className="mx-auto max-w-7xl px-6">
           <div className="space-y-3">
             {reportMatrix.map((item, index) => (
@@ -79,7 +78,7 @@ export default function ReportPage() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, amount: 0.35 }}
                 transition={{ delay: index * 0.06 }}
-                className="story-card panel-gradient p-5 md:p-6"
+                className="story-card p-5 md:p-6"
               >
                 <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
                   <div>
@@ -118,7 +117,6 @@ export default function ReportPage() {
         </Link>
       </section>
 
-      <GuideFlow />
     </div>
   );
 }

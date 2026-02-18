@@ -51,7 +51,7 @@ export function Navigation() {
           'fixed inset-x-0 top-0 z-[100] border-b transition-all duration-300',
           isScrolled
             ? 'border-white/14 bg-[#123142]/82 backdrop-blur-xl'
-            : 'border-transparent bg-gradient-to-b from-[#0f2a39]/72 to-transparent'
+            : 'border-transparent bg-[#0f2a39]/68 backdrop-blur-sm'
         )}
       >
         <div className="mx-auto flex h-20 max-w-7xl items-center justify-between px-6">
@@ -72,7 +72,7 @@ export function Navigation() {
                 <span>{item.label}</span>
                 <span
                   className={cn(
-                    'absolute -bottom-1 left-0 h-[1px] w-full origin-left scale-x-0 bg-gradient-to-r from-[#76c6bb] to-[#d7ab73] transition-transform duration-300',
+                    'absolute -bottom-1 left-0 h-[1px] w-full origin-left scale-x-0 bg-[#8db1c8] transition-transform duration-300',
                     isActive(item.href) && 'scale-x-100'
                   )}
                 />
@@ -98,7 +98,7 @@ export function Navigation() {
             ))}
             <Link
               href="/get-help"
-              className="inline-flex items-center rounded-lg border border-[#d7ab73]/45 bg-gradient-to-r from-[#5b8f93]/40 to-[#5a3f26]/35 px-4 py-2 text-sm font-medium text-white/95 transition hover:border-[#d7ab73]/65 hover:from-[#5b8f93]/50 hover:to-[#6f4c2f]/44"
+              className="inline-flex items-center rounded-lg border border-[#d9a567]/45 bg-[#243142] px-4 py-2 text-sm font-medium text-white/95 transition hover:border-[#d9a567]/65 hover:bg-[#2b3d52]"
             >
               get help.
             </Link>

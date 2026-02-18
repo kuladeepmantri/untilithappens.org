@@ -2,7 +2,6 @@
 
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { GuideFlow } from '@/components/site/guide-flow';
 import { PasswordStrengthLab } from '@/components/site/password-strength-lab';
 
 const modules = [
@@ -19,7 +18,6 @@ const modules = [
       { label: 'Threat command center', href: '/threats' },
       { label: 'Real incidents', href: '/real-stories' },
     ],
-    gradient: 'from-[#76c6bb]/27 to-[#355d6d]/35',
   },
   {
     title: 'Module 2: Defend identity and accounts',
@@ -34,7 +32,6 @@ const modules = [
       { label: 'Protection workflow', href: '/protect' },
       { label: 'NIST identity guidance', href: 'https://csrc.nist.gov/pubs/sp/800/63/4/final' },
     ],
-    gradient: 'from-[#9ebac4]/22 to-[#445b6c]/36',
   },
   {
     title: 'Module 3: Reduce exposed personal data',
@@ -49,7 +46,6 @@ const modules = [
       { label: 'Footprint workflow', href: '/check-footprint' },
       { label: 'CISA Secure Our World', href: 'https://www.cisa.gov/secure-our-world' },
     ],
-    gradient: 'from-[#d7ab73]/21 to-[#5a432d]/37',
   },
   {
     title: 'Module 4: Respond and report correctly',
@@ -64,7 +60,6 @@ const modules = [
       { label: 'Get help', href: '/get-help' },
       { label: 'Reporting routes', href: '/report' },
     ],
-    gradient: 'from-[#8ea8a0]/24 to-[#58402f]/36',
   },
 ];
 
@@ -77,7 +72,7 @@ const cadence = [
 
 export default function LearnPage() {
   return (
-    <div className="aurora-bg relative overflow-hidden pt-24">
+    <div className="page-shell page-learn">
       <section className="mx-auto max-w-7xl px-6 pb-10 pt-14 md:pt-20">
         <span className="guide-chip">Learning system</span>
         <h1 className="mt-6 max-w-4xl text-5xl font-semibold leading-[0.9] text-white sm:text-6xl">
@@ -97,7 +92,7 @@ export default function LearnPage() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, amount: 0.35 }}
               transition={{ delay: index * 0.08 }}
-              className={`story-card bg-gradient-to-br ${module.gradient} p-6 md:p-8`}
+              className="story-card p-6 md:p-8"
             >
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <h2 className="text-2xl font-semibold text-white">{module.title}</h2>
@@ -135,7 +130,7 @@ export default function LearnPage() {
         <PasswordStrengthLab />
       </section>
 
-      <section className="border-y border-white/10 bg-white/[0.03] py-12">
+      <section className="page-band py-12">
         <div className="mx-auto max-w-7xl px-6">
           <h2 className="text-3xl font-semibold text-white">Cadence that keeps working</h2>
           <div className="mt-4 grid gap-3 md:grid-cols-2">
@@ -155,7 +150,6 @@ export default function LearnPage() {
         </div>
       </section>
 
-      <GuideFlow />
     </div>
   );
 }

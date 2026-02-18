@@ -2,7 +2,6 @@
 
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { GuideFlow } from '@/components/site/guide-flow';
 
 const contributeWays = [
   {
@@ -36,7 +35,7 @@ const principles = [
 
 export default function CommunityPage() {
   return (
-    <div className="aurora-bg relative overflow-hidden pt-24">
+    <div className="page-shell page-support">
       <section className="mx-auto max-w-7xl px-6 pb-10 pt-14 md:pt-20">
         <span className="guide-chip">Community workflow</span>
         <h1 className="mt-6 max-w-4xl text-5xl font-semibold leading-[0.9] text-white sm:text-6xl">
@@ -56,7 +55,7 @@ export default function CommunityPage() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, amount: 0.35 }}
               transition={{ delay: index * 0.07 }}
-              className="story-card panel-gradient p-6"
+              className="story-card p-6"
             >
               <h2 className="text-2xl font-semibold text-white">{item.title}</h2>
               <p className="mt-3 text-sm text-white/74">{item.detail}</p>
@@ -68,7 +67,7 @@ export default function CommunityPage() {
         </div>
       </section>
 
-      <section className="border-y border-white/10 bg-white/[0.03] py-12">
+      <section className="page-band py-12">
         <div className="mx-auto max-w-7xl px-6">
           <h2 className="text-3xl font-semibold text-white">Contribution guardrails</h2>
           <ul className="mt-4 grid gap-3 md:grid-cols-2">
@@ -94,7 +93,6 @@ export default function CommunityPage() {
         </div>
       </section>
 
-      <GuideFlow />
     </div>
   );
 }

@@ -35,7 +35,7 @@ const sections = [
 
 export default function PrivacyPage() {
   return (
-    <div className="aurora-bg relative overflow-hidden pt-24">
+    <div className="page-shell page-legal">
       <section className="mx-auto max-w-4xl px-6 pb-12 pt-14 md:pt-20">
         <span className="guide-chip">
           Privacy
